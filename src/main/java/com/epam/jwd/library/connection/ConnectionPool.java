@@ -12,4 +12,7 @@ public interface ConnectionPool {
 
     void returnConnection(Connection connection);
 
+    static ConnectionPool lockingPool() {
+        return LockingConnectionPool.getInstance();
+    }
 }
