@@ -1,7 +1,6 @@
 package com.epam.jwd.library.controller;
 
 import com.epam.jwd.library.command.Command;
-import com.epam.jwd.library.command.CommandRegistry;
 import com.epam.jwd.library.command.CommandResponse;
 import com.epam.jwd.library.connection.ConnectionPool;
 import org.apache.logging.log4j.LogManager;
@@ -46,7 +45,7 @@ public class Controller extends HttpServlet {
         }
     }
 
-
     public void destroy() {
+        ConnectionPool.lockingPool().shoutDown();
     }
 }
