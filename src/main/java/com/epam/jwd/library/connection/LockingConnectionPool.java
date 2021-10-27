@@ -1,6 +1,6 @@
-package com.epam.jwd.model.connection;
+package com.epam.jwd.library.connection;
 
-import com.epam.jwd.exception.InitializeConnectionPoolError;
+import com.epam.jwd.library.exception.InitializeConnectionPoolError;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 

@@ -1,4 +1,4 @@
-package com.epam.jwd.model.connection;
+package com.epam.jwd.library.connection;
 
 import java.sql.Connection;
 

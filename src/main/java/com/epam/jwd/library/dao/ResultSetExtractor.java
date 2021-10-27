@@ -1,4 +1,4 @@
-package com.epam.jwd.model.dao;
+package com.epam.jwd.library.dao;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;

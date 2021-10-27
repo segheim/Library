@@ -1,7 +1,7 @@
-package com.epam.jwd.model.dao;
+package com.epam.jwd.library.dao;
 
-import com.epam.jwd.entity.Entity;
-import com.epam.jwd.model.connection.ConnectionPool;
+import com.epam.jwd.library.entity.Entity;
+import com.epam.jwd.library.connection.ConnectionPool;
 
 import java.sql.*;
 import java.util.Collections;

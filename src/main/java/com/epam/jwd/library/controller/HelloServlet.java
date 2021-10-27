@@ -1,4 +1,4 @@
-package com.epam.jwd.library;
+package com.epam.jwd.library.controller;
 
 import java.io.*;
 import javax.servlet.http.*;
