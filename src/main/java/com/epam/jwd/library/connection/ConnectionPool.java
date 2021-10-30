@@ -1,14 +1,16 @@
 package com.epam.jwd.library.connection;
 
+import com.epam.jwd.library.exception.InitializeConnectionPoolError;
+
 import java.sql.Connection;
 
 public interface ConnectionPool {
 
-    boolean init();
+    boolean init() throws InitializeConnectionPoolError;
 
     boolean shoutDown();
 
-    Connection takeConnection();
+    Connection takeConnection() throws InterruptedException;
 
     void returnConnection(Connection connection);
 

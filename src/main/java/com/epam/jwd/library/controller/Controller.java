@@ -25,7 +25,7 @@ public class Controller extends HttpServlet {
         LOG.trace("doGet method");
         final String commandName = request.getParameter("command");
         final Command command = Command.of(commandName);
-        final CommandResponse commandResponse = command.execute(null);
+        final CommandResponse commandResponse = command.execute(request::setAttribute);
         forwardOrRedirectToCommandResponseLocation(request, response, commandResponse);
     }
 

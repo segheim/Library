@@ -7,5 +7,8 @@
 <body>
 <h1>Welcome to page Main.jsp</h1>
 <i>Сегодня: <%= new Date() %></i>
+<p>
+    <a href="/controller?command=author_page">authors</a>
+</p>
 </body>
 </html>

@@ -95,7 +95,7 @@ public class LockingConnectionPool implements ConnectionPool{
     }
 
     @Override
-    public Connection takeConnection() {
+    public Connection takeConnection() throws InterruptedException {
         ProxyConnection proxyConnection = null;
         locker.lock();
         try {
@@ -104,8 +104,6 @@ public class LockingConnectionPool implements ConnectionPool{
             }
             proxyConnection = availableConnections.poll();
             givenAwayConnections.add(proxyConnection);
-        } catch (InterruptedException e) {
-            LOG.error("interrupted when waiting empty availableConnections", e);
         } finally {
             locker.unlock();
         }

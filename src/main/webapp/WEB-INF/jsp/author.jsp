@@ -8,14 +8,15 @@
 <h3>Authors</h3>
 <table>
     <tr>
+        <th>Id</th>
         <th>First name</th>
         <th>Last name</th>
-        <%--        <th>Owner</th>--%>
     </tr>
-    <c:forEach var="authir" items="${requestScope.authors}">
+    <c:forEach var="author" items="${requestScope.authors}">
         <tr>
-            <td><a href="/controller?command=show_bike&id=${author.id}">${bike.first_name}</a></td>
-            <td>${bike.last_name}</td>
+            <td>${author.id}</td>
+            <td>${author.first_name}</td>
+            <td>${author.last_name}</td>
         </tr>
     </c:forEach>
 </table>

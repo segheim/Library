@@ -45,6 +45,9 @@ public class AuthorDao extends AbstractDao<Author>{
             LOG.error("sql error, could not create author", e);
         } catch (AuthorNotCreateException e) {
             LOG.error("could not create new author", e);
+        } catch (InterruptedException e) {
+            LOG.error("method takeConnection from ConnectionPool was interrupted", e);
+            Thread.currentThread().interrupt();
         }
         return createAuthor;
     }
@@ -65,10 +68,14 @@ public class AuthorDao extends AbstractDao<Author>{
                 final Author author = executeAuthor(resultSet).orElseThrow(() -> new AuthorNotFoundException("could not extract author"));
                 authors.add(author);
             }
+            return authors;
         } catch (SQLException e) {
             LOG.error("sql error, could not found authors", e);
         } catch (AuthorNotFoundException e) {
             LOG.error("did not found authors", e);
+        } catch (InterruptedException e) {
+            LOG.error("method takeConnection from ConnectionPool was interrupted", e);
+            Thread.currentThread().interrupt();
         }
         return Collections.emptyList();
     }
@@ -82,6 +89,7 @@ public class AuthorDao extends AbstractDao<Author>{
     public boolean delete(Author entity) {
         return false;
     }
+
     private Optional<Author> executeAuthor(ResultSet resultSet){
         try {
             return Optional.of(new Author(resultSet.getLong(ID_COLUMN_NAME), resultSet.getString(FIRST_NAME_COLUMN_NAME),
