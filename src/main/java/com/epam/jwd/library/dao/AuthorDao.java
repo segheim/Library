@@ -17,13 +17,13 @@ public class AuthorDao extends AbstractDao<Author>{
 
     private static final Logger LOG = LogManager.getLogger(AuthorDao.class);
 
-    public static final String SELECT_ALL_AUTHORS = "select id as id, first_name as f_name, last_name as l_name from author";
-    public static final String LAST_NAME_COLUMN_NAME = "l_name";
-    public static final String FIRST_NAME_COLUMN_NAME = "f_name";
-    public static final String ID_COLUMN_NAME = "id";
-    public static final String INSERT_NEW_AUTHOR = "insert into author (first_name, last_name) values (?,?)";
+    private static final String SELECT_ALL_AUTHORS = "select id as id, first_name as f_name, last_name as l_name from author";
+    private static final String LAST_NAME_COLUMN_NAME = "l_name";
+    private static final String FIRST_NAME_COLUMN_NAME = "f_name";
+    private static final String ID_COLUMN_NAME = "id";
+    private static final String INSERT_NEW_AUTHOR = "insert into author (first_name, last_name) values (?,?)";
 
-    public AuthorDao(ConnectionPool pool) {
+    private AuthorDao(ConnectionPool pool) {
         super(pool, LOG);
     }
 
@@ -98,6 +98,14 @@ public class AuthorDao extends AbstractDao<Author>{
             LOG.error("could not extract author from executeAuthor", e);
             return Optional.empty();
         }
+    }
+
+    private static class Holder {
+        private static final AuthorDao INSTANCE = new AuthorDao(ConnectionPool.lockingPool());
+    }
+
+    public static AuthorDao getInstance() {
+        return Holder.INSTANCE;
     }
 
 }

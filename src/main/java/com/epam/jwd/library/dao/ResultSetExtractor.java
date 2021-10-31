@@ -5,6 +5,7 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 
+@FunctionalInterface
 public interface ResultSetExtractor<T> {
 
     T extract(ResultSet resultSet);

@@ -1,14 +1,16 @@
 package com.epam.jwd.library.command;
 
-import com.epam.jwd.library.connection.ConnectionPool;
 import com.epam.jwd.library.dao.AuthorDao;
+import com.epam.jwd.library.dao.BookDao;
 import com.epam.jwd.library.service.AuthorService;
+import com.epam.jwd.library.service.BookService;
 
 public enum CommandRegistry {
 
-    MAIN_PAGE(ShowMainPageCommand.getInstance(), "main_page"),
-    AUTHOR_PAGE(new ShowAuthorsPageCommand(new AuthorService(new AuthorDao(ConnectionPool.lockingPool()))), "author_page"),
-    DEFAULT_PAGE(Show404ErrorPageCommand.getInstance(), "404error");
+    MAIN_PAGE(new ShowMainPageCommand(), "main_page"),
+    AUTHOR_PAGE(new ShowAuthorsPageCommand(new AuthorService(AuthorDao.getInstance())), "author_page"),
+    BOOKS_PAGE(new ShowBooksPageCommand(new BookService(BookDao.getInstance())), "catalog"),
+    DEFAULT_PAGE(new Show404ErrorPageCommand(), "404error");
 
     private final Command command;
     private final String path;

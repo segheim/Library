@@ -10,5 +10,8 @@
 <p>
     <a href="/controller?command=author_page">authors</a>
 </p>
+<p>
+    <a href="/controller?command=catalog">catalog</a>
+</p>
 </body>
 </html>

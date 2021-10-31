@@ -1,17 +1,36 @@
 package com.epam.jwd.library.dao;
 
 import com.epam.jwd.library.connection.ConnectionPool;
+import com.epam.jwd.library.entity.Author;
 import com.epam.jwd.library.entity.Book;
+import com.epam.jwd.library.exception.BookNotFoundException;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
+import java.sql.Connection;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.sql.Statement;
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
+import java.util.Optional;
 
 public class BookDao extends AbstractDao<Book>{
 
     private static final Logger LOG = LogManager.getLogger(BookDao.class);
 
-    protected BookDao(ConnectionPool pool) {
+    private static final String SELECT_ALL_BOOKS = "select book.id, author.first_name, author.last_name, " +
+            "book.title, book.date_published, book.amount_of_left from author join author_to_book atb on author.id = atb.author_id " +
+            "join book on atb.book_id = book.id";
+    private static final String ID_COLUMN_NAME = "id";
+    private static final String TITLE_COLUMN_NAME = "title";
+    private static final String DATE_PUBLISHED_COLUMN_NAME = "date_published";
+    private static final String AMOUNT_OF_LEFT_COLUMN_NAME = "amount_of_left";
+    private static final String LAST_NAME_COLUMN_NAME_AUTHOR = "last_name";
+    private static final String FIRST_NAME_COLUMN_NAME_AUTHOR = "first_name";
+
+    private BookDao(ConnectionPool pool) {
         super(pool, LOG);
     }
 
@@ -27,7 +46,26 @@ public class BookDao extends AbstractDao<Book>{
 
     @Override
     public List<Book> readAll() {
-        return null;
+        LOG.trace("start readAll");
+        List<Book> books = new ArrayList<>();
+        try (final Connection connection = pool.takeConnection();
+             final Statement statement = connection.createStatement();
+             final ResultSet resultSet = statement.executeQuery(SELECT_ALL_BOOKS)){
+            while (resultSet.next()) {
+                final Book book = executeBook(resultSet).orElseThrow(()
+                        -> new BookNotFoundException("could not extract book"));
+                books.add(book);
+            }
+            return books;
+        } catch (SQLException e) {
+            LOG.error("sql error, could not found books", e);
+        } catch (BookNotFoundException e) {
+            LOG.error("did not found books", e);
+        } catch (InterruptedException e) {
+            LOG.error("method takeConnection from ConnectionPool was interrupted", e);
+            Thread.currentThread().interrupt();
+        }
+        return Collections.emptyList();
     }
 
     @Override
@@ -38,5 +76,24 @@ public class BookDao extends AbstractDao<Book>{
     @Override
     public boolean delete(Book entity) {
         return false;
+    }
+
+    private Optional<Book> executeBook(ResultSet resultSet){
+        try {
+            return Optional.of(new Book(resultSet.getLong(ID_COLUMN_NAME), resultSet.getString(TITLE_COLUMN_NAME),
+                    resultSet.getDate(DATE_PUBLISHED_COLUMN_NAME), resultSet.getInt(AMOUNT_OF_LEFT_COLUMN_NAME),
+                    new Author(resultSet.getString(FIRST_NAME_COLUMN_NAME_AUTHOR), resultSet.getString(LAST_NAME_COLUMN_NAME_AUTHOR))));
+        } catch (SQLException e) {
+            LOG.error("could not extract book from executeBook", e);
+            return Optional.empty();
+        }
+    }
+
+    private static class Holder {
+        private static final BookDao INSTANCE = new BookDao(ConnectionPool.lockingPool());
+    }
+
+    public static BookDao getInstance() {
+        return Holder.INSTANCE;
     }
 }
