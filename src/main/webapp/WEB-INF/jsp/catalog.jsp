@@ -22,7 +22,7 @@
             <td>${book.author.first_name}</td>
             <td>${book.author.last_name}</td>
             <td>${book.date_published}</td>
-            <td>${book.mount_of_left}</td>
+            <td>${book.amount_of_left}</td>
         </tr>
     </c:forEach>
 </table>
