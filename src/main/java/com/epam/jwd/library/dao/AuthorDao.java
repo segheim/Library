@@ -2,8 +2,10 @@ package com.epam.jwd.library.dao;
 
 import com.epam.jwd.library.connection.ConnectionPool;
 import com.epam.jwd.library.entity.Author;
+import com.epam.jwd.library.entity.Book;
 import com.epam.jwd.library.exception.AuthorNotCreateException;
 import com.epam.jwd.library.exception.AuthorNotFoundException;
+import com.epam.jwd.library.exception.BookNotFoundException;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -13,13 +15,16 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 
-public class AuthorDao extends AbstractDao<Author>{
+public class AuthorDao extends AbstractDao<Author> implements BasicAuthorDao{
 
     private static final Logger LOG = LogManager.getLogger(AuthorDao.class);
 
     private static final String SELECT_ALL_AUTHORS = "select id as id, first_name as f_name, last_name as l_name from author";
-    private static final String LAST_NAME_COLUMN_NAME = "l_name";
+    private static final String SELECT_AUTHOR_BY_ID_BOOK = "select author.first_name, author.last_name,book.title," +
+            " book.date_published, book.amount_of_left from author join author_to_book atb " +
+            "on author.id = atb.author_id join book on atb.book_id = book.id where book.id = ?";
     private static final String FIRST_NAME_COLUMN_NAME = "f_name";
+    private static final String LAST_NAME_COLUMN_NAME = "l_name";
     private static final String ID_COLUMN_NAME = "id";
     private static final String INSERT_NEW_AUTHOR = "insert into author (first_name, last_name) values (?,?)";
 
@@ -53,7 +58,7 @@ public class AuthorDao extends AbstractDao<Author>{
     }
 
     @Override
-    public Author read(Long id) {
+    public Optional<Book> read(Long id) {
         return null;
     }
 

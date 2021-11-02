@@ -3,9 +3,10 @@ package com.epam.jwd.library.dao;
 import com.epam.jwd.library.entity.Author;
 import com.epam.jwd.library.entity.Book;
 
-import java.util.Optional;
+import java.util.List;
 
-public interface BasicAuthorDao {
+public interface BasicBookDao {
 
+    List<Book> readByIdAuthor(Author author);
 
 }

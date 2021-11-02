@@ -5,7 +5,13 @@
     <title>Title</title>
 </head>
 <body>
-<h3>Authors</h3>
+<h3>Catalog</h3>
+<p>
+    <form action="student.jsp" method="POST">
+        Search: <input type="text" name="Name">
+        <input type ="submit" value="search">
+    </form>
+</p>
 <table>
     <tr>
         <th>Id</th>
@@ -14,6 +20,7 @@
         <th>Last name</th>
         <th>Date published</th>
         <th>Quantity</th>
+        <th>Order</th>
     </tr>
     <c:forEach var="book" items="${requestScope.books}">
         <tr>
@@ -23,6 +30,9 @@
             <td>${book.author.last_name}</td>
             <td>${book.date_published}</td>
             <td>${book.amount_of_left}</td>
+            <c:if test="${book.amount_of_left>0}">
+                <td><label><input type="checkbox"/></label></td>
+            </c:if>
         </tr>
     </c:forEach>
 </table>

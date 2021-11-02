@@ -7,22 +7,26 @@ import com.epam.jwd.library.exception.BookNotFoundException;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
-import java.sql.Connection;
-import java.sql.ResultSet;
-import java.sql.SQLException;
-import java.sql.Statement;
+import java.sql.*;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 
-public class BookDao extends AbstractDao<Book>{
+public class BookDao extends AbstractDao<Book> implements BasicBookDao{
 
     private static final Logger LOG = LogManager.getLogger(BookDao.class);
 
     private static final String SELECT_ALL_BOOKS = "select book.id, author.first_name, author.last_name, " +
-            "book.title, book.date_published, book.amount_of_left from author join author_to_book atb on author.id = atb.author_id " +
-            "join book on atb.book_id = book.id";
+            "book.title, book.date_published, book.amount_of_left from author join author_to_book atb " +
+            "on author.id = atb.author_id join book on atb.book_id = book.id";
+    private static final String SELECT_BOOKS_BY_ID = "select author.first_name, author.last_name, book.title," +
+            " book.date_published, book.amount_of_left from author join author_to_book atb" +
+            " on author.id = atb.author_id join book on atb.book_id = book.id where book.id = ?";
+    private static final String SELECT_BOOK_BY_ID_AUTHOR = "select author.first_name, author.last_name,book.title," +
+            " book.date_published, book.amount_of_left from author join author_to_book atb " +
+            "on author.id = atb.author_id join book on atb.book_id = book.id where author.id = ?";
+
     private static final String ID_COLUMN_NAME = "id";
     private static final String TITLE_COLUMN_NAME = "title";
     private static final String DATE_PUBLISHED_COLUMN_NAME = "date_published";
@@ -40,8 +44,28 @@ public class BookDao extends AbstractDao<Book>{
     }
 
     @Override
-    public Book read(Long id) {
-        return null;
+    public Optional<Book> read(Long id) {
+        LOG.trace("start read (read by id)");
+        Optional<Book> book = Optional.empty();
+        try (final Connection connection = pool.takeConnection();
+             final PreparedStatement preparedStatement = connection.prepareStatement(SELECT_BOOKS_BY_ID)) {
+            preparedStatement.setLong(1, id);
+            final ResultSet resultSet = preparedStatement.executeQuery();
+            if (resultSet.next()) {
+                final Book executedBook = executeBook(resultSet).orElseThrow(()
+                        -> new BookNotFoundException("could not extract book"));
+                book = Optional.of(executedBook);
+            }
+            return book;
+        } catch (SQLException e) {
+            LOG.error("sql error, could not found a book", e);
+        } catch (BookNotFoundException e) {
+            LOG.error("could not found a book", e);
+        } catch (InterruptedException e) {
+            LOG.error("method takeConnection from ConnectionPool was interrupted", e);
+            Thread.currentThread().interrupt();
+        }
+        return book;
     }
 
     @Override
@@ -88,6 +112,33 @@ public class BookDao extends AbstractDao<Book>{
             return Optional.empty();
         }
     }
+
+    @Override
+    public List<Book> readByIdAuthor(Author author) {
+        LOG.trace("start readByAuthor");
+        List<Book> books = new ArrayList<>();
+        try (final Connection connection = pool.takeConnection();
+             final PreparedStatement preparedStatement = connection.prepareStatement(SELECT_BOOK_BY_ID_AUTHOR)) {
+            preparedStatement.setLong(1, author.getId());
+            final ResultSet resultSet = preparedStatement.executeQuery();
+            while (resultSet.next()) {
+                final Book book = executeBook(resultSet).orElseThrow(()
+                        -> new BookNotFoundException("could not extract book"));
+                books.add(book);
+            }
+            return books;
+        } catch (SQLException e) {
+            LOG.error("sql error, could not found a book", e);
+        } catch (BookNotFoundException e) {
+            LOG.error("could not found a book", e);
+        } catch (InterruptedException e) {
+            LOG.error("method takeConnection from ConnectionPool was interrupted", e);
+            Thread.currentThread().interrupt();
+        }
+        return Collections.emptyList();
+    }
+
+
 
     private static class Holder {
         private static final BookDao INSTANCE = new BookDao(ConnectionPool.lockingPool());

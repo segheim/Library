@@ -10,7 +10,7 @@ public enum CommandRegistry {
     MAIN_PAGE(new ShowMainPageCommand(), "main_page"),
     AUTHOR_PAGE(new ShowAuthorsPageCommand(new AuthorService(AuthorDao.getInstance())), "author_page"),
     BOOKS_PAGE(new ShowBooksPageCommand(new BookService(BookDao.getInstance())), "catalog"),
-    DEFAULT_PAGE(new Show404ErrorPageCommand(), "404error");
+    DEFAULT_PAGE(new Show404ErrorPageCommand(), "404");
 
     private final Command command;
     private final String path;
