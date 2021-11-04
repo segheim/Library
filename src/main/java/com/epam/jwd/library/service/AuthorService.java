@@ -1,7 +1,7 @@
 package com.epam.jwd.library.service;
 
 import com.epam.jwd.library.dao.AuthorDao;
-import com.epam.jwd.library.entity.Author;
+import com.epam.jwd.library.model.Author;
 
 import java.util.List;
 

@@ -1,8 +1,7 @@
 package com.epam.jwd.library.dao;
 
 import com.epam.jwd.library.connection.ConnectionPool;
-import com.epam.jwd.library.entity.Book;
-import com.epam.jwd.library.entity.Entity;
+import com.epam.jwd.library.model.Entity;
 import org.apache.logging.log4j.Logger;
 
 import java.util.List;
@@ -20,7 +19,7 @@ public abstract class AbstractDao<T extends Entity>{
 
     public abstract boolean create(T entity);
 
-    public abstract Optional<Book> read(Long id);
+    public abstract Optional<T> read(Long id);
 
     public abstract List<T> readAll();
 

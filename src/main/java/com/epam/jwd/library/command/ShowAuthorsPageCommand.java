@@ -1,6 +1,6 @@
 package com.epam.jwd.library.command;
 
-import com.epam.jwd.library.entity.Author;
+import com.epam.jwd.library.model.Author;
 import com.epam.jwd.library.service.AuthorService;
 
 import java.util.List;

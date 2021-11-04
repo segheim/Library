@@ -1,4 +1,4 @@
-package com.epam.jwd.library.entity;
+package com.epam.jwd.library.model;
 
 public interface Entity {
 

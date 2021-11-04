@@ -14,25 +14,26 @@
 </p>
 <table>
     <tr>
-        <th>Id</th>
+        <th>Add</th>
         <th>Title</th>
-        <th>First name</th>
-        <th>Last name</th>
+        <th>Author</th>
         <th>Date published</th>
         <th>Quantity</th>
-        <th>Order</th>
     </tr>
     <c:forEach var="book" items="${requestScope.books}">
         <tr>
-            <td>${book.id}</td>
-            <td>${book.title}</td>
-            <td>${book.author.first_name}</td>
-            <td>${book.author.last_name}</td>
-            <td>${book.date_published}</td>
-            <td>${book.amount_of_left}</td>
             <c:if test="${book.amount_of_left>0}">
                 <td><label><input type="checkbox"/></label></td>
             </c:if>
+            <td>${book.title}</td>
+            <td>
+        <c:forEach var="author" items="${book.authors}">
+            <br>${author.first_name}
+                ${author.last_name}
+        </c:forEach>
+            </td>
+            <td>${book.date_published}</td>
+            <td>${book.amount_of_left}</td>
         </tr>
     </c:forEach>
 </table>

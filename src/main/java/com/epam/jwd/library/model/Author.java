@@ -1,5 +1,7 @@
-package com.epam.jwd.library.entity;
+package com.epam.jwd.library.model;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Objects;
 
 public class Author implements Entity{
@@ -8,7 +10,8 @@ public class Author implements Entity{
     private final String first_name;
     private final String last_name;
 
-    public Author(Long id, String first_name, String last_name) {
+
+    public Author(Long id, String first_name, String last_name ) {
         this.id = id;
         this.first_name = first_name;
         this.last_name = last_name;
@@ -18,6 +21,8 @@ public class Author implements Entity{
         this(null, first_name, last_name);
     }
 
+
+    @Override
     public Long getId() {
         return id;
     }
@@ -45,6 +50,10 @@ public class Author implements Entity{
 
     @Override
     public String toString() {
-        return "Author{" + "id=" + id + " " + first_name + " " + last_name + '}';
+        return "Author{" +
+                "id=" + id +
+                ", first_name='" + first_name + '\'' +
+                ", last_name='" + last_name + '\'' +
+                '}';
     }
 }

@@ -1,9 +1,10 @@
 package com.epam.jwd.library.command;
 
-import com.epam.jwd.library.entity.Book;
+import com.epam.jwd.library.model.Book;
 import com.epam.jwd.library.service.BookService;
 
 import java.util.List;
+import java.util.Set;
 
 public class ShowBooksPageCommand implements Command{
 

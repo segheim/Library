@@ -3,6 +3,7 @@ package com.epam.jwd.library.controller;
 import com.epam.jwd.library.command.Command;
 import com.epam.jwd.library.command.CommandResponse;
 import com.epam.jwd.library.connection.ConnectionPool;
+import com.epam.jwd.library.dao.AuthorDao;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
