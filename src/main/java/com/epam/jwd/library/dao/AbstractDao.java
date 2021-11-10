@@ -1,6 +1,7 @@
 package com.epam.jwd.library.dao;
 
 import com.epam.jwd.library.connection.ConnectionPool;
+import com.epam.jwd.library.model.Book;
 import com.epam.jwd.library.model.Entity;
 import org.apache.logging.log4j.Logger;
 
@@ -17,13 +18,13 @@ public abstract class AbstractDao<T extends Entity>{
         this.logger = logger;
     }
 
-    public abstract boolean create(T entity);
+    public abstract Optional<T> create(T entity);
 
     public abstract Optional<T> read(Long id);
 
     public abstract List<T> readAll();
 
-    public abstract T update(T entity);
+    public abstract Optional<T> update(T entity);
 
     public abstract boolean delete(T entity);
 

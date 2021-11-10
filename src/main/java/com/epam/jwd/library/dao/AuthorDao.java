@@ -1,29 +1,28 @@
 package com.epam.jwd.library.dao;
 
 import com.epam.jwd.library.connection.ConnectionPool;
+import com.epam.jwd.library.exception.BookDaoException;
 import com.epam.jwd.library.model.Author;
-import com.epam.jwd.library.exception.AuthorNotCreateException;
-import com.epam.jwd.library.exception.AuthorNotFoundException;
+import com.epam.jwd.library.exception.AuthorDaoException;
+import com.epam.jwd.library.model.Book;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 import java.sql.*;
+import java.sql.Date;
 import java.util.*;
 
 public class AuthorDao extends AbstractDao<Author> implements BasicAuthorDao {
-    public static void main(String[] args) {
-        AuthorDao.getInstance().readAll();
-    }
 
     private static final Logger LOG = LogManager.getLogger(AuthorDao.class);
 
+    private static final String INSERT_NEW_AUTHOR = "insert into author (first_name, last_name) values (?,?)";
+    private static final String SELECT_AUTHOR_BY_ID = "select id as id, first_name as f_name, last_name as l_name" +
+            " from author where id=?";
     private static final String SELECT_ALL_AUTHORS = "select id as id, first_name as f_name, last_name as l_name\n" +
             "from author";
-
-    private static final String SELECT_AUTHOR_BY_ID_BOOK = "select author.first_name, author.last_name,book.title," +
-            " book.date_published, book.amount_of_left from author join author_to_book atb " +
-            "on author.id = atb.author_id join book on atb.book_id = book.id where book.id = ?";
-    private static final String INSERT_NEW_AUTHOR = "insert into author (first_name, last_name) values (?,?)";
+    private static final String UPDATE_AUTHOR = "update author set first_name=?, last_name=? where id=?";
+    private static final String DELETE_AUTHOR_BY_ID = "delete from author where id=?";
 
     private static final String FIRST_NAME_COLUMN_NAME = "f_name";
     private static final String LAST_NAME_COLUMN_NAME = "l_name";
@@ -34,33 +33,56 @@ public class AuthorDao extends AbstractDao<Author> implements BasicAuthorDao {
     }
 
     @Override
-    public boolean create(Author author) {
+    public Optional<Author> create(Author author) {
         LOG.trace("start create author");
-        boolean createAuthor = false;
         try (final Connection connection = pool.takeConnection();
-             final PreparedStatement preparedStatement = connection.prepareStatement(INSERT_NEW_AUTHOR)) {
+             final PreparedStatement preparedStatement = connection.prepareStatement(INSERT_NEW_AUTHOR, Statement.RETURN_GENERATED_KEYS)) {
             preparedStatement.setString(1, author.getFirst_name());
             preparedStatement.setString(2, author.getLast_name());
             final int numberChangedLines = preparedStatement.executeUpdate();
             if (numberChangedLines != 0) {
-                createAuthor = true;
-                LOG.info("created new author: {} {}", author.getFirst_name(), author.getLast_name());
+                final ResultSet generatedKeys = preparedStatement.getGeneratedKeys();
+                if (generatedKeys.next()) {
+                    long key = generatedKeys.getLong(1);
+                    final Optional<Author> createAuthor = read(key);
+                    final Author author1 = createAuthor.get();
+                }
             } else
-                throw new AuthorNotCreateException("could not create author");
+                throw new AuthorDaoException("could not create author");
         } catch (SQLException e) {
             LOG.error("sql error, could not create author", e);
-        } catch (AuthorNotCreateException e) {
+        } catch (AuthorDaoException e) {
             LOG.error("could not create new author", e);
         } catch (InterruptedException e) {
             LOG.error("method takeConnection from ConnectionPool was interrupted", e);
             Thread.currentThread().interrupt();
         }
-        return createAuthor;
+        return Optional.empty();
     }
 
     @Override
     public Optional<Author> read(Long id) {
-        return null;
+        LOG.trace("start read author (read by id)");
+        Optional<Author> author = Optional.empty();
+        try (final Connection connection = pool.takeConnection();
+             final PreparedStatement preparedStatement = connection.prepareStatement(SELECT_AUTHOR_BY_ID)) {
+            preparedStatement.setLong(1, id);
+            final ResultSet resultSet = preparedStatement.executeQuery();
+            if (resultSet.next()) {
+                final Author executedAuthor = executeAuthor(resultSet).orElseThrow(()
+                        -> new AuthorDaoException("could not extract author"));
+                author = Optional.of(executedAuthor);
+            }
+            return author;
+        } catch (SQLException e) {
+            LOG.error("sql error, could not found a author", e);
+        } catch (AuthorDaoException e) {
+            LOG.error("could not found a author", e);
+        } catch (InterruptedException e) {
+            LOG.error("method takeConnection from ConnectionPool was interrupted", e);
+            Thread.currentThread().interrupt();
+        }
+        return author;
     }
 
     @Override
@@ -71,7 +93,7 @@ public class AuthorDao extends AbstractDao<Author> implements BasicAuthorDao {
              final Statement statement = connection.createStatement();
              final ResultSet resultSet = statement.executeQuery(SELECT_ALL_AUTHORS)) {
             while (resultSet.next()) {
-                final Author author = executeAuthor(resultSet).orElseThrow(() -> new AuthorNotFoundException("could not extract author"));
+                final Author author = executeAuthor(resultSet).orElseThrow(() -> new AuthorDaoException("could not extract author"));
                 authors.add(author);
             }
             return authors;
@@ -80,20 +102,71 @@ public class AuthorDao extends AbstractDao<Author> implements BasicAuthorDao {
         } catch (InterruptedException e) {
             LOG.error("method takeConnection from ConnectionPool was interrupted", e);
             Thread.currentThread().interrupt();
-        } catch (AuthorNotFoundException e) {
+        } catch (AuthorDaoException e) {
             LOG.error("did not found authors", e);
         }
         return Collections.emptyList();
     }
 
     @Override
-    public Author update(Author entity) {
-        return null;
+    public Optional<Author> update(Author author) {
+        LOG.trace("start update author");
+        try (final Connection connection = pool.takeConnection();
+             final PreparedStatement preparedStatement = connection.prepareStatement(UPDATE_AUTHOR)) {
+            preparedStatement.setString(1, author.getFirst_name());
+            preparedStatement.setString(2, author.getLast_name());
+            preparedStatement.setLong(3, author.getId());
+            final int numberChangedLines = preparedStatement.executeUpdate();
+            if (numberChangedLines != 0) {
+                final ResultSet generatedKeys = preparedStatement.getGeneratedKeys();
+                if (generatedKeys.next()) {
+                    long key = generatedKeys.getLong(1);
+                    LOG.info("key = {}", key);
+                    final Optional<Author> createAuthor = read(key);
+                    final Author author1 = createAuthor.get();
+                    LOG.info("author = {} {}", author1.getFirst_name(), author1.getLast_name());
+                }
+                LOG.info("created new author: {} {}", author.getFirst_name(), author.getLast_name());
+            } else
+                throw new AuthorDaoException("could not update author");
+        } catch (SQLException e) {
+            LOG.error("sql error, could not update author", e);
+        } catch (AuthorDaoException e) {
+            LOG.error("could not update author");
+        } catch (InterruptedException e) {
+            LOG.error("method takeConnection from ConnectionPool was interrupted", e);
+            Thread.currentThread().interrupt();
+        }
+        return Optional.empty();
     }
 
     @Override
-    public boolean delete(Author entity) {
-        return false;
+    public boolean delete(Author author) {
+        LOG.trace("start delete author");
+        return deleteAuthorById(author.getId());
+    }
+
+    public boolean deleteAuthorById(Long id) {
+        LOG.trace("start deleteAuthorById");
+        boolean deleteAuthor = false;
+        try (final Connection connection = pool.takeConnection();
+             final PreparedStatement preparedStatement = connection.prepareStatement(DELETE_AUTHOR_BY_ID)) {
+            preparedStatement.setLong(1, id);
+            final int numberChangedLines = preparedStatement.executeUpdate();
+            if (numberChangedLines != 0) {
+                deleteAuthor = true;
+                LOG.info("deleted author with id: {}", id);
+            } else
+                throw new BookDaoException("could not delete author");
+        } catch (SQLException e) {
+            LOG.error("sql error, could not delete author", e);
+        } catch (BookDaoException e) {
+            LOG.error("could not delete new author", e);
+        } catch (InterruptedException e) {
+            LOG.error("method takeConnection from ConnectionPool was interrupted", e);
+            Thread.currentThread().interrupt();
+        }
+        return deleteAuthor;
     }
 
     private Optional<Author> executeAuthor(ResultSet resultSet) {

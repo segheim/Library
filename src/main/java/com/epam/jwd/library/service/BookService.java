@@ -4,7 +4,6 @@ import com.epam.jwd.library.dao.BookDao;
 import com.epam.jwd.library.model.Book;
 
 import java.util.List;
-import java.util.Set;
 
 public class BookService {
 
