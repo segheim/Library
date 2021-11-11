@@ -9,7 +9,7 @@ public enum CommandRegistry {
 
     MAIN_PAGE(new ShowMainPageCommand(), "main_page"),
     AUTHOR_PAGE(new ShowAuthorsPageCommand(new AuthorService(AuthorDao.getInstance())), "author_page"),
-    BOOKS_PAGE(new ShowBooksPageCommand(new BookService(BookDao.getInstance())), "catalog"),
+    BOOKS_PAGE(new ShowBooksPageCommand(new BookService(BookDao.getInstance(), AuthorDao.getInstance())), "catalog"),
     DEFAULT_PAGE(new Show404ErrorPageCommand(), "404");
 
     private final Command command;

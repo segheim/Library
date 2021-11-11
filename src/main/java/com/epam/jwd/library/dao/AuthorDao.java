@@ -21,6 +21,8 @@ public class AuthorDao extends AbstractDao<Author> implements BasicAuthorDao {
             " from author where id=?";
     private static final String SELECT_ALL_AUTHORS = "select id as id, first_name as f_name, last_name as l_name\n" +
             "from author";
+    private static final String SELECT_AUTHOR_BY_LAST_NAME ="select id, first_name, last_name from author" +
+            " where first_name='?'";
     private static final String UPDATE_AUTHOR = "update author set first_name=?, last_name=? where id=?";
     private static final String DELETE_AUTHOR_BY_ID = "delete from author where id=?";
 
@@ -35,6 +37,7 @@ public class AuthorDao extends AbstractDao<Author> implements BasicAuthorDao {
     @Override
     public Optional<Author> create(Author author) {
         LOG.trace("start create author");
+        Optional<Author> createdAuthor = Optional.empty();
         try (final Connection connection = pool.takeConnection();
              final PreparedStatement preparedStatement = connection.prepareStatement(INSERT_NEW_AUTHOR, Statement.RETURN_GENERATED_KEYS)) {
             preparedStatement.setString(1, author.getFirst_name());
@@ -44,8 +47,8 @@ public class AuthorDao extends AbstractDao<Author> implements BasicAuthorDao {
                 final ResultSet generatedKeys = preparedStatement.getGeneratedKeys();
                 if (generatedKeys.next()) {
                     long key = generatedKeys.getLong(1);
-                    final Optional<Author> createAuthor = read(key);
-                    final Author author1 = createAuthor.get();
+                     createdAuthor = read(key);
+                    return createdAuthor;
                 }
             } else
                 throw new AuthorDaoException("could not create author");
@@ -57,7 +60,7 @@ public class AuthorDao extends AbstractDao<Author> implements BasicAuthorDao {
             LOG.error("method takeConnection from ConnectionPool was interrupted", e);
             Thread.currentThread().interrupt();
         }
-        return Optional.empty();
+        return createdAuthor;
     }
 
     @Override
@@ -99,11 +102,11 @@ public class AuthorDao extends AbstractDao<Author> implements BasicAuthorDao {
             return authors;
         } catch (SQLException e) {
             LOG.error("sql error, could not found authors", e);
+        } catch (AuthorDaoException e) {
+            LOG.error("did not found authors", e);
         } catch (InterruptedException e) {
             LOG.error("method takeConnection from ConnectionPool was interrupted", e);
             Thread.currentThread().interrupt();
-        } catch (AuthorDaoException e) {
-            LOG.error("did not found authors", e);
         }
         return Collections.emptyList();
     }
@@ -167,6 +170,29 @@ public class AuthorDao extends AbstractDao<Author> implements BasicAuthorDao {
             Thread.currentThread().interrupt();
         }
         return deleteAuthor;
+    }
+
+    public Optional<Author> readAuthorByLastName(String lastName) {
+        Optional<Author> author = Optional.empty();
+        try (final Connection connection = pool.takeConnection();
+             final PreparedStatement preparedStatement = connection.prepareStatement(DELETE_AUTHOR_BY_ID)) {
+            preparedStatement.setString(1, lastName);
+            final ResultSet resultSet = preparedStatement.executeQuery();
+            if (resultSet.next()) {
+                final Author executedAuthor = executeAuthor(resultSet).orElseThrow(()
+                        -> new AuthorDaoException("could not extract author"));
+                author = Optional.of(executedAuthor);
+            }
+            return author;
+        } catch (SQLException e) {
+            LOG.error("sql error, could not delete author", e);
+        } catch (AuthorDaoException e) {
+            LOG.error("could not delete new author", e);
+        } catch (InterruptedException e) {
+            LOG.error("method takeConnection from ConnectionPool was interrupted", e);
+            Thread.currentThread().interrupt();
+        }
+        return author;
     }
 
     private Optional<Author> executeAuthor(ResultSet resultSet) {
