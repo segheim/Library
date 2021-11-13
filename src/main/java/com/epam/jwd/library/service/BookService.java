@@ -1,6 +1,5 @@
 package com.epam.jwd.library.service;
 
-import com.epam.jwd.library.command.ShowMainPageCommand;
 import com.epam.jwd.library.dao.AuthorDao;
 import com.epam.jwd.library.dao.BookDao;
 import com.epam.jwd.library.exception.BookDaoException;
@@ -8,27 +7,19 @@ import com.epam.jwd.library.model.Author;
 import com.epam.jwd.library.model.Book;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import sun.plugin.ClassLoaderInfo;
-import sun.util.resources.LocaleData;
 
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
-import java.time.LocalDate;
 import java.util.Date;
 import java.util.List;
-import java.util.Locale;
 import java.util.Optional;
-import java.util.concurrent.locks.Lock;
-import java.util.concurrent.locks.ReentrantLock;
 
 public class BookService {
 
     private static final Logger LOG = LogManager.getLogger(BookService.class);
-    private static BookService instance;
 
-    private static BookDao bookDao;
-    private static AuthorDao authorDao;
-    private static Lock locker = new ReentrantLock();
+    private final BookDao bookDao;
+    private final AuthorDao authorDao;
 
     private BookService(BookDao bookDao, AuthorDao authorDao) {
         this.bookDao = bookDao;
@@ -75,16 +66,10 @@ public class BookService {
     }
 
     public static BookService getInstance() {
-        if (instance == null){
-            locker.lock();
-            try {
-                if (instance == null) {
-                    instance = new BookService(BookDao.getInstance(), AuthorDao.getInstance());
-                }
-            } finally {
-                locker.unlock();
-            }
-        }
-        return instance;
+        return Holder.INSTANCE;
+    }
+
+    private static class Holder {
+        public static final BookService INSTANCE = new BookService(BookDao.getInstance(), AuthorDao.getInstance());
     }
 }

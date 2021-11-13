@@ -9,7 +9,7 @@ public class AuthorService implements BasicAuthorService {
 
     private final AuthorDao authorDao;
 
-    public AuthorService(AuthorDao authorDao) {
+    private AuthorService(AuthorDao authorDao) {
         this.authorDao = authorDao;
     }
 
@@ -17,5 +17,13 @@ public class AuthorService implements BasicAuthorService {
     public List<Author> findAll() {
         final List<Author> authors = authorDao.readAll();
         return authors;
+    }
+
+    public static AuthorService getInstance() {
+        return Holder.INSTANCE;
+    }
+
+    private static class Holder {
+        public static final AuthorService INSTANCE = new AuthorService(AuthorDao.getInstance());
     }
 }

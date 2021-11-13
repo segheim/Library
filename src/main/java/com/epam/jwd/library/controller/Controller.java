@@ -1,6 +1,7 @@
 package com.epam.jwd.library.controller;
 
 import com.epam.jwd.library.command.Command;
+import com.epam.jwd.library.command.CommandRequest;
 import com.epam.jwd.library.command.CommandResponse;
 import com.epam.jwd.library.connection.ConnectionPool;
 import com.epam.jwd.library.dao.AuthorDao;
@@ -18,16 +19,19 @@ public class Controller extends HttpServlet {
 
     private static final Logger LOG = LogManager.getLogger(Controller.class);
 
+    private final RequestFactory requestFactory = RequestFactory.getInstance();
+
     public void init() {
         ConnectionPool.lockingPool().init();
     }
 
-    public void doGet(HttpServletRequest request, HttpServletResponse response) {
+    public void doGet(HttpServletRequest httpServletRequest, HttpServletResponse httpServletResponse) {
         LOG.trace("doGet method");
-        final String commandName = request.getParameter("command");
+        final String commandName = httpServletRequest.getParameter("command");
         final Command command = Command.of(commandName);
-        final CommandResponse commandResponse = command.execute(request::setAttribute);
-        forwardOrRedirectToCommandResponseLocation(request, response, commandResponse);
+        final CommandRequest request = requestFactory.createRequest(httpServletRequest);
+        final CommandResponse commandResponse = command.execute(request);
+        forwardOrRedirectToCommandResponseLocation(httpServletRequest, httpServletResponse, commandResponse);
     }
 
     private void forwardOrRedirectToCommandResponseLocation(HttpServletRequest request, HttpServletResponse response, CommandResponse commandResponse) {
