@@ -5,7 +5,7 @@
 </head>
 <body>
 <h3>Please log in:</h3>
-<form name = "login_form" method="POST" action="controller">
+<form name = "login_form" method="post" action="controller">
   Login:<br/>
   <input type="text" name="login" value=""/>
   <br/>Password:<br/>

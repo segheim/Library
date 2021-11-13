@@ -34,6 +34,7 @@ public class Controller extends HttpServlet {
         forwardOrRedirectToCommandResponseLocation(httpServletRequest, httpServletResponse, commandResponse);
     }
 
+
     private void forwardOrRedirectToCommandResponseLocation(HttpServletRequest request, HttpServletResponse response, CommandResponse commandResponse) {
         try {
             if (commandResponse.isRedirect()) {

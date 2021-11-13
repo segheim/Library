@@ -13,5 +13,8 @@
 <p>
     <a href="/controller?command=catalog">catalog</a>
 </p>
+<p>
+    <a href="/controller?command=login">login</a>
+</p>
 </body>
 </html>

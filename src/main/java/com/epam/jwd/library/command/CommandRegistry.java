@@ -4,7 +4,8 @@ public enum CommandRegistry {
 
     MAIN_PAGE(ShowMainPageCommand.getInstance(), "main_page"),
     AUTHOR_PAGE(ShowAuthorsPageCommand.getInstance(), "author_page"),
-    BOOKS_PAGE(ShowCatalogPageCommand.getInstance(), "catalog"),
+    CATALOG_PAGE(ShowCatalogPageCommand.getInstance(), "catalog"),
+    LOGIN_PAGE(ShowLoginPageCommand.getInstance(), "login"),
     DEFAULT_PAGE(ShowMainPageCommand.getInstance(), "");
 
     private final Command command;
