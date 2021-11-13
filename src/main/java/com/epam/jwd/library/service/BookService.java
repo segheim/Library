@@ -1,5 +1,6 @@
 package com.epam.jwd.library.service;
 
+import com.epam.jwd.library.command.ShowMainPageCommand;
 import com.epam.jwd.library.dao.AuthorDao;
 import com.epam.jwd.library.dao.BookDao;
 import com.epam.jwd.library.exception.BookDaoException;
@@ -7,6 +8,7 @@ import com.epam.jwd.library.model.Author;
 import com.epam.jwd.library.model.Book;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import sun.plugin.ClassLoaderInfo;
 import sun.util.resources.LocaleData;
 
 import java.text.ParseException;
@@ -16,15 +18,19 @@ import java.util.Date;
 import java.util.List;
 import java.util.Locale;
 import java.util.Optional;
+import java.util.concurrent.locks.Lock;
+import java.util.concurrent.locks.ReentrantLock;
 
 public class BookService {
 
     private static final Logger LOG = LogManager.getLogger(BookService.class);
+    private static BookService instance;
 
-    private final BookDao bookDao;
-    private final AuthorDao authorDao;
+    private static BookDao bookDao;
+    private static AuthorDao authorDao;
+    private static Lock locker = new ReentrantLock();
 
-    public BookService(BookDao bookDao, AuthorDao authorDao) {
+    private BookService(BookDao bookDao, AuthorDao authorDao) {
         this.bookDao = bookDao;
         this.authorDao = authorDao;
     }
@@ -59,13 +65,26 @@ public class BookService {
         } catch (BookDaoException e) {
             LOG.error("could not create book");
         }
-        bookDao.createATB(book.getId(), author.getId());
-
+        bookDao.createBookInAuthorToBook(book.getId(), author.getId());
+        return book;
     }
 
-
     public List<Book> findAll() {
-        final List<Book> books = bookDao.readAll();
+        final List<Book> books = bookDao.readAllWithAuthors();
         return books;
+    }
+
+    public static BookService getInstance() {
+        if (instance == null){
+            locker.lock();
+            try {
+                if (instance == null) {
+                    instance = new BookService(BookDao.getInstance(), AuthorDao.getInstance());
+                }
+            } finally {
+                locker.unlock();
+            }
+        }
+        return instance;
     }
 }

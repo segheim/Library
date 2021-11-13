@@ -90,12 +90,13 @@ public class BookDao extends AbstractDao<Book> implements BasicBookDao{
         return createdBook;
     }
 
-    private boolean createBookInAuthorToBook(Long idBook, Long idAuthor) {
+    public boolean createBookInAuthorToBook(Long idBook, Long idAuthor) {
         LOG.trace("start create book in author to book");
         boolean createBookInAuthorToBook = false;
         try (final Connection connection = pool.takeConnection();
              final PreparedStatement preparedStatement = connection.prepareStatement(INSERT_BOOK_IN_AUTHOR_TO_BOOK)) {
-            preparedStatement.setLong(1, id);
+            preparedStatement.setLong(1, idBook);
+            preparedStatement.setLong(1, idAuthor);
             final int numberChangedLines = preparedStatement.executeUpdate();
             if (numberChangedLines > 0) {
                 createBookInAuthorToBook = true;
