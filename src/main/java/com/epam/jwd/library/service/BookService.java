@@ -14,7 +14,7 @@ import java.util.Date;
 import java.util.List;
 import java.util.Optional;
 
-public class BookService {
+public class BookService implements Service{
 
     private static final Logger LOG = LogManager.getLogger(BookService.class);
 

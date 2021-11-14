@@ -5,7 +5,7 @@ import com.epam.jwd.library.model.Author;
 
 import java.util.List;
 
-public class AuthorService implements BasicAuthorService {
+public class AuthorService implements Service, BasicAuthorService {
 
     private final AuthorDao authorDao;
 
