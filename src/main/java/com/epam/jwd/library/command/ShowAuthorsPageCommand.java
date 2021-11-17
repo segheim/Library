@@ -20,7 +20,7 @@ public class ShowAuthorsPageCommand implements Command{
     public CommandResponse execute(CommandRequest request) {
         final List<Author> authors = authorService.findAll();
         request.addAttributeToJsp("authors", authors);
-        return requestFactory.createResponse("/WEB-INF/jsp/author.jsp");
+        return requestFactory.createForwardResponse("/WEB-INF/jsp/author.jsp");
     }
 
     public static ShowAuthorsPageCommand getInstance() {

@@ -4,16 +4,19 @@ import com.epam.jwd.library.command.CommandRequest;
 import com.epam.jwd.library.command.CommandResponse;
 
 import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
+
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
 public class SimpleRequestFactory implements RequestFactory{
 
-    private final Map<String, CommandResponse> responseCash;
+    private final Map<String, CommandResponse> responseForwardCash;
+    private final Map<String, CommandResponse> responseRedirectCash;
+
 
     private SimpleRequestFactory() {
-        this.responseCash = new ConcurrentHashMap<>();
+        this.responseForwardCash = new ConcurrentHashMap<>();
+        this.responseRedirectCash = new ConcurrentHashMap<>();
     }
 
     @Override
@@ -22,8 +25,13 @@ public class SimpleRequestFactory implements RequestFactory{
     }
 
     @Override
-    public CommandResponse createResponse(String path) {
-        return responseCash.computeIfAbsent(path, p -> new PlainCommandResponse(p));
+    public CommandResponse createForwardResponse(String path) {
+        return responseForwardCash.computeIfAbsent(path, p -> new PlainCommandResponse(p));
+    }
+
+    @Override
+    public CommandResponse createRedirectResponse(String path) {
+        return responseRedirectCash.computeIfAbsent(path, p -> new PlainCommandResponse(true, p));
     }
 
     public static SimpleRequestFactory getInstance() {

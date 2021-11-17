@@ -56,6 +56,11 @@ public class LockingConnectionPool implements ConnectionPool{
     @Override
     public boolean init() {
         if (initialize.compareAndSet(false, true)) {
+            try {
+                Class.forName("com.mysql.cj.jdbc.Driver");
+            } catch (ClassNotFoundException e) {
+                e.printStackTrace();
+            }
             registerDrivers();
             initializeConnections(DEFAULT_POOL_SIZE);
             return true;
@@ -96,7 +101,7 @@ public class LockingConnectionPool implements ConnectionPool{
 
     @Override
     public Connection takeConnection() throws InterruptedException {
-        ProxyConnection proxyConnection = null;
+        ProxyConnection proxyConnection;
         locker.lock();
         try {
             while(availableConnections.isEmpty()) {

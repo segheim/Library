@@ -3,7 +3,6 @@ package com.epam.jwd.library.dao;
 import com.epam.jwd.library.connection.ConnectionPool;
 import com.epam.jwd.library.exception.AccountDaoException;
 import com.epam.jwd.library.model.Account;
-import com.epam.jwd.library.model.Entity;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -14,12 +13,12 @@ import java.sql.SQLException;
 import java.util.List;
 import java.util.Optional;
 
-public class AccountDao extends AbstractDao implements BasicAccountDao{
+public class AccountDao extends AbstractDao<Account> implements BasicAccountDao{
 
     private static final Logger LOG = LogManager.getLogger(AccountDao.class);
 
-    private static final String SELECT_BY_LOGIN = "select a_id as id, login as login, password as password" +
-            "from account where login='?'";
+    private static final String SELECT_BY_LOGIN = "select a_id as id, login as login, password as password " +
+            "from account where login=?";
 
     protected AccountDao(ConnectionPool pool) {
         super(pool, LOG);
@@ -51,7 +50,7 @@ public class AccountDao extends AbstractDao implements BasicAccountDao{
 
     private Optional<Account> executeAccount(ResultSet resultSet){
         try {
-            return Optional.of(new Account(resultSet.getLong("a_id"),
+            return Optional.of(new Account(resultSet.getLong("id"),
                     resultSet.getString("login"), resultSet.getString("password")));
         } catch (SQLException e) {
             LOG.error("could not extract book from executeBook", e);
@@ -59,28 +58,37 @@ public class AccountDao extends AbstractDao implements BasicAccountDao{
         }
     }
 
+
+    public static AccountDao getInstance() {
+        return Holder.INSTANCE;
+    }
+
     @Override
-    public Optional create(Entity entity) {
+    public Optional<Account> create(Account entity) {
         return Optional.empty();
     }
 
     @Override
-    public Optional read(Long id) {
+    public Optional<Account> read(Long id) {
         return Optional.empty();
     }
 
     @Override
-    public List readAll() {
+    public List<Account> readAll() {
         return null;
     }
 
     @Override
-    public Optional update(Entity entity) {
+    public Optional<Account> update(Account entity) {
         return Optional.empty();
     }
 
     @Override
-    public boolean delete(Entity entity) {
+    public boolean delete(Account entity) {
         return false;
+    }
+
+    private static class Holder {
+        public static final AccountDao INSTANCE = new AccountDao(ConnectionPool.lockingPool());
     }
 }

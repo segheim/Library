@@ -19,7 +19,7 @@ public class ShowCatalogPageCommand implements Command{
     public CommandResponse execute(CommandRequest request) {
         final List<Book> books = bookService.findAll();
         request.addAttributeToJsp("books", books);
-        return requestFactory.createResponse("/WEB-INF/jsp/catalog.jsp");
+        return requestFactory.createForwardResponse("/WEB-INF/jsp/catalog.jsp");
     }
 
     public static ShowCatalogPageCommand getInstance() {

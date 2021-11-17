@@ -15,7 +15,7 @@ import javax.servlet.http.*;
 import javax.servlet.annotation.*;
 
 @WebServlet("/controller")
-public class Controller extends HttpServlet {
+public class Controller extends HttpServlet {    
 
     private static final Logger LOG = LogManager.getLogger(Controller.class);
 
@@ -27,13 +27,21 @@ public class Controller extends HttpServlet {
 
     public void doGet(HttpServletRequest httpServletRequest, HttpServletResponse httpServletResponse) {
         LOG.trace("doGet method");
+        processRequest(httpServletRequest, httpServletResponse);
+    }
+
+    public void doPost(HttpServletRequest httpServletRequest, HttpServletResponse httpServletResponse) {
+        LOG.trace("doPost method");
+        processRequest(httpServletRequest, httpServletResponse);
+    }
+
+    private void processRequest(HttpServletRequest httpServletRequest, HttpServletResponse httpServletResponse) {
         final String commandName = httpServletRequest.getParameter("command");
         final Command command = Command.of(commandName);
         final CommandRequest request = requestFactory.createRequest(httpServletRequest);
         final CommandResponse commandResponse = command.execute(request);
         forwardOrRedirectToCommandResponseLocation(httpServletRequest, httpServletResponse, commandResponse);
     }
-
 
     private void forwardOrRedirectToCommandResponseLocation(HttpServletRequest request, HttpServletResponse response, CommandResponse commandResponse) {
         try {

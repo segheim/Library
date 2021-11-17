@@ -11,7 +11,7 @@ public class ShowMainPageCommand implements Command {
 
     @Override
     public CommandResponse execute(CommandRequest request) {
-        return requestFactory.createResponse("/WEB-INF/jsp/main.jsp");
+        return requestFactory.createForwardResponse("/WEB-INF/jsp/main.jsp");
     }
 
     public static ShowMainPageCommand getInstance() {

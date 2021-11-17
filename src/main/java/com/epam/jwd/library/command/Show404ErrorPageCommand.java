@@ -11,7 +11,7 @@ public class Show404ErrorPageCommand implements Command{
 
     @Override
     public CommandResponse execute(CommandRequest request) {
-        return requestFactory.createResponse("/WEB-INF/jsp/404.jsp");
+        return requestFactory.createForwardResponse("/WEB-INF/jsp/404.jsp");
     }
 
     public static Show404ErrorPageCommand getInstance() {

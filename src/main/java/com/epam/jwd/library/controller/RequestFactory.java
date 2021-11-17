@@ -9,7 +9,9 @@ public interface RequestFactory {
 
     CommandRequest createRequest(HttpServletRequest httpServletRequest);
 
-    CommandResponse createResponse(String path);
+    CommandResponse createForwardResponse(String path);
+
+    CommandResponse createRedirectResponse(String path);
 
     static RequestFactory getInstance() {
         return SimpleRequestFactory.getInstance();

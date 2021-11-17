@@ -22,7 +22,7 @@
     </tr>
     <c:forEach var="book" items="${requestScope.books}">
         <tr>
-            <c:if test="${book.amount_of_left>0}">
+            <c:if test="${book.amount_of_left > 0}">
                 <td><label><input type="checkbox"/></label></td>
             </c:if>
             <td>${book.title}</td>

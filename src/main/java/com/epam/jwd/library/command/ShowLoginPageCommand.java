@@ -8,7 +8,7 @@ public class ShowLoginPageCommand implements Command{
 
     @Override
     public CommandResponse execute(CommandRequest request) {
-        return requestFactory.createResponse("/WEB-INF/jsp/login.jsp");
+        return requestFactory.createForwardResponse("/WEB-INF/jsp/login.jsp");
     }
 
     public static ShowLoginPageCommand getInstance() {
