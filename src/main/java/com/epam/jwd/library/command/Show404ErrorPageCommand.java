@@ -4,6 +4,8 @@ import com.epam.jwd.library.controller.RequestFactory;
 
 public class Show404ErrorPageCommand implements Command{
 
+    private static final String PATH_404_JSP = "/WEB-INF/jsp/404.jsp";
+
     private final RequestFactory requestFactory = RequestFactory.getInstance();
 
     private Show404ErrorPageCommand() {
@@ -11,7 +13,7 @@ public class Show404ErrorPageCommand implements Command{
 
     @Override
     public CommandResponse execute(CommandRequest request) {
-        return requestFactory.createForwardResponse("/WEB-INF/jsp/404.jsp");
+        return requestFactory.createForwardResponse(PATH_404_JSP);
     }
 
     public static Show404ErrorPageCommand getInstance() {

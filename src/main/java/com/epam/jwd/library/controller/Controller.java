@@ -18,6 +18,7 @@ import javax.servlet.annotation.*;
 public class Controller extends HttpServlet {    
 
     private static final Logger LOG = LogManager.getLogger(Controller.class);
+    private static final String COMMAND_PARAMETER_NAME = "command";
 
     private final RequestFactory requestFactory = RequestFactory.getInstance();
 
@@ -36,7 +37,7 @@ public class Controller extends HttpServlet {
     }
 
     private void processRequest(HttpServletRequest httpServletRequest, HttpServletResponse httpServletResponse) {
-        final String commandName = httpServletRequest.getParameter("command");
+        final String commandName = httpServletRequest.getParameter(COMMAND_PARAMETER_NAME);
         final Command command = Command.of(commandName);
         final CommandRequest request = requestFactory.createRequest(httpServletRequest);
         final CommandResponse commandResponse = command.execute(request);

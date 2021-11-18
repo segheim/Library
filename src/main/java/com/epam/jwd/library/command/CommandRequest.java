@@ -1,6 +1,5 @@
 package com.epam.jwd.library.command;
 
-import javax.servlet.http.HttpSession;
 import java.util.Optional;
 
 public interface CommandRequest {

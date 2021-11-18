@@ -4,6 +4,8 @@ import com.epam.jwd.library.controller.RequestFactory;
 
 public class ShowMainPageCommand implements Command {
 
+    private static final String PATH_MAIN_JSP = "/WEB-INF/jsp/main.jsp";
+
     private final RequestFactory requestFactory = RequestFactory.getInstance();
 
     private ShowMainPageCommand() {
@@ -11,7 +13,7 @@ public class ShowMainPageCommand implements Command {
 
     @Override
     public CommandResponse execute(CommandRequest request) {
-        return requestFactory.createForwardResponse("/WEB-INF/jsp/main.jsp");
+        return requestFactory.createForwardResponse(PATH_MAIN_JSP);
     }
 
     public static ShowMainPageCommand getInstance() {

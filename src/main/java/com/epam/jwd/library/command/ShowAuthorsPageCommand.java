@@ -8,6 +8,9 @@ import java.util.List;
 
 public class ShowAuthorsPageCommand implements Command{
 
+    private static final String REQUEST_ATTRIBUTE_NAME = "authors";
+    private static final String PATH_AUTHOR_JSP = "/WEB-INF/jsp/author.jsp";
+
     private final AuthorService authorService;
     private final RequestFactory requestFactory = RequestFactory.getInstance();
 
@@ -19,8 +22,8 @@ public class ShowAuthorsPageCommand implements Command{
     @Override
     public CommandResponse execute(CommandRequest request) {
         final List<Author> authors = authorService.findAll();
-        request.addAttributeToJsp("authors", authors);
-        return requestFactory.createForwardResponse("/WEB-INF/jsp/author.jsp");
+        request.addAttributeToJsp(REQUEST_ATTRIBUTE_NAME, authors);
+        return requestFactory.createForwardResponse(PATH_AUTHOR_JSP);
     }
 
     public static ShowAuthorsPageCommand getInstance() {
@@ -30,18 +33,4 @@ public class ShowAuthorsPageCommand implements Command{
     private static class Holder {
         public static final ShowAuthorsPageCommand INSTANCE = new ShowAuthorsPageCommand(AuthorService.getInstance());
     }
-
-//    public static ShowAuthorsPageCommand getInstance() {
-//        if (instance == null){
-//            locker.lock();
-//            try {
-//                if (instance == null) {
-//                    instance = new ShowAuthorsPageCommand(authorService);
-//                }
-//            } finally {
-//                locker.unlock();
-//            }
-//        }
-//        return instance;
-//    }
 }

@@ -4,11 +4,13 @@ import com.epam.jwd.library.controller.RequestFactory;
 
 public class ShowLoginPageCommand implements Command{
 
+    private static final String PATH_LOGIN_JSP = "/WEB-INF/jsp/login.jsp";
+
     private final RequestFactory requestFactory = RequestFactory.getInstance();
 
     @Override
     public CommandResponse execute(CommandRequest request) {
-        return requestFactory.createForwardResponse("/WEB-INF/jsp/login.jsp");
+        return requestFactory.createForwardResponse(PATH_LOGIN_JSP);
     }
 
     public static ShowLoginPageCommand getInstance() {
