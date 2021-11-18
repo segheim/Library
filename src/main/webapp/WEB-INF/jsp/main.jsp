@@ -19,7 +19,7 @@
             <a href="/controller?command=catalog_page">catalog</a>
         </p>
         <p>
-            <a href="/controller?command=logout_page">logout</a>
+            <a href="/controller?command=logout">logout</a>
         </p>
     </c:when>
     <c:otherwise>

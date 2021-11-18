@@ -4,7 +4,6 @@ import com.epam.jwd.library.controller.RequestFactory;
 import com.epam.jwd.library.model.Account;
 import com.epam.jwd.library.service.AccountService;
 
-import javax.servlet.http.HttpSession;
 import java.util.Optional;
 
 public class LoginCommand implements Command {
@@ -14,14 +13,16 @@ public class LoginCommand implements Command {
 
     @Override
     public CommandResponse execute(CommandRequest request) {
+        if (request.sessionExist() && request.takeFromSession("account").isPresent()) {
 
+        }
         final String login = request.getParameter("login");
         final String password = request.getParameter("password");
         final Optional<Account> account = accountService.authenticate(login, password);
-
         if (account.isPresent()) {
-            final HttpSession session = request.createSession();
-            session.setAttribute("account", account.get());
+            request.clearSession();
+            request.createSession();
+            request.addAttributeToSession("account", account.get());
             return requestFactory.createRedirectResponse("index.jsp");
         } else {
             request.addAttributeToJsp("errorLoginPassMessage", "Incorrect login or password, try again");

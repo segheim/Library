@@ -1,6 +1,7 @@
 package com.epam.jwd.library.command;
 
 import javax.servlet.http.HttpSession;
+import java.util.Optional;
 
 public interface CommandRequest {
 
@@ -8,7 +9,14 @@ public interface CommandRequest {
 
     void addAttributeToJsp(String name, Object attribute);
 
-    HttpSession createSession();
+    void createSession();
 
+    boolean addAttributeToSession(String name, Object attribute);
+
+    void clearSession();
+
+    Optional<Object> takeFromSession(String name);
+
+    boolean sessionExist();
 
 }

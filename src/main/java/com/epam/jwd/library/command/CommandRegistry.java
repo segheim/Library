@@ -7,6 +7,7 @@ public enum CommandRegistry {
     CATALOG_PAGE(ShowCatalogPageCommand.getInstance(), "catalog_page"),
     LOGIN_PAGE(ShowLoginPageCommand.getInstance(), "login_page"),
     LOGIN(LoginCommand.getInstance(), "login"),
+    LOGOUT(LogoutCommand.getInstance(), "logout"),
     DEFAULT_PAGE(ShowMainPageCommand.getInstance(), "");
 
     private final Command command;
