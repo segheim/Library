@@ -149,7 +149,7 @@ public class LockingConnectionPool implements ConnectionPool{
         try {
             DriverManager.registerDriver(DriverManager.getDriver(DB_URL));
         } catch (SQLException e) {
-            LOG.info("could not register drivers");
+            LOG.info("could not register drivers", e);
             throw new InitializeConnectionPoolError("sql drivers are not initialize", e);
         }
     }

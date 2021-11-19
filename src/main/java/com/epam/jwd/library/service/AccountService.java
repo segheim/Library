@@ -3,6 +3,7 @@ package com.epam.jwd.library.service;
 import com.epam.jwd.library.dao.AccountDao;
 import com.epam.jwd.library.model.Account;
 
+import java.util.List;
 import java.util.Optional;
 
 public class AccountService implements BasicAccountService{
@@ -18,6 +19,12 @@ public class AccountService implements BasicAccountService{
         final Optional<Account> readAccount = accountDao.readByLogin(login);
         final Optional<Account> checkedAccount = readAccount.filter(account -> account.getPassword().equals(password));
         return checkedAccount;
+    }
+
+    @Override
+    public List<Account> findAll() {
+        final List<Account> accounts = accountDao.readAll();
+        return accounts;
     }
 
     public static AccountService getInstance() {

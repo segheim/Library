@@ -3,6 +3,7 @@ package com.epam.jwd.library.dao;
 import com.epam.jwd.library.connection.ConnectionPool;
 import com.epam.jwd.library.exception.AccountDaoException;
 import com.epam.jwd.library.model.Account;
+import com.epam.jwd.library.model.Role;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -17,8 +18,9 @@ public class AccountDao extends AbstractDao<Account> implements BasicAccountDao{
 
     private static final Logger LOG = LogManager.getLogger(AccountDao.class);
 
-    private static final String SELECT_BY_LOGIN = "select a_id as id, login as login, password as password " +
-            "from account where login=?";
+    private static final String SELECT_BY_LOGIN = "select a_id as id, login as login, password as password,\n" +
+            "role.role_name as role_name from account join role  on role.id = account.role_id\n" +
+            "where login=?";
 
     protected AccountDao(ConnectionPool pool) {
         super(pool, LOG);
@@ -51,7 +53,8 @@ public class AccountDao extends AbstractDao<Account> implements BasicAccountDao{
     private Optional<Account> executeAccount(ResultSet resultSet){
         try {
             return Optional.of(new Account(resultSet.getLong("id"),
-                    resultSet.getString("login"), resultSet.getString("password")));
+                    resultSet.getString("login"), resultSet.getString("password"),
+                    Role.valueOf(resultSet.getString("role_name").toUpperCase())));
         } catch (SQLException e) {
             LOG.error("could not extract book from executeBook", e);
             return Optional.empty();

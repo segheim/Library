@@ -6,7 +6,7 @@ import com.epam.jwd.library.service.AuthorService;
 
 import java.util.List;
 
-public class ShowAuthorsPageCommand implements Command{
+public class ShowAuthorPageCommand implements Command{
 
     private static final String REQUEST_ATTRIBUTE_NAME = "authors";
     private static final String PATH_AUTHOR_JSP = "/WEB-INF/jsp/author.jsp";
@@ -15,7 +15,7 @@ public class ShowAuthorsPageCommand implements Command{
     private final RequestFactory requestFactory = RequestFactory.getInstance();
 
 
-    private ShowAuthorsPageCommand(AuthorService authorService) {
+    private ShowAuthorPageCommand(AuthorService authorService) {
         this.authorService = authorService;
     }
 
@@ -26,11 +26,11 @@ public class ShowAuthorsPageCommand implements Command{
         return requestFactory.createForwardResponse(PATH_AUTHOR_JSP);
     }
 
-    public static ShowAuthorsPageCommand getInstance() {
+    public static ShowAuthorPageCommand getInstance() {
         return Holder.INSTANCE;
     }
 
     private static class Holder {
-        public static final ShowAuthorsPageCommand INSTANCE = new ShowAuthorsPageCommand(AuthorService.getInstance());
+        public static final ShowAuthorPageCommand INSTANCE = new ShowAuthorPageCommand(AuthorService.getInstance());
     }
 }
