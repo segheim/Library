@@ -5,6 +5,7 @@ import com.epam.jwd.library.dao.BookDao;
 import com.epam.jwd.library.exception.BookDaoException;
 import com.epam.jwd.library.model.Author;
 import com.epam.jwd.library.model.Book;
+import com.epam.jwd.library.model.Entity;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -14,7 +15,7 @@ import java.util.Date;
 import java.util.List;
 import java.util.Optional;
 
-public class BookService implements Service{
+public class BookService implements Service<Book>, BasicBookService{
 
     private static final Logger LOG = LogManager.getLogger(BookService.class);
 
@@ -60,10 +61,33 @@ public class BookService implements Service{
         return book;
     }
 
+
+    @Override
+    public Optional<Book> create(Book entity) {
+        return Optional.empty();
+    }
+
+    @Override
+    public Optional<Book> findById(Long id) {
+        final Optional<Book> readBook = bookDao.readWithAuthors(id);
+        return readBook;
+    }
+
     public List<Book> findAll() {
         final List<Book> books = bookDao.readAllWithAuthors();
         return books;
     }
+
+    @Override
+    public Optional<Book> update(Book entity) {
+        return Optional.empty();
+    }
+
+    @Override
+    public boolean delete(Book entity) {
+        return false;
+    }
+
 
     public static BookService getInstance() {
         return Holder.INSTANCE;

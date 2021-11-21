@@ -22,7 +22,7 @@
 </c:if>
 <c:if test="${not empty sessionScope.account && sessionScope.account.role eq Role.ADMIN}">
     <p>
-        <a href="/controller?command=account_page">authors</a>
+        <a href="/controller?command=account_page">accounts</a>
     </p>
 </c:if>
 <c:choose>

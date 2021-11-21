@@ -16,6 +16,14 @@ public class Account implements Entity{
         this.role = role;
     }
 
+    public Account(String login, String password) {
+        this(null, login, password, Role.READER);
+    }
+
+    public Account(Long id, String login, String password) {
+        this(id, login, password, Role.READER);
+    }
+
     @Override
     public Long getId() {
         return id;
@@ -31,6 +39,10 @@ public class Account implements Entity{
 
     public Role getRole() {
         return role;
+    }
+
+    public Account withPassword(String password) {
+        return new Account(id, login, password);
     }
 
     @Override

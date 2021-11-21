@@ -25,12 +25,14 @@
             <c:if test="${book.amount_of_left > 0}">
                 <td><label><input type="checkbox"/></label></td>
             </c:if>
-            <td>${book.title}</td>
             <td>
-        <c:forEach var="author" items="${book.authors}">
-            <br>${author.first_name}
-                ${author.last_name}
-        </c:forEach>
+                <a href="/controller?command=book_page&id=${book.id}">${book.title}</a>
+            </td>
+            <td>
+                <c:forEach var="author" items="${book.authors}">
+                    <br>${author.first_name}
+                    ${author.last_name}
+                </c:forEach>
             </td>
             <td>${book.date_published}</td>
             <td>${book.amount_of_left}</td>

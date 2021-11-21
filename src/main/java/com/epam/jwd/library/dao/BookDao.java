@@ -245,26 +245,27 @@ public class BookDao extends AbstractDao<Book> implements BasicBookDao{
 
     public Optional<Book> readWithAuthors(Long id) {
         LOG.trace("start readWithAuthors (read by id)");
-        Optional<Book> book = Optional.empty();
+        LinkedList<Book> books = new LinkedList<>();
         try (final Connection connection = pool.takeConnection();
              final PreparedStatement preparedStatement = connection.prepareStatement(SELECT_BOOK_BY_ID_WITH_AUTHORS)) {
             preparedStatement.setLong(1, id);
             final ResultSet resultSet = preparedStatement.executeQuery();
-            Book lastBook = null;
             while (resultSet.next()) {
-                final Book executedBook = executeBook(resultSet).orElseThrow(()
+                final Book book = executeBookWithAuthors(resultSet).orElseThrow(()
                         -> new BookDaoException("could not extract book"));
-                if (lastBook != null) {
+                if (idLastBook == book.getId()) {
+                    idLastBook = book.getId();
+                    final Book lastBook = books.getLast();
+                    books.removeLast();
                     final List<Author> authors = lastBook.getAuthors();
-                    authors.add(executedBook.getAuthors().get(executedBook.getAuthors().size() - 1));
-                    final Book bookWithAuthors = lastBook.getBookWithAuthors(authors);
-                    lastBook = bookWithAuthors;
+                    authors.add(book.getAuthors().get(book.getAuthors().size()-1));
+                    books.add(book.getBookWithAuthors(authors));
                 } else {
-                    lastBook = executedBook;
+                    idLastBook = book.getId();
+                    books.add(book);
                 }
             }
-            book = Optional.of(lastBook);
-            return book;
+            return Optional.ofNullable(books.getFirst());
         } catch (SQLException e) {
             LOG.error("sql error, could not found a book", e);
         } catch (BookDaoException e) {
@@ -273,7 +274,7 @@ public class BookDao extends AbstractDao<Book> implements BasicBookDao{
             LOG.error("method takeConnection from ConnectionPool was interrupted", e);
             Thread.currentThread().interrupt();
         }
-        return book;
+        return Optional.empty();
     }
 
     public List<Book> readAllWithAuthors() {

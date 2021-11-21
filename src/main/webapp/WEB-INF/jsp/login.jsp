@@ -14,7 +14,6 @@
   <br/>
   <c:if test="${not empty requestScope.errorLoginPassMessage}">
     <b style="color: red">${requestScope.errorLoginPassMessage}</b>
-<%--    <b>${requestScope.errorLoginPassMessage}</b>--%>
   <br>
   </c:if>
   <input type="submit" value="log in"/>
