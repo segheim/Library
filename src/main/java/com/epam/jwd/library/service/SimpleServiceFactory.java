@@ -21,7 +21,7 @@ public class SimpleServiceFactory implements ServiceFactory{
         Service service;
 
         switch (serviceType) {
-            case USER_SERVICE:
+            case ACCOUNT_SERVICE:
                 service = UserService.getInstance();
                 break;
             case BOOK_SERVICE:

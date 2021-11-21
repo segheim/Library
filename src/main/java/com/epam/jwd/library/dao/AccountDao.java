@@ -17,12 +17,19 @@ public class AccountDao extends AbstractDao<Account> implements BasicAccountDao{
 
     private static final Logger LOG = LogManager.getLogger(AccountDao.class);
 
-    private static final String SELECT_ALL_ACCOUNTS = "select a_id as id, login as login, password as password,\n" +
-            "role.role_name as role_name from account join role  on role.id = account.role_id";
+    private static final String INSET_NEW_ACCOUNT ="insert into l_account (login, password) values (?,?)";
 
-    private static final String SELECT_BY_LOGIN = "select a_id as id, login as login, password as password,\n" +
-            "role.role_name as role_name from account join role  on role.id = account.role_id\n" +
+    private static final String SELECT_ALL_ACCOUNTS = "select a_id as id, login as login, password as password, " +
+            "a_role.role_name as role_name from l_account join a_role  on a_role.id = l_account.role_id";
+
+    private static final String SELECT_BY_LOGIN = "select a_id as id, login as login, password as password, " +
+            "a_role.role_name as role_name from l_account join a_role  on a_role.id = l_account.role_id " +
             "where login=?";
+
+    private static final String ID_COLUMN_NAME = "id";
+    private static final String LOGIN_COLUMN_NAME = "login";
+    private static final String PASSWORD_COLUMN_NAME = "password";
+    private static final String ROLE_NAME_COLUMN_NAME = "role_name";
 
     protected AccountDao(ConnectionPool pool) {
         super(pool, LOG);
@@ -52,11 +59,33 @@ public class AccountDao extends AbstractDao<Account> implements BasicAccountDao{
         return account;
     }
 
-
-
     @Override
-    public Optional<Account> create(Account entity) {
-        return Optional.empty();
+    public Optional<Account> create(Account account) {
+        LOG.trace("start create account");
+        Optional<Account> createdAccount = Optional.empty();
+        try (final Connection connection = pool.takeConnection();
+             final PreparedStatement preparedStatement = connection.prepareStatement(INSET_NEW_ACCOUNT, Statement.RETURN_GENERATED_KEYS)) {
+            preparedStatement.setString(1, account.getLogin());
+            preparedStatement.setString(2, account.getPassword());
+            final int numberChangedLines = preparedStatement.executeUpdate();
+            if (numberChangedLines != 0) {
+                final ResultSet generatedKeys = preparedStatement.getGeneratedKeys();
+                if (generatedKeys.next()) {
+                    long key = generatedKeys.getLong(1);
+                    createdAccount = read(key);
+                    return createdAccount;
+                }
+            } else
+                throw new AccountDaoException("could not create account");
+        } catch (SQLException e) {
+            LOG.error("sql error, could not create account", e);
+        } catch (AccountDaoException e) {
+            LOG.error("could not create new account", e);
+        } catch (InterruptedException e) {
+            LOG.error("method takeConnection from ConnectionPool was interrupted", e);
+            Thread.currentThread().interrupt();
+        }
+        return createdAccount;
     }
 
     @Override
@@ -99,11 +128,11 @@ public class AccountDao extends AbstractDao<Account> implements BasicAccountDao{
 
     private Optional<Account> executeAccount(ResultSet resultSet){
         try {
-            return Optional.of(new Account(resultSet.getLong("id"),
-                    resultSet.getString("login"), resultSet.getString("password"),
-                    Role.valueOf(resultSet.getString("role_name").toUpperCase())));
+            return Optional.of(new Account(resultSet.getLong(ID_COLUMN_NAME),
+                    resultSet.getString(LOGIN_COLUMN_NAME), resultSet.getString(PASSWORD_COLUMN_NAME),
+                    Role.valueOf(resultSet.getString(ROLE_NAME_COLUMN_NAME).toUpperCase())));
         } catch (SQLException e) {
-            LOG.error("could not extract book from executeBook", e);
+            LOG.error("could not extract account from executeBook", e);
             return Optional.empty();
         }
     }

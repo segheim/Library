@@ -5,6 +5,7 @@ public enum CommandRegistry {
     MAIN_PAGE(ShowMainPageCommand.getInstance(), "main_page"),
     ACCOUNT_PAGE(ShowAccountPageCommand.getInstance(), "account_page"),
     AUTHOR_PAGE(ShowAuthorPageCommand.getInstance(), "author_page"),
+    BOOK_PAGE(ShowBookPageCommand.getInstance(), "book_page"),
     CATALOG_PAGE(ShowCatalogPageCommand.getInstance(), "catalog_page"),
     LOGIN_PAGE(ShowLoginPageCommand.getInstance(), "login_page"),
     ERROR(ShowErrorPageCommand.getInstance(), "error_page"),

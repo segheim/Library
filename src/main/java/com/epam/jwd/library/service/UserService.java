@@ -1,6 +1,9 @@
 package com.epam.jwd.library.service;
 
+import com.epam.jwd.library.model.Entity;
+
 import java.util.List;
+import java.util.Optional;
 
 public class UserService implements Service{
 
@@ -10,6 +13,26 @@ public class UserService implements Service{
     @Override
     public List findAll() {
         return null;
+    }
+
+    @Override
+    public Optional update(Entity entity) {
+        return Optional.empty();
+    }
+
+    @Override
+    public boolean delete(Entity entity) {
+        return false;
+    }
+
+    @Override
+    public Optional create(Entity entity) {
+        return Optional.empty();
+    }
+
+    @Override
+    public Optional findById(Long id) {
+        return Optional.empty();
     }
 
     public static UserService getInstance() {
