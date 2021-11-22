@@ -15,10 +15,10 @@
     </c:forEach>
 </p>
 <p>
-    Date of published : ${requestScope.book.date_published}
+    Date of published: ${requestScope.book.date_published}
 </p>
 <p>
-    Number of items : ${requestScope.book.amount_of_left}
+    Quantity of items: ${requestScope.book.amount_of_left}
 </p>
 </body>
 </html>

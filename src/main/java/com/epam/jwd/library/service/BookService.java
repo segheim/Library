@@ -1,14 +1,17 @@
 package com.epam.jwd.library.service;
 
+import com.epam.jwd.library.connection.ConnectionPool;
 import com.epam.jwd.library.dao.AuthorDao;
 import com.epam.jwd.library.dao.BookDao;
+import com.epam.jwd.library.exception.AuthorDaoException;
 import com.epam.jwd.library.exception.BookDaoException;
 import com.epam.jwd.library.model.Author;
 import com.epam.jwd.library.model.Book;
-import com.epam.jwd.library.model.Entity;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
+import java.sql.Connection;
+import java.sql.SQLException;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
@@ -63,7 +66,8 @@ public class BookService implements Service<Book>, BasicBookService{
 
 
     @Override
-    public Optional<Book> create(Book entity) {
+    public Optional<Book> create(Book en) {
+
         return Optional.empty();
     }
 
@@ -88,6 +92,36 @@ public class BookService implements Service<Book>, BasicBookService{
         return false;
     }
 
+    @Override
+    public boolean createBook(String title, java.sql.Date date, int amount_of_left, String authorFirstName, String authorLastName) {
+        boolean createBookWithAuthor = false;
+        Book book = new Book(title, date, amount_of_left);
+        Author author = new Author(authorFirstName, authorLastName);
+        try (Connection connection = ConnectionPool.lockingPool().takeConnection()) {
+            connection.setAutoCommit(false);
+            BookDao bookDao = BookDao.getInstance();
+            AuthorDao authorDao = AuthorDao.getInstance();
+            final Long idBook = bookDao.create(book)
+                    .map(Book::getId)
+                    .orElseThrow(() -> new BookDaoException("could not create book"));
+            final Long idAuthor = authorDao.create(author)
+                    .map(Author::getId)
+                    .orElseThrow(() -> new AuthorDaoException("could not create author"));
+            bookDao.createBookInAuthorToBook(idBook, idAuthor);
+            createBookWithAuthor = true;
+            connection.setAutoCommit(true);
+        } catch (InterruptedException e) {
+            LOG.error("method takeConnection from ConnectionPool was interrupted", e);
+            Thread.currentThread().interrupt();
+        } catch (SQLException e) {
+            LOG.error("sql error, database access error occurs", e);
+        } catch (AuthorDaoException e) {
+            LOG.error("could not create new author", e);
+        } catch (BookDaoException e) {
+            LOG.error("could not create new book", e);
+        }
+        return createBookWithAuthor;
+    }
 
     public static BookService getInstance() {
         return Holder.INSTANCE;

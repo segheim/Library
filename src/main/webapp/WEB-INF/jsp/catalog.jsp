@@ -7,10 +7,7 @@
 <body>
 <h3>Catalog</h3>
 <p>
-    <form action="student.jsp" method="POST">
-        Search: <input type="text" name="Name">
-        <input type ="submit" value="search">
-    </form>
+    <a href="/controller?command=create_book_page">create book</a>
 </p>
 <table>
     <tr>
@@ -19,6 +16,7 @@
         <th>Author</th>
         <th>Date published</th>
         <th>Quantity</th>
+        <th>Action</th>
     </tr>
     <c:forEach var="book" items="${requestScope.books}">
         <tr>
@@ -36,6 +34,14 @@
             </td>
             <td>${book.date_published}</td>
             <td>${book.amount_of_left}</td>
+            <td>
+                <p>
+                    <a href="/controller?command=update_book">update book</a>
+                </p>
+                <p>
+                    <a href="/controller?command=delete_book">delete book</a>
+                </p>
+            </td>
         </tr>
     </c:forEach>
 </table>

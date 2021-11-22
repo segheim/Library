@@ -7,8 +7,10 @@ public enum CommandRegistry {
     AUTHOR_PAGE(ShowAuthorPageCommand.getInstance(), "author_page"),
     BOOK_PAGE(ShowBookPageCommand.getInstance(), "book_page"),
     CATALOG_PAGE(ShowCatalogPageCommand.getInstance(), "catalog_page"),
+    CREATE_BOOK_PAGE(ShowCreateBookPageCommand.getInstance(), "create_book_page"),
     LOGIN_PAGE(ShowLoginPageCommand.getInstance(), "login_page"),
     ERROR(ShowErrorPageCommand.getInstance(), "error_page"),
+    CREATE_BOOK(CreateBookCommand.getInstance(), "create_book"),
     LOGIN(LoginCommand.getInstance(), "login"),
     LOGOUT(LogoutCommand.getInstance(), "logout"),
     DEFAULT_PAGE(ShowMainPageCommand.getInstance(), "");

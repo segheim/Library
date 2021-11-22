@@ -43,8 +43,6 @@ public class BookDao extends AbstractDao<Book> implements BasicBookDao{
 
     private static final String SELECT_BY_TITLE = "select id, title from book where title = ?";
 
-
-
     private static final String ID_BOOK_COLUMN_NAME = "id_book";
     private static final String BOOK_TITLE_COLUMN_NAME = "book_title";
     private static final String BOOK_DATE_PUBLISHED_COLUMN_NAME = "book_date_published";

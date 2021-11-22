@@ -14,6 +14,7 @@ public class LoginCommand implements Command {
     private static final String PATH_INDEX_JSP = "index.jsp";
     private static final String PATH_LOGIN_JSP = "/WEB-INF/jsp/login.jsp";
     private static final String ERROR_LOGIN_PASS_MESSAGE_NAME = "errorLoginPassMessage";
+    private static final String ERROR = "Incorrect login or password, try again";
     private static final String ERROR_LOGIN_PASS_MASSAGE_ATTRIBUTE = "Incorrect login or password, try again";
 
     private final AccountService accountService = AccountService.getInstance();
@@ -22,7 +23,7 @@ public class LoginCommand implements Command {
     @Override
     public CommandResponse execute(CommandRequest request) {
         if (request.sessionExist() && request.takeFromSession(SESSION_ATTRIBUTE_NAME).isPresent()) {
-
+            return null;
         }
         final String login = request.getParameter(LOGIN_REQUEST_PARAMETER);
         final String password = request.getParameter(PASSWORD_REQUEST_PARAMETER);
