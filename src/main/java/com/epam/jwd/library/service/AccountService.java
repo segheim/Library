@@ -59,7 +59,7 @@ public class AccountService implements BasicAccountService, Service<Account>{
     }
 
     @Override
-    public boolean delete(Account entity) {
+    public boolean delete(Long id) {
         return false;
     }
 

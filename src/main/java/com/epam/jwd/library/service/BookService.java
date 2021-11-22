@@ -83,13 +83,13 @@ public class BookService implements Service<Book>, BasicBookService{
     }
 
     @Override
-    public Optional<Book> update(Book entity) {
-        return Optional.empty();
+    public Optional<Book> update(Book book) {
+        return null;
     }
 
     @Override
-    public boolean delete(Book entity) {
-        return false;
+    public boolean delete(Long id) {
+        return bookDao.delete(id);
     }
 
     @Override

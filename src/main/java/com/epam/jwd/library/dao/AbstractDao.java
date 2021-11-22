@@ -26,7 +26,6 @@ public abstract class AbstractDao<T extends Entity>{
 
     public abstract Optional<T> update(T entity);
 
-    public abstract boolean delete(T entity);
-
+    public abstract boolean delete(Long id);
 
 }

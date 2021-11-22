@@ -20,5 +20,6 @@
 <p>
     Quantity of items: ${requestScope.book.amount_of_left}
 </p>
+
 </body>
 </html>

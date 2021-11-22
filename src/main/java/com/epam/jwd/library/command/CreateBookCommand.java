@@ -1,9 +1,11 @@
 package com.epam.jwd.library.command;
 
 import com.epam.jwd.library.controller.RequestFactory;
+import com.epam.jwd.library.model.Book;
 import com.epam.jwd.library.service.BookService;
 
 import java.sql.Date;
+import java.util.List;
 
 public class CreateBookCommand implements Command{
 
@@ -12,6 +14,7 @@ public class CreateBookCommand implements Command{
     private static final String AMOUNT_OF_LEFT_PARAMETER_NAME = "amount_of_left";
     private static final String AUTHOR_FIRST_NAME_PARAMETER_NAME = "author_first_name";
     private static final String AUTHOR_LAST_NAME_PARAMETER_NAME = "author_last_name";
+    private static final String REQUEST_ATTRIBUTE_NAME = "books";
     private static final String PATH_CATALOG_JSP = "/WEB-INF/jsp/catalog.jsp";
     private static final String PATH_CREATE_BOOK_JSP = "/WEB-INF/jsp/create_book_page.jsp";
     private static final String ERROR_CREATE_BOOK_MASSAGE_NAME = "errorCreateBookMassage";
@@ -32,10 +35,13 @@ public class CreateBookCommand implements Command{
         final String authorLastName = request.getParameter(AUTHOR_LAST_NAME_PARAMETER_NAME);
         final boolean isCreateBook = bookService.createBook(title, datePublished, amountOfLeft, authorFirstName, authorLastName);
         if (isCreateBook) {
+            final List<Book> books = bookService.findAll();
+            request.addAttributeToJsp(REQUEST_ATTRIBUTE_NAME, books);
             return requestFactory.createForwardResponse(PATH_CATALOG_JSP);
+        } else {
+            request.addAttributeToJsp(ERROR_CREATE_BOOK_MASSAGE_NAME, ERROR_CREATE_BOOK_MASSAGE_ATTRIBUTE);
+            return requestFactory.createForwardResponse(PATH_CREATE_BOOK_JSP);
         }
-        request.addAttributeToJsp(ERROR_CREATE_BOOK_MASSAGE_NAME, ERROR_CREATE_BOOK_MASSAGE_ATTRIBUTE);
-        return requestFactory.createForwardResponse(PATH_CREATE_BOOK_JSP);
     }
 
     public static CreateBookCommand getInstance() {

@@ -36,10 +36,8 @@
             <td>${book.amount_of_left}</td>
             <td>
                 <p>
-                    <a href="/controller?command=update_book">update book</a>
-                </p>
-                <p>
-                    <a href="/controller?command=delete_book">delete book</a>
+                    <a href="/controller?command=book_page">update</a>
+                    <a href="/controller?command=delete_book&id=${book.id}">delete</a>
                 </p>
             </td>
         </tr>

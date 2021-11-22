@@ -17,7 +17,7 @@ public class BookDao extends AbstractDao<Book> implements BasicBookDao{
 
     private static final String INSERT_BOOK = "insert into book (title, date_published, amount_of_left) values (?,?,?)";
 
-    private static final String INSERT_BOOK_IN_AUTHOR_TO_BOOK = "insert into author_to_book (book_id) values (?)";
+    private static final String INSERT_BOOK_IN_AUTHOR_TO_BOOK = "insert into author_to_book (book_id, author_id) values (?,?)";
 
     private static final String SELECT_BY_ID = "select id as id_book, title as book_title, date_published as book_date_published, amount_of_left as book_amount_of_left from book where id = ?";
 
@@ -94,7 +94,7 @@ public class BookDao extends AbstractDao<Book> implements BasicBookDao{
         try (final Connection connection = pool.takeConnection();
              final PreparedStatement preparedStatement = connection.prepareStatement(INSERT_BOOK_IN_AUTHOR_TO_BOOK)) {
             preparedStatement.setLong(1, idBook);
-            preparedStatement.setLong(1, idAuthor);
+            preparedStatement.setLong(2, idAuthor);
             final int numberChangedLines = preparedStatement.executeUpdate();
             if (numberChangedLines > 0) {
                 createBookInAuthorToBook = true;
@@ -188,27 +188,22 @@ public class BookDao extends AbstractDao<Book> implements BasicBookDao{
     }
 
     @Override
-    public boolean delete(Book book) {
+    public boolean delete(Long idBook) {
         LOG.trace("start delete book");
-        return deleteBookById(book.getId());
-    }
-
-    public boolean deleteBookById(Long id) {
-        LOG.trace("start deleteBookById");
         boolean deleteBook = false;
         try (final Connection connection = pool.takeConnection();
              final PreparedStatement preparedStatement = connection.prepareStatement(DELETE_BOOK_BY_ID)) {
-            preparedStatement.setLong(1, id);
+            preparedStatement.setLong(1, idBook);
             final int numberChangedLines = preparedStatement.executeUpdate();
             if (numberChangedLines != 0) {
                 deleteBook = true;
-                LOG.info("deleted book with id: {}", id);
+                LOG.info("deleted book with id: {}", idBook);
             } else
                 throw new BookDaoException("could not delete book");
         } catch (SQLException e) {
             LOG.error("sql error, could not delete book", e);
         } catch (BookDaoException e) {
-            LOG.error("could not delete new book", e);
+            LOG.error("could not delete book", e);
         } catch (InterruptedException e) {
             LOG.error("method takeConnection from ConnectionPool was interrupted", e);
             Thread.currentThread().interrupt();

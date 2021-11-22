@@ -144,21 +144,16 @@ public class AuthorDao extends AbstractDao<Author> implements BasicAuthorDao {
     }
 
     @Override
-    public boolean delete(Author author) {
+    public boolean delete(Long idAuthor) {
         LOG.trace("start delete author");
-        return deleteAuthorById(author.getId());
-    }
-
-    public boolean deleteAuthorById(Long id) {
-        LOG.trace("start deleteAuthorById");
         boolean deleteAuthor = false;
         try (final Connection connection = pool.takeConnection();
              final PreparedStatement preparedStatement = connection.prepareStatement(DELETE_AUTHOR_BY_ID)) {
-            preparedStatement.setLong(1, id);
+            preparedStatement.setLong(1, idAuthor);
             final int numberChangedLines = preparedStatement.executeUpdate();
             if (numberChangedLines != 0) {
                 deleteAuthor = true;
-                LOG.info("deleted author with id: {}", id);
+                LOG.info("deleted author with id: {}", idAuthor);
             } else
                 throw new BookDaoException("could not delete author");
         } catch (SQLException e) {

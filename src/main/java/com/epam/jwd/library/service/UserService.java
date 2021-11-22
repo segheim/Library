@@ -21,7 +21,7 @@ public class UserService implements Service{
     }
 
     @Override
-    public boolean delete(Entity entity) {
+    public boolean delete(Long id) {
         return false;
     }
 

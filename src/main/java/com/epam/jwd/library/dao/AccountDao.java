@@ -122,7 +122,7 @@ public class AccountDao extends AbstractDao<Account> implements BasicAccountDao{
     }
 
     @Override
-    public boolean delete(Account entity) {
+    public boolean delete(Long idAccount) {
         return false;
     }
 

@@ -36,7 +36,7 @@ public class AuthorService implements Service<Author>, BasicAuthorService {
     }
 
     @Override
-    public boolean delete(Author entity) {
+    public boolean delete(Long id) {
         return false;
     }
 

@@ -15,7 +15,7 @@ public interface Service<T extends  Entity> {
 
     Optional<T> update(T entity);
 
-    boolean delete(T entity);
+    boolean delete(Long id);
 
 
 
