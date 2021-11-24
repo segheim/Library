@@ -40,8 +40,8 @@ public class AuthorDao extends AbstractDao<Author> implements BasicAuthorDao {
         Optional<Author> createdAuthor = Optional.empty();
         try (final Connection connection = pool.takeConnection();
              final PreparedStatement preparedStatement = connection.prepareStatement(INSERT_NEW_AUTHOR, Statement.RETURN_GENERATED_KEYS)) {
-            preparedStatement.setString(1, author.getFirst_name());
-            preparedStatement.setString(2, author.getLast_name());
+            preparedStatement.setString(1, author.getFirstName());
+            preparedStatement.setString(2, author.getLastName());
             final int numberChangedLines = preparedStatement.executeUpdate();
             if (numberChangedLines != 0) {
                 final ResultSet generatedKeys = preparedStatement.getGeneratedKeys();
@@ -114,24 +114,19 @@ public class AuthorDao extends AbstractDao<Author> implements BasicAuthorDao {
     @Override
     public Optional<Author> update(Author author) {
         LOG.trace("start update author");
+        Optional<Author> updatedAuthor = Optional.empty();
         try (final Connection connection = pool.takeConnection();
              final PreparedStatement preparedStatement = connection.prepareStatement(UPDATE_AUTHOR)) {
-            preparedStatement.setString(1, author.getFirst_name());
-            preparedStatement.setString(2, author.getLast_name());
+            preparedStatement.setString(1, author.getFirstName());
+            preparedStatement.setString(2, author.getLastName());
             preparedStatement.setLong(3, author.getId());
             final int numberChangedLines = preparedStatement.executeUpdate();
-            if (numberChangedLines != 0) {
-                final ResultSet generatedKeys = preparedStatement.getGeneratedKeys();
-                if (generatedKeys.next()) {
-                    long key = generatedKeys.getLong(1);
-                    LOG.info("key = {}", key);
-                    final Optional<Author> createAuthor = read(key);
-                    final Author author1 = createAuthor.get();
-                    LOG.info("author = {} {}", author1.getFirst_name(), author1.getLast_name());
-                }
-                LOG.info("created new author: {} {}", author.getFirst_name(), author.getLast_name());
-            } else
-                throw new AuthorDaoException("could not update author");
+            if (numberChangedLines > 0) {
+                updatedAuthor = read(author.getId());
+                return updatedAuthor;
+            } else {
+                throw new AuthorDaoException("could not changed lines for update author");
+            }
         } catch (SQLException e) {
             LOG.error("sql error, could not update author", e);
         } catch (AuthorDaoException e) {
@@ -140,7 +135,7 @@ public class AuthorDao extends AbstractDao<Author> implements BasicAuthorDao {
             LOG.error("method takeConnection from ConnectionPool was interrupted", e);
             Thread.currentThread().interrupt();
         }
-        return Optional.empty();
+        return updatedAuthor;
     }
 
     @Override

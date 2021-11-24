@@ -16,11 +16,6 @@ public class UserService implements Service{
     }
 
     @Override
-    public Optional update(Entity entity) {
-        return Optional.empty();
-    }
-
-    @Override
     public boolean delete(Long id) {
         return false;
     }

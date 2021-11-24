@@ -9,7 +9,7 @@ import java.util.List;
 public class ShowAuthorPageCommand implements Command{
 
     private static final String REQUEST_ATTRIBUTE_NAME = "authors";
-    private static final String PATH_AUTHOR_JSP = "/WEB-INF/jsp/author.jsp";
+    private static final String PATH_AUTHOR_JSP = "/WEB-INF/jsp/authors.jsp";
 
     private final AuthorService authorService;
     private final RequestFactory requestFactory = RequestFactory.getInstance();

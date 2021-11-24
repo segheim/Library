@@ -8,7 +8,7 @@ public class ShowCreateBookPageCommand implements Command{
 
     @Override
     public CommandResponse execute(CommandRequest request) {
-        return requestFactory.createForwardResponse("/WEB-INF/jsp/createBook.jsp");
+        return requestFactory.createForwardResponse("/WEB-INF/jsp/createbook.jsp");
     }
 
     public static ShowCreateBookPageCommand getInstance() {

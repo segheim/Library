@@ -1,9 +1,33 @@
 package com.epam.jwd.library.command;
 
+import com.epam.jwd.library.controller.RequestFactory;
+import com.epam.jwd.library.model.Author;
+import com.epam.jwd.library.service.AuthorService;
+
+import java.util.List;
+import java.util.Optional;
+
 public class UpdateAuthorCommand implements Command{
+
+    private final AuthorService authorService;
+    private final RequestFactory requestFactory = RequestFactory.getInstance();
+
+    public UpdateAuthorCommand(AuthorService authorService) {
+        this.authorService = authorService;
+    }
 
     @Override
     public CommandResponse execute(CommandRequest request) {
+        final Long idAuthor = Long.valueOf(request.getParameter("id"));
+        final String firstName = request.getParameter("first_name");
+        final String lastName = request.getParameter("last_name");
+        final Optional<Author> updatedAuthor = authorService.update(idAuthor, firstName, lastName);
+        if (updatedAuthor.isPresent()) {
+            final List<Author> authors = authorService.findAll();
+            request.addAttributeToJsp("authors", authors);
+            return requestFactory.createForwardResponse("/WEB-INF/jsp/authors.jsp");
+        }
+
         return null;
     }
 
@@ -12,6 +36,6 @@ public class UpdateAuthorCommand implements Command{
     }
 
     private static class Holder {
-        public static final UpdateAuthorCommand INSTANCE = new UpdateAuthorCommand();
+        public static final UpdateAuthorCommand INSTANCE = new UpdateAuthorCommand(AuthorService.getInstance());
     }
 }

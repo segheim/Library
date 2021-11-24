@@ -10,16 +10,18 @@
 </h1>
 <p>
     Author: <c:forEach var="author" items="${requestScope.book.authors}">
-            <br>${author.first_name}
-            ${author.last_name}
+            <br>${author.firstName}
+            ${author.lastName}
     </c:forEach>
 </p>
 <p>
-    Date of published: ${requestScope.book.date_published}
+    Date of published: ${requestScope.book.datePublished}
 </p>
 <p>
-    Quantity of items: ${requestScope.book.amount_of_left}
+    Quantity of items: ${requestScope.book.amountOfLeft}
 </p>
-
+<p>
+    <a href="/controller?command=update_book_page&id=${book.id}">Update book</a>
+</p>
 </body>
 </html>

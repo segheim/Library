@@ -13,6 +13,9 @@
     <h1> Hello, dear ${sessionScope.account.login}!</h1>
 </c:if>
 <p>
+    <a href="/controller?command=author_page">authors</a>
+</p>
+<p>
     <a href="/controller?command=catalog_page">catalog</a>
 </p>
 <c:if test="${not empty sessionScope.account and ((sessionScope.account.role eq Role.ADMIN) or (sessionScope.account.role eq Role.LIBRARIAN) or (sessionScope.account.role eq Role.READER))}">

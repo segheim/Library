@@ -52,10 +52,15 @@ public class RoleFilter implements Filter {
         commandsForGuest.add(ShowErrorPageCommand.getInstance());
         commandsForGuest.add(ShowCatalogPageCommand.getInstance());
         commandsForGuest.add(ShowCreateBookPageCommand.getInstance());
+        commandsForGuest.add(ShowUpdateBookPageCommand.getInstance());
+        commandsForGuest.add(ShowUpdateAuthorPageCommand.getInstance());
         commandsForGuest.add(ShowBookPageCommand.getInstance());
+        commandsForGuest.add(ShowAuthorPageCommand.getInstance());
         commandsForGuest.add(CreateBookCommand.getInstance());
         commandsForGuest.add(DeleteBookCommand.getInstance());
+        commandsForGuest.add(DeleteAuthorCommand.getInstance());
         commandsForGuest.add(UpdateBookCommand.getInstance());
+        commandsForGuest.add(UpdateAuthorCommand.getInstance());
         commandsForGuest.add(LoginCommand.getInstance());
 
         commandsWithRole.put(Role.ADMIN, commandsForAdmin);

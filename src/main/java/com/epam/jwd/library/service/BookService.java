@@ -83,19 +83,14 @@ public class BookService implements Service<Book>, BasicBookService{
     }
 
     @Override
-    public Optional<Book> update(Book book) {
-        return null;
-    }
-
-    @Override
     public boolean delete(Long id) {
         return bookDao.delete(id);
     }
 
     @Override
-    public boolean createBook(String title, java.sql.Date date, int amount_of_left, String authorFirstName, String authorLastName) {
+    public boolean createBook(String title, java.sql.Date date, int amountOfLeft, String authorFirstName, String authorLastName) {
         boolean createBookWithAuthor = false;
-        Book book = new Book(title, date, amount_of_left);
+        Book book = new Book(title, date, amountOfLeft);
         Author author = new Author(authorFirstName, authorLastName);
         try (Connection connection = ConnectionPool.lockingPool().takeConnection()) {
             connection.setAutoCommit(false);

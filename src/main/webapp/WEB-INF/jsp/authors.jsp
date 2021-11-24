@@ -2,7 +2,7 @@
 <%@ page contentType="text/html;charset=UTF-8" language="java" %>
 <html>
 <head>
-    <title>Title</title>
+    <title>Authors</title>
 </head>
 <body>
 <h3>Authors</h3>
@@ -11,17 +11,18 @@
         <th>Id</th>
         <th>First name</th>
         <th>Last name</th>
-        <th>Book</th>
+        <th>Action</th>
     </tr>
     <c:forEach var="author" items="${requestScope.authors}">
         <tr>
             <td>${author.id}</td>
-            <td>${author.first_name}</td>
-            <td>${author.last_name}</td>
+            <td>${author.firstName}</td>
+            <td>${author.lastName}</td>
             <td>
-        <c:forEach var="book" items="${requestScope.books}">
-            <tr>${author.book.title} ${author.book.date_published}</tr>
-        </c:forEach>
+                <p>
+                    <a href="/controller?command=update_author_page&id=${author.id}">update</a>
+                    <a href="/controller?command=delete_author&id=${author.id}">delete</a>
+                </p>
             </td>
         </tr>
     </c:forEach>

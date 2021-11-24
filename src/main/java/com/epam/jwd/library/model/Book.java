@@ -8,15 +8,15 @@ public class Book implements Entity{
 
     private Long id;
     private String title;
-    private Date date_published;
-    private Integer amount_of_left;
+    private Date datePublished;
+    private Integer amountOfLeft;
     private List<Author> authors;
 
-    public Book(Long id, String title, Date date_published, Integer amount_of_left, List<Author> authors) {
+    public Book(Long id, String title, Date datePublished, Integer amountOfLeft, List<Author> authors) {
         this.id = id;
         this.title = title;
-        this.date_published = date_published;
-        this.amount_of_left = amount_of_left;
+        this.datePublished = datePublished;
+        this.amountOfLeft = amountOfLeft;
         this.authors = authors;
     }
 
@@ -24,12 +24,12 @@ public class Book implements Entity{
 //        this(null, title, date_published, amount_of_left);
 //    }
 
-    public Book(String title, Date date_published, Integer amount_of_left) {
-        this(null, title, date_published, amount_of_left);
+    public Book(String title, Date datePublished, Integer amountOfLeft) {
+        this(null, title, datePublished, amountOfLeft);
     }
 
-    public Book(Long id, String title, Date date_published, Integer amount_of_left) {
-        this(id, title, date_published, amount_of_left, null);
+    public Book(Long id, String title, Date datePublished, Integer amountOfLeft) {
+        this(id, title, datePublished, amountOfLeft, null);
     }
 
     public Long getId() {
@@ -40,12 +40,12 @@ public class Book implements Entity{
         return title;
     }
 
-    public Date getDate_published() {
-        return date_published;
+    public Date getDatePublished() {
+        return datePublished;
     }
 
-    public Integer getAmount_of_left() {
-        return amount_of_left;
+    public Integer getAmountOfLeft() {
+        return amountOfLeft;
     }
 
     public List<Author> getAuthors() {
@@ -53,7 +53,7 @@ public class Book implements Entity{
     }
 
     public Book getBookWithAuthors(List<Author> authors) {
-        return new Book(id, title, date_published, amount_of_left, authors);
+        return new Book(id, title, datePublished, amountOfLeft, authors);
     }
 
     @Override
@@ -61,12 +61,15 @@ public class Book implements Entity{
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         Book book = (Book) o;
-        return Objects.equals(id, book.id) && Objects.equals(title, book.title) && Objects.equals(date_published, book.date_published) && Objects.equals(amount_of_left, book.amount_of_left) && Objects.equals(authors, book.authors);
+        return Objects.equals(id, book.id) && Objects.equals(title, book.title)
+                && Objects.equals(datePublished, book.datePublished)
+                && Objects.equals(amountOfLeft, book.amountOfLeft)
+                && Objects.equals(authors, book.authors);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(id, title, date_published, amount_of_left, authors);
+        return Objects.hash(id, title, datePublished, amountOfLeft, authors);
     }
 
     @Override
@@ -74,8 +77,8 @@ public class Book implements Entity{
         return "Book{" +
                 "id=" + id +
                 ", title='" + title + '\'' +
-                ", date_published=" + date_published +
-                ", amount_of_left=" + amount_of_left +
+                ", date_published=" + datePublished +
+                ", amount_of_left=" + amountOfLeft +
                 ", authors=" + authors +
                 '}';
     }

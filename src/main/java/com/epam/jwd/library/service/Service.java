@@ -13,8 +13,6 @@ public interface Service<T extends  Entity> {
 
     List<T> findAll();
 
-    Optional<T> update(T entity);
-
     boolean delete(Long id);
 
 

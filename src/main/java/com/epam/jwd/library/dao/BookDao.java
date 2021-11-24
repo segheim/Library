@@ -64,8 +64,8 @@ public class BookDao extends AbstractDao<Book> implements BasicBookDao{
         try (final Connection connection = pool.takeConnection();
              final PreparedStatement preparedStatement = connection.prepareStatement(INSERT_BOOK, Statement.RETURN_GENERATED_KEYS)) {
             preparedStatement.setString(1, book.getTitle());
-            preparedStatement.setDate(2, (Date) book.getDate_published());
-            preparedStatement.setInt(3, book.getAmount_of_left());
+            preparedStatement.setDate(2, (Date) book.getDatePublished());
+            preparedStatement.setInt(3, book.getAmountOfLeft());
             final int numberChangedLines = preparedStatement.executeUpdate();
             if (numberChangedLines > 0) {
                 final ResultSet generatedKeys = preparedStatement.getGeneratedKeys();
@@ -76,7 +76,7 @@ public class BookDao extends AbstractDao<Book> implements BasicBookDao{
                 }
                 return createdBook;
             } else
-                throw new BookDaoException("could not create book");
+                throw new BookDaoException("could not changed lines for create book");
         } catch (SQLException e) {
             LOG.error("sql error, could not create book", e);
         } catch (BookDaoException e) {
@@ -98,12 +98,16 @@ public class BookDao extends AbstractDao<Book> implements BasicBookDao{
             final int numberChangedLines = preparedStatement.executeUpdate();
             if (numberChangedLines > 0) {
                 createBookInAuthorToBook = true;
+            } else {
+                throw new BookDaoException("could not changed lines for create in table author_to_book");
             }
         } catch (SQLException e) {
             LOG.error("sql error, could not create book in author to book", e);
         } catch (InterruptedException e) {
             LOG.error("method takeConnection from ConnectionPool was interrupted", e);
             Thread.currentThread().interrupt();
+        } catch (BookDaoException e) {
+            LOG.error("could not create in author_to_book");
         }
         return createBookInAuthorToBook;
     }
@@ -162,10 +166,10 @@ public class BookDao extends AbstractDao<Book> implements BasicBookDao{
         LOG.trace("start update book");
         Optional<Book> updatedBook = Optional.empty();
         try (final Connection connection = pool.takeConnection();
-             final PreparedStatement preparedStatement = connection.prepareStatement(UPDATE_BOOK)) {
+             final PreparedStatement preparedStatement = connection.prepareStatement(UPDATE_BOOK, Statement.RETURN_GENERATED_KEYS)) {
             preparedStatement.setString(1, book.getTitle());
-            preparedStatement.setDate(2, (Date) book.getDate_published());
-            preparedStatement.setInt(3, book.getAmount_of_left());
+            preparedStatement.setDate(2, (Date) book.getDatePublished());
+            preparedStatement.setInt(3, book.getAmountOfLeft());
             preparedStatement.setLong(4, book.getId());
             final int numberChangedLines = preparedStatement.executeUpdate();
             if (numberChangedLines > 0) {
@@ -175,14 +179,18 @@ public class BookDao extends AbstractDao<Book> implements BasicBookDao{
                     LOG.info("key = {}", key);
                     updatedBook = read(key);
                 }
-                LOG.info("created new author: {} {}", book.getTitle(), book.getDate_published());
+                LOG.info("created new author: {} {}", book.getTitle(), book.getDatePublished());
                 return updatedBook;
+            } else {
+                throw new BookDaoException("could not changed lines for update book");
             }
         } catch (SQLException e) {
             LOG.error("sql error, could not update book", e);
         } catch (InterruptedException e) {
             LOG.error("method takeConnection from ConnectionPool was interrupted", e);
             Thread.currentThread().interrupt();
+        } catch (BookDaoException e) {
+            LOG.info("could not update book");
         }
         return updatedBook;
     }
@@ -246,7 +254,7 @@ public class BookDao extends AbstractDao<Book> implements BasicBookDao{
             while (resultSet.next()) {
                 final Book book = executeBookWithAuthors(resultSet).orElseThrow(()
                         -> new BookDaoException("could not extract book"));
-                if (idLastBook == book.getId()) {
+                if (idLastBook == book.getId() && (book.getAuthors().size() > 1)) {
                     idLastBook = book.getId();
                     final Book lastBook = books.getLast();
                     books.removeLast();

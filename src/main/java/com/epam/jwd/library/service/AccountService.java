@@ -53,12 +53,7 @@ public class AccountService implements BasicAccountService, Service<Account>{
         return accountDao.readAll();
     }
 
-    @Override
-    public Optional<Account> update(Account entity) {
-        return Optional.empty();
-    }
-
-    @Override
+        @Override
     public boolean delete(Long id) {
         return false;
     }

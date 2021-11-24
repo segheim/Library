@@ -12,6 +12,7 @@ public enum CommandRegistry {
     UPDATE_AUTHOR_PAGE(ShowUpdateAuthorPageCommand.getInstance(), "update_author_page"),
     ERROR(ShowErrorPageCommand.getInstance(), "error_page"),
     DELETE_BOOK(DeleteBookCommand.getInstance(), "delete_book"),
+    DELETE_AUTHOR(DeleteAuthorCommand.getInstance(), "delete_author"),
     UPDATE_BOOK(UpdateBookCommand.getInstance(), "update_book"),
     UPDATE_AUTHOR(UpdateAuthorCommand.getInstance(), "update_author"),
     LOGIN_PAGE(ShowLoginPageCommand.getInstance(), "login_page"),

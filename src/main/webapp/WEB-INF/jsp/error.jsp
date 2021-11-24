@@ -5,6 +5,7 @@
 </head>
 <body>
 <h3>Oops! Something unpleasant happened...</h3>
+<h1>${errorPassMassage}</h1>
 </body>
 </html>
 

@@ -1,10 +1,11 @@
 package com.epam.jwd.library.service;
 
-import com.epam.jwd.library.model.Author;
-
 import java.util.List;
+import java.util.Optional;
 
-public interface BasicAuthorService {
+public interface BasicAuthorService<T> {
 
-    List<Author> findAll();
+    List<T> findAll();
+
+    Optional<T> update(Long id, String firstName, String lastName);
 }

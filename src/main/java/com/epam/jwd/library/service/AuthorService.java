@@ -6,7 +6,7 @@ import com.epam.jwd.library.model.Author;
 import java.util.List;
 import java.util.Optional;
 
-public class AuthorService implements Service<Author>, BasicAuthorService {
+public class AuthorService implements Service<Author>, BasicAuthorService<Author> {
 
     private final AuthorDao authorDao;
 
@@ -21,7 +21,7 @@ public class AuthorService implements Service<Author>, BasicAuthorService {
 
     @Override
     public Optional<Author> findById(Long id) {
-        return Optional.empty();
+        return authorDao.read(id);
     }
 
     @Override
@@ -31,13 +31,14 @@ public class AuthorService implements Service<Author>, BasicAuthorService {
     }
 
     @Override
-    public Optional<Author> update(Author entity) {
-        return Optional.empty();
+    public Optional<Author> update(Long id, String firstName, String lastName) {
+        Author author = new Author(id, firstName, lastName);
+        return authorDao.update(author);
     }
 
     @Override
     public boolean delete(Long id) {
-        return false;
+        return authorDao.delete(id);
     }
 
     public static AuthorService getInstance() {
