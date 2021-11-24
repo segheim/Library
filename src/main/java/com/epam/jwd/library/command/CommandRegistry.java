@@ -8,6 +8,7 @@ public enum CommandRegistry {
     BOOK_PAGE(ShowBookPageCommand.getInstance(), "book_page"),
     CATALOG_PAGE(ShowCatalogPageCommand.getInstance(), "catalog_page"),
     CREATE_BOOK_PAGE(ShowCreateBookPageCommand.getInstance(), "create_book_page"),
+    CREATE_AUTHOR_PAGE(ShowCreateAuthorPageCommand.getInstance(), "create_author_page"),
     UPDATE_BOOK_PAGE(ShowUpdateBookPageCommand.getInstance(), "update_book_page"),
     UPDATE_AUTHOR_PAGE(ShowUpdateAuthorPageCommand.getInstance(), "update_author_page"),
     ERROR(ShowErrorPageCommand.getInstance(), "error_page"),
@@ -17,6 +18,7 @@ public enum CommandRegistry {
     UPDATE_AUTHOR(UpdateAuthorCommand.getInstance(), "update_author"),
     LOGIN_PAGE(ShowLoginPageCommand.getInstance(), "login_page"),
     CREATE_BOOK(CreateBookCommand.getInstance(), "create_book"),
+    CREATE_AUTHOR(CreateAuthorCommand.getInstance(), "create_author"),
     LOGIN(LoginCommand.getInstance(), "login"),
     LOGOUT(LogoutCommand.getInstance(), "logout"),
     DEFAULT_PAGE(ShowMainPageCommand.getInstance(), "");

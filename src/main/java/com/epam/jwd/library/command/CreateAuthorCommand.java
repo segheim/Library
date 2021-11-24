@@ -7,36 +7,34 @@ import com.epam.jwd.library.service.AuthorService;
 import java.util.List;
 import java.util.Optional;
 
-public class UpdateAuthorCommand implements Command {
+public class CreateAuthorCommand implements Command{
 
     private final AuthorService authorService;
     private final RequestFactory requestFactory = RequestFactory.getInstance();
 
-    public UpdateAuthorCommand(AuthorService authorService) {
+    public CreateAuthorCommand(AuthorService authorService) {
         this.authorService = authorService;
     }
 
     @Override
     public CommandResponse execute(CommandRequest request) {
-        final Long idAuthor = Long.valueOf(request.getParameter("id"));
         final String firstName = request.getParameter("first_name");
         final String lastName = request.getParameter("last_name");
-        final Optional<Author> updatedAuthor = authorService.update(idAuthor, firstName, lastName);
-        if (updatedAuthor.isPresent()) {
+        final Optional<Author> author = authorService.create(firstName, lastName);
+        if (author.isPresent()) {
             final List<Author> authors = authorService.findAll();
             request.addAttributeToJsp("authors", authors);
             return requestFactory.createForwardResponse("/WEB-INF/jsp/authors.jsp");
         } else {
-            request.addAttributeToJsp("errorPassMassage", "Could not update author");
-            return requestFactory.createForwardResponse("/WEB-INF/jsp/error.jsp");
+            request.addAttributeToJsp("errorCreateAuthorMessage", "Incorrect dates, please try again");
+            return requestFactory.createForwardResponse("/WEB-INF/jsp/createauthor.jsp");
         }
     }
 
-    public static UpdateAuthorCommand getInstance() {
+    public static CreateAuthorCommand getInstance() {
         return Holder.INSTANCE;
     }
-
     private static class Holder {
-        public static final UpdateAuthorCommand INSTANCE = new UpdateAuthorCommand(AuthorService.getInstance());
+        public static final CreateAuthorCommand INSTANCE = new CreateAuthorCommand(AuthorService.getInstance());
     }
 }

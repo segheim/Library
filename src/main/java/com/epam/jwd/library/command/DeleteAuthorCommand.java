@@ -1,7 +1,10 @@
 package com.epam.jwd.library.command;
 
 import com.epam.jwd.library.controller.RequestFactory;
+import com.epam.jwd.library.model.Author;
 import com.epam.jwd.library.service.AuthorService;
+
+import java.util.List;
 
 public class DeleteAuthorCommand implements Command{
 
@@ -14,7 +17,15 @@ public class DeleteAuthorCommand implements Command{
 
     @Override
     public CommandResponse execute(CommandRequest request) {
-        return null;
+        final Long idAuthor = Long.valueOf(request.getParameter("id"));
+        if (authorService.delete(idAuthor)) {
+            final List<Author> authors = authorService.findAll();
+            request.addAttributeToJsp("authors", authors);
+            return requestFactory.createForwardResponse("/WEB-INF/jsp/authors.jsp");
+        } else {
+            request.addAttributeToJsp("errorPassMassage", "Could not delete author");
+            return requestFactory.createForwardResponse("/WEB-INF/jsp/error.jsp");
+        }
     }
 
     public static DeleteAuthorCommand getInstance() {

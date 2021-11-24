@@ -21,10 +21,14 @@ public class DeleteBookCommand implements Command{
     @Override
     public CommandResponse execute(CommandRequest request) {
         final Long id = Long.valueOf(request.getParameter(ID_PARAMETER_NAME));
-        bookService.delete(id);
-        final List<Book> books = bookService.findAll();
-        request.addAttributeToJsp(REQUEST_ATTRIBUTE_NAME, books);
-        return requestFactory.createForwardResponse(PATH_CATALOG_JSP);
+        if (bookService.delete(id)) {
+            final List<Book> books = bookService.findAll();
+            request.addAttributeToJsp(REQUEST_ATTRIBUTE_NAME, books);
+            return requestFactory.createForwardResponse(PATH_CATALOG_JSP);
+        } else {
+            request.addAttributeToJsp("errorPassMassage", "Could not delete book");
+            return requestFactory.createForwardResponse("/WEB-INF/jsp/error.jsp");
+        }
     }
 
     public static DeleteBookCommand getInstance() {

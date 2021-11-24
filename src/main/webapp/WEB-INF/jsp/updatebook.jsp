@@ -7,10 +7,11 @@
 <body>
 <h3>Please enter changes into Book:</h3>
 <form name = "update_book_form" method="post" action="/controller?command=update_book">
+    <input type="hidden" name="id" value="${book.id}">
     Title:<br/>
     <input type="text" name="title" value=""/>
     <br/>Published Date:<br/>
-    <input type="text" name="date_published" value=""/>
+    <input type="date" name="date_published" value=""/>
     <br/>Quantity of items:<br/>
     <input type="text" name="amount_of_left" value=""/>
     <br/>

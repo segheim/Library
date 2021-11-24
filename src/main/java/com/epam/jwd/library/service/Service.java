@@ -7,8 +7,6 @@ import java.util.Optional;
 
 public interface Service<T extends  Entity> {
 
-    Optional<T> create(T entity);
-
     Optional<T> findById(Long id);
 
     List<T> findAll();

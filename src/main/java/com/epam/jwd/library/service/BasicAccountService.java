@@ -5,9 +5,12 @@ import com.epam.jwd.library.model.Account;
 import java.util.List;
 import java.util.Optional;
 
-public interface BasicAccountService {
+public interface BasicAccountService<T> {
 
-    Optional<Account> authenticate(String login, String password);
+    Optional<T> create(Account account);
 
-    List<Account> findAll();
+    List<T> findAll();
+
+    Optional<T> authenticate(String login, String password);
+
 }

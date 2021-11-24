@@ -1,7 +1,5 @@
 package com.epam.jwd.library.service;
 
-import com.epam.jwd.library.model.Entity;
-
 import java.util.List;
 import java.util.Optional;
 
@@ -18,11 +16,6 @@ public class UserService implements Service{
     @Override
     public boolean delete(Long id) {
         return false;
-    }
-
-    @Override
-    public Optional create(Entity entity) {
-        return Optional.empty();
     }
 
     @Override

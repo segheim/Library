@@ -6,6 +6,12 @@
 </head>
 <body>
 <h3>Authors</h3>
+<p>
+    <a href="/controller?command=create_author_page">create author</a>
+</p>
+<p>
+    <a href="/controller?command=main_page">main page</a>
+</p>
 <table>
     <tr>
         <th>Id</th>

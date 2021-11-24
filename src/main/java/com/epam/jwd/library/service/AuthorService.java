@@ -15,8 +15,9 @@ public class AuthorService implements Service<Author>, BasicAuthorService<Author
     }
 
     @Override
-    public Optional<Author> create(Author entity) {
-        return Optional.empty();
+    public Optional<Author> create(String firstName, String lastName) {
+        Author author = new Author(firstName, lastName);
+        return authorDao.create(author);
     }
 
     @Override

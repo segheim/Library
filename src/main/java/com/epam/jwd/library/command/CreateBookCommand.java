@@ -34,7 +34,7 @@ public class CreateBookCommand implements Command{
         final Integer amountOfLeft = Integer.valueOf(request.getParameter(AMOUNT_OF_LEFT_PARAMETER_NAME));
         final String authorFirstName = request.getParameter(AUTHOR_FIRST_NAME_PARAMETER_NAME);
         final String authorLastName = request.getParameter(AUTHOR_LAST_NAME_PARAMETER_NAME);
-        final boolean isCreateBook = bookService.createBook(title, datePublished, amountOfLeft, authorFirstName, authorLastName);
+        final boolean isCreateBook = bookService.createBookWithAuthor(title, datePublished, amountOfLeft, authorFirstName, authorLastName);
         if (isCreateBook) {
             final List<Book> books = bookService.findAll();
             request.addAttributeToJsp(REQUEST_ATTRIBUTE_NAME, books);

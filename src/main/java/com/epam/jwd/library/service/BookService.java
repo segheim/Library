@@ -12,13 +12,10 @@ import org.apache.logging.log4j.Logger;
 
 import java.sql.Connection;
 import java.sql.SQLException;
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
-import java.util.Date;
 import java.util.List;
 import java.util.Optional;
 
-public class BookService implements Service<Book>, BasicBookService{
+public class BookService implements Service<Book>, BasicBookService<Book>{
 
     private static final Logger LOG = LogManager.getLogger(BookService.class);
 
@@ -30,65 +27,8 @@ public class BookService implements Service<Book>, BasicBookService{
         this.authorDao = authorDao;
     }
 
-
-    public Book createBookWithAuthors() {
-        String firstName = "Alexandr";
-        String lastName = "Pyshkin";
-        String insertDate = "2014-01-28";
-        Date utilDate = null;
-        try {
-            utilDate = new SimpleDateFormat("yyyy-MM-dd").parse(insertDate);
-        } catch (ParseException e) {
-            e.printStackTrace();
-        }
-        java.sql.Date sqlDate= new java.sql.Date(utilDate.getTime());
-
-        Author author = new Author(firstName, lastName);
-        final Optional<Author> optionalAuthor = authorDao.readAuthorByLastName(lastName);
-        if (optionalAuthor.isPresent()) {
-            author = optionalAuthor.get();
-        } else {
-            final Optional<Author> newAuthor = authorDao.create(author);
-            if (newAuthor.isPresent()) {
-                author = newAuthor.get();
-            }
-        }
-        Book book = null;
-        final Optional<Book> newBook = bookDao.create(new Book("new Tittle", sqlDate, 2));
-        try {
-            book = newBook.orElseThrow(() -> new BookDaoException("could not create book"));
-        } catch (BookDaoException e) {
-            LOG.error("could not create book");
-        }
-        bookDao.createBookInAuthorToBook(book.getId(), author.getId());
-        return book;
-    }
-
-
     @Override
-    public Optional<Book> create(Book en) {
-
-        return Optional.empty();
-    }
-
-    @Override
-    public Optional<Book> findById(Long id) {
-        final Optional<Book> readBook = bookDao.readWithAuthors(id);
-        return readBook;
-    }
-
-    public List<Book> findAll() {
-        final List<Book> books = bookDao.readAllWithAuthors();
-        return books;
-    }
-
-    @Override
-    public boolean delete(Long id) {
-        return bookDao.delete(id);
-    }
-
-    @Override
-    public boolean createBook(String title, java.sql.Date date, int amountOfLeft, String authorFirstName, String authorLastName) {
+    public boolean createBookWithAuthor(String title, java.sql.Date date, int amountOfLeft, String authorFirstName, String authorLastName) {
         boolean createBookWithAuthor = false;
         Book book = new Book(title, date, amountOfLeft);
         Author author = new Author(authorFirstName, authorLastName);
@@ -116,6 +56,28 @@ public class BookService implements Service<Book>, BasicBookService{
             LOG.error("could not create new book", e);
         }
         return createBookWithAuthor;
+    }
+
+    @Override
+    public Optional<Book> findById(Long id) {
+        final Optional<Book> readBook = bookDao.readWithAuthors(id);
+        return readBook;
+    }
+
+    public List<Book> findAll() {
+        final List<Book> books = bookDao.readAllWithAuthors();
+        return books;
+    }
+
+    @Override
+    public Optional<Book> update(Long id, String title, java.sql.Date date, Integer amountOfLeft) {
+        Book book = new Book(id, title, date, amountOfLeft);
+        return bookDao.update(book);
+    }
+
+    @Override
+    public boolean delete(Long id) {
+        return bookDao.delete(id);
     }
 
     public static BookService getInstance() {

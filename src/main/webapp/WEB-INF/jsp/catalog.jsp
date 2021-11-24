@@ -9,6 +9,9 @@
 <p>
     <a href="/controller?command=create_book_page">create book</a>
 </p>
+<p>
+    <a href="/controller?command=main_page">main page</a>
+</p>
 <table>
     <tr>
         <th>Add</th>

@@ -173,13 +173,7 @@ public class BookDao extends AbstractDao<Book> implements BasicBookDao{
             preparedStatement.setLong(4, book.getId());
             final int numberChangedLines = preparedStatement.executeUpdate();
             if (numberChangedLines > 0) {
-                final ResultSet generatedKeys = preparedStatement.getGeneratedKeys();
-                if (generatedKeys.next()) {
-                    long key = generatedKeys.getLong(1);
-                    LOG.info("key = {}", key);
-                    updatedBook = read(key);
-                }
-                LOG.info("created new author: {} {}", book.getTitle(), book.getDatePublished());
+                updatedBook = read(book.getId());
                 return updatedBook;
             } else {
                 throw new BookDaoException("could not changed lines for update book");
