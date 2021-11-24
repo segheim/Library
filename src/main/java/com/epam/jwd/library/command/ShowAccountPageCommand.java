@@ -9,7 +9,7 @@ import java.util.List;
 public class ShowAccountPageCommand implements Command{
 
     private static final String REQUEST_ATTRIBUTE_NAME = "accounts";
-    private static final String PATH_ACCOUNT_NAME = "/WEB-INF/jsp/account.jsp";
+    private static final String PATH_ACCOUNT_NAME = "/WEB-INF/jsp/accounts.jsp";
 
     private final AccountService accountService;
     private final RequestFactory requestFactory = RequestFactory.getInstance();

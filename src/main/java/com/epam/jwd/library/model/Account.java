@@ -8,20 +8,26 @@ public class Account implements Entity{
     private final String login;
     private final String password;
     private final Role role;
+    private final AccountDetails details;
 
-    public Account(Long id, String login, String password, Role role) {
+    public Account(Long id, String login, String password, Role role, AccountDetails details) {
         this.id = id;
         this.login = login;
         this.password = password;
         this.role = role;
+        this.details = details;
     }
 
-    public Account(String login, String password) {
-        this(null, login, password, Role.READER);
+    public Account(String login, String password, AccountDetails details) {
+        this(null, login, password, Role.READER, details);
     }
 
-    public Account(Long id, String login, String password) {
-        this(id, login, password, Role.READER);
+    public Account(Long id, String login, String password, AccountDetails details) {
+        this(id, login, password, Role.READER, details);
+    }
+
+    public Account(Long id, String login, String password, Role role) {
+        this(id, login, password, role, null);
     }
 
     @Override
@@ -41,8 +47,12 @@ public class Account implements Entity{
         return role;
     }
 
+    public AccountDetails getDetails() {
+        return details;
+    }
+
     public Account withPassword(String password) {
-        return new Account(id, login, password);
+        return new Account(id, login, password, details);
     }
 
     @Override
@@ -50,12 +60,12 @@ public class Account implements Entity{
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         Account account = (Account) o;
-        return Objects.equals(id, account.id) && Objects.equals(login, account.login) && Objects.equals(password, account.password) && Objects.equals(role, account.role);
+        return Objects.equals(id, account.id) && Objects.equals(login, account.login) && Objects.equals(password, account.password) && role == account.role && Objects.equals(details, account.details);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(id, login, password, role);
+        return Objects.hash(id, login, password, role, details);
     }
 
     @Override
@@ -65,6 +75,7 @@ public class Account implements Entity{
                 ", login='" + login + '\'' +
                 ", password='" + password + '\'' +
                 ", role=" + role +
+                ", details=" + details +
                 '}';
     }
 }

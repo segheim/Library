@@ -38,6 +38,9 @@
         <p>
             <a href="/controller?command=login_page">login</a>
         </p>
+        <p>
+            <a href="/controller?command=registration">login</a>
+        </p>
     </c:otherwise>
 </c:choose>
 </body>

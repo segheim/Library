@@ -3,6 +3,7 @@ package com.epam.jwd.library.dao;
 import com.epam.jwd.library.connection.ConnectionPool;
 import com.epam.jwd.library.exception.AccountDaoException;
 import com.epam.jwd.library.model.Account;
+import com.epam.jwd.library.model.AccountDetails;
 import com.epam.jwd.library.model.Role;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -17,10 +18,12 @@ public class AccountDao extends AbstractDao<Account> implements BasicAccountDao{
 
     private static final Logger LOG = LogManager.getLogger(AccountDao.class);
 
-    private static final String INSET_NEW_ACCOUNT ="insert into l_account (login, password) values (?,?)";
+    private static final String INSERT_NEW_ACCOUNT ="insert into l_account (login, password) values (?,?)";
 
     private static final String SELECT_ALL_ACCOUNTS = "select a_id as id, login as login, password as password, " +
-            "a_role.role_name as role_name from l_account join a_role  on a_role.id = l_account.role_id";
+            "a_role.role_name as role_name, ad.first_name as ad_f_name, ad.last_name as ad_l_name " +
+            "from l_account join a_role  on a_role.id = l_account.role_id " +
+            "join account_details ad on l_account.a_id = ad.account_id";
 
     private static final String SELECT_BY_LOGIN = "select a_id as id, login as login, password as password, " +
             "a_role.role_name as role_name from l_account join a_role  on a_role.id = l_account.role_id " +
@@ -30,20 +33,22 @@ public class AccountDao extends AbstractDao<Account> implements BasicAccountDao{
     private static final String LOGIN_COLUMN_NAME = "login";
     private static final String PASSWORD_COLUMN_NAME = "password";
     private static final String ROLE_NAME_COLUMN_NAME = "role_name";
+    private static final String ACCOUNT_DETAILS_FIRST_NAME_COLUMN_NAME = "ad_f_name";
+    private static final String ACCOUNT_DETAILS_LAST_NAME_COLUMN_NAME = "ad_l_name";
 
     protected AccountDao(ConnectionPool pool) {
         super(pool, LOG);
     }
 
     public Optional<Account> readByLogin(String login) {
-        LOG.trace("start read by login");
+        LOG.trace("start read account by login");
         Optional<Account> account = Optional.empty();
         try (final Connection connection = pool.takeConnection();
              final PreparedStatement preparedStatement = connection.prepareStatement(SELECT_BY_LOGIN)) {
             preparedStatement.setString(1, login);
             final ResultSet resultSet = preparedStatement.executeQuery();
             if (resultSet.next()) {
-                final Account executedAccount = executeAccount(resultSet).orElseThrow(()
+                final Account executedAccount = executeAccountWithoutDetails(resultSet).orElseThrow(()
                         -> new AccountDaoException("could not extract account"));
                 account = Optional.of(executedAccount);
                 return account;
@@ -64,7 +69,7 @@ public class AccountDao extends AbstractDao<Account> implements BasicAccountDao{
         LOG.trace("start create account");
         Optional<Account> createdAccount = Optional.empty();
         try (final Connection connection = pool.takeConnection();
-             final PreparedStatement preparedStatement = connection.prepareStatement(INSET_NEW_ACCOUNT, Statement.RETURN_GENERATED_KEYS)) {
+             final PreparedStatement preparedStatement = connection.prepareStatement(INSERT_NEW_ACCOUNT, Statement.RETURN_GENERATED_KEYS)) {
             preparedStatement.setString(1, account.getLogin());
             preparedStatement.setString(2, account.getPassword());
             final int numberChangedLines = preparedStatement.executeUpdate();
@@ -95,7 +100,7 @@ public class AccountDao extends AbstractDao<Account> implements BasicAccountDao{
 
     @Override
     public List<Account> readAll() {
-        LOG.trace("start readAll");
+        LOG.trace("start read all accounts");
         List<Account> accounts = new ArrayList<>();
         try (final Connection connection = pool.takeConnection();
              final Statement statement = connection.createStatement();
@@ -126,7 +131,22 @@ public class AccountDao extends AbstractDao<Account> implements BasicAccountDao{
         return false;
     }
 
+
+
     private Optional<Account> executeAccount(ResultSet resultSet){
+        try {
+            return Optional.of(new Account(resultSet.getLong(ID_COLUMN_NAME),
+                    resultSet.getString(LOGIN_COLUMN_NAME), resultSet.getString(PASSWORD_COLUMN_NAME),
+                    Role.valueOf(resultSet.getString(ROLE_NAME_COLUMN_NAME).toUpperCase()),
+                    new AccountDetails(resultSet.getString(ACCOUNT_DETAILS_FIRST_NAME_COLUMN_NAME),
+                            resultSet.getString(ACCOUNT_DETAILS_LAST_NAME_COLUMN_NAME))));
+        } catch (SQLException e) {
+            LOG.error("could not extract account from executeBook", e);
+            return Optional.empty();
+        }
+    }
+
+    private Optional<Account> executeAccountWithoutDetails(ResultSet resultSet){
         try {
             return Optional.of(new Account(resultSet.getLong(ID_COLUMN_NAME),
                     resultSet.getString(LOGIN_COLUMN_NAME), resultSet.getString(PASSWORD_COLUMN_NAME),
