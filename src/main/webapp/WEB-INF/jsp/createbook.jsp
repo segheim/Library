@@ -5,7 +5,7 @@
     <title>CreateBook</title>
 </head>
 <body>
-<h3>Please enter dates for creating book:</h3>
+<h3>Please enter data for creating book:</h3>
 <form name = "create_book_form" method="post" action="/controller?command=create_book">
     Title:<br/>
     <input type="text" name="title" value=""/>

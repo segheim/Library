@@ -14,20 +14,25 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 
-public class AccountDao extends AbstractDao<Account> implements BasicAccountDao{
+public class AccountDao extends AbstractDao<Account> implements BasicAccountDao {
 
     private static final Logger LOG = LogManager.getLogger(AccountDao.class);
 
-    private static final String INSERT_NEW_ACCOUNT ="insert into l_account (login, password) values (?,?)";
+    private static final String INSERT_NEW_ACCOUNT = "insert into l_account (a_login, a_password, a_role_id) values (?,?,?)";
 
-    private static final String SELECT_ALL_ACCOUNTS = "select a_id as id, login as login, password as password, " +
-            "a_role.role_name as role_name, ad.first_name as ad_f_name, ad.last_name as ad_l_name " +
-            "from l_account join a_role  on a_role.id = l_account.role_id " +
+    private static final String SELECT_ALL_ACCOUNTS = "select a_id as id, a_login as login, a_password as password, " +
+            "a_role.role_name as role_name, ad.ad_first_name as ad_f_name, ad.ad_last_name as ad_l_name " +
+            "from l_account join a_role  on a_role.role_id = l_account.a_role_id " +
             "join account_details ad on l_account.a_id = ad.account_id";
 
-    private static final String SELECT_BY_LOGIN = "select a_id as id, login as login, password as password, " +
-            "a_role.role_name as role_name from l_account join a_role  on a_role.id = l_account.role_id " +
-            "where login=?";
+    private static final String SELECT_BY_LOGIN = "select a_id as id, a_login as login, a_password as password, " +
+            "a_role.role_name as role_name from l_account join a_role  on a_role.role_id = l_account.a_role_id " +
+            "where a_login=?";
+
+    private static final String SELECT_ACCOUNT_BY_ID = "select a_id as id, a_login as login, a_password as password, " +
+            "ar.role_name as role_name from l_account join a_role ar on l_account.a_role_id = ar.role_id where a_id=?";
+
+    private static final String DELETE_ACCOUNT = "delete from l_account where a_id=?";
 
     private static final String ID_COLUMN_NAME = "id";
     private static final String LOGIN_COLUMN_NAME = "login";
@@ -72,7 +77,9 @@ public class AccountDao extends AbstractDao<Account> implements BasicAccountDao{
              final PreparedStatement preparedStatement = connection.prepareStatement(INSERT_NEW_ACCOUNT, Statement.RETURN_GENERATED_KEYS)) {
             preparedStatement.setString(1, account.getLogin());
             preparedStatement.setString(2, account.getPassword());
+            preparedStatement.setInt(3, account.getRole().ordinal());
             final int numberChangedLines = preparedStatement.executeUpdate();
+            LOG.info("number = {}", numberChangedLines);
             if (numberChangedLines != 0) {
                 final ResultSet generatedKeys = preparedStatement.getGeneratedKeys();
                 if (generatedKeys.next()) {
@@ -95,7 +102,25 @@ public class AccountDao extends AbstractDao<Account> implements BasicAccountDao{
 
     @Override
     public Optional<Account> read(Long id) {
-        return Optional.empty();
+        LOG.trace("start read account");
+        Optional<Account> readAccount = Optional.empty();
+        try (final Connection connection = pool.takeConnection();
+             final PreparedStatement preparedStatement = connection.prepareStatement(SELECT_ACCOUNT_BY_ID)) {
+            preparedStatement.setLong(1, id);
+            final ResultSet resultSet = preparedStatement.executeQuery();
+            if (resultSet.next()) {
+                final Account account = executeAccountWithoutDetails(resultSet).orElseThrow(() -> new AccountDaoException("could not extract account"));
+                return Optional.of(account);
+            }
+        } catch (SQLException e) {
+            LOG.error("sql error, could not find account", e);
+        } catch (AccountDaoException e) {
+            LOG.error("could not find account", e);
+        } catch (InterruptedException e) {
+            LOG.error("method takeConnection from ConnectionPool was interrupted", e);
+            Thread.currentThread().interrupt();
+        }
+        return readAccount;
     }
 
     @Override
@@ -127,13 +152,30 @@ public class AccountDao extends AbstractDao<Account> implements BasicAccountDao{
     }
 
     @Override
-    public boolean delete(Long idAccount) {
-        return false;
+    public boolean delete(Long id) {
+        LOG.trace("start delete account");
+        boolean deleteAccount = false;
+        try (final Connection connection = pool.takeConnection();
+             final PreparedStatement preparedStatement = connection.prepareStatement(DELETE_ACCOUNT)) {
+            preparedStatement.setLong(1, id);
+            final int numberChangedLines = preparedStatement.executeUpdate();
+            if (numberChangedLines != 0) {
+                deleteAccount = true;
+            } else {
+                throw new AccountDaoException("could not change lines delete account");
+            }
+        } catch (SQLException e) {
+            LOG.error("sql error, could not delete account", e);
+        } catch (AccountDaoException e) {
+            LOG.error("could not delete account", e);
+        } catch (InterruptedException e) {
+            LOG.error("method takeConnection from ConnectionPool was interrupted", e);
+            Thread.currentThread().interrupt();
+        }
+        return deleteAccount;
     }
 
-
-
-    private Optional<Account> executeAccount(ResultSet resultSet){
+    private Optional<Account> executeAccount(ResultSet resultSet) {
         try {
             return Optional.of(new Account(resultSet.getLong(ID_COLUMN_NAME),
                     resultSet.getString(LOGIN_COLUMN_NAME), resultSet.getString(PASSWORD_COLUMN_NAME),
@@ -146,7 +188,7 @@ public class AccountDao extends AbstractDao<Account> implements BasicAccountDao{
         }
     }
 
-    private Optional<Account> executeAccountWithoutDetails(ResultSet resultSet){
+    private Optional<Account> executeAccountWithoutDetails(ResultSet resultSet) {
         try {
             return Optional.of(new Account(resultSet.getLong(ID_COLUMN_NAME),
                     resultSet.getString(LOGIN_COLUMN_NAME), resultSet.getString(PASSWORD_COLUMN_NAME),
@@ -160,6 +202,7 @@ public class AccountDao extends AbstractDao<Account> implements BasicAccountDao{
     public static AccountDao getInstance() {
         return Holder.INSTANCE;
     }
+
     private static class Holder {
         public static final AccountDao INSTANCE = new AccountDao(ConnectionPool.lockingPool());
     }

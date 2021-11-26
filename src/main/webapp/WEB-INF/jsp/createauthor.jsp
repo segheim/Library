@@ -5,7 +5,7 @@
     <title>CreateAuthor</title>
 </head>
 <body>
-<h3>Please enter dates for creating author:</h3>
+<h3>Please enter data for creating author:</h3>
 <form name = "create_author_form" method="post" action="/controller?command=create_author">
     <br/>First name:<br/>
     <input type="text" name="first_name" value=""/>

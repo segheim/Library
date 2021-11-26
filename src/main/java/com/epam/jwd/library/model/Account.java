@@ -18,8 +18,8 @@ public class Account implements Entity{
         this.details = details;
     }
 
-    public Account(String login, String password, AccountDetails details) {
-        this(null, login, password, Role.READER, details);
+    public Account(String login, String password) {
+        this(null, login, password, Role.READER, null);
     }
 
     public Account(Long id, String login, String password, AccountDetails details) {

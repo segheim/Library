@@ -20,11 +20,9 @@ public class BookService implements Service<Book>, BasicBookService<Book>{
     private static final Logger LOG = LogManager.getLogger(BookService.class);
 
     private final BookDao bookDao;
-    private final AuthorDao authorDao;
 
-    private BookService(BookDao bookDao, AuthorDao authorDao) {
+    private BookService(BookDao bookDao) {
         this.bookDao = bookDao;
-        this.authorDao = authorDao;
     }
 
     @Override
@@ -42,8 +40,9 @@ public class BookService implements Service<Book>, BasicBookService<Book>{
             final Long idAuthor = authorDao.create(author)
                     .map(Author::getId)
                     .orElseThrow(() -> new AuthorDaoException("could not create author"));
-            bookDao.createBookInAuthorToBook(idBook, idAuthor);
-            createBookWithAuthor = true;
+            if (bookDao.createBookInAuthorToBook(idBook, idAuthor)) {
+                createBookWithAuthor = true;
+            }
             connection.setAutoCommit(true);
         } catch (InterruptedException e) {
             LOG.error("method takeConnection from ConnectionPool was interrupted", e);
@@ -60,13 +59,11 @@ public class BookService implements Service<Book>, BasicBookService<Book>{
 
     @Override
     public Optional<Book> findById(Long id) {
-        final Optional<Book> readBook = bookDao.readWithAuthors(id);
-        return readBook;
+        return bookDao.readWithAuthors(id);
     }
 
     public List<Book> findAll() {
-        final List<Book> books = bookDao.readAllWithAuthors();
-        return books;
+        return bookDao.readAllWithAuthors();
     }
 
     @Override
@@ -85,6 +82,6 @@ public class BookService implements Service<Book>, BasicBookService<Book>{
     }
 
     private static class Holder {
-        public static final BookService INSTANCE = new BookService(BookDao.getInstance(), AuthorDao.getInstance());
+        public static final BookService INSTANCE = new BookService(BookDao.getInstance());
     }
 }

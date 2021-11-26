@@ -2,7 +2,7 @@
 <%@ page contentType="text/html;charset=UTF-8" language="java" %>
 <html>
 <head>
-    <title>Title</title>
+    <title>Accounts</title>
 </head>
 <body>
 <h3>Accounts</h3>
@@ -13,6 +13,7 @@
         <th>Role</th>
         <th>First name</th>
         <th>Last name</th>
+        <th>Action</th>
     </tr>
     <c:forEach var="account" items="${requestScope.accounts}">
         <tr>
@@ -21,6 +22,12 @@
         <td>${account.role}</td>
         <td>${account.details.firstName}</td>
         <td>${account.details.lastName}</td>
+        <td>
+            <p>
+                <a href="/controller?command=change_role&id=${account.id}">change role</a>
+                <a href="/controller?command=delete_account&id=${account.id}">delete</a>
+            </p>
+        </td>
         </tr>
     </c:forEach>
 </table>

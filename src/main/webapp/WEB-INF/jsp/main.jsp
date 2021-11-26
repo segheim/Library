@@ -39,7 +39,7 @@
             <a href="/controller?command=login_page">login</a>
         </p>
         <p>
-            <a href="/controller?command=registration">login</a>
+            <a href="/controller?command=registration_page">registration</a>
         </p>
     </c:otherwise>
 </c:choose>

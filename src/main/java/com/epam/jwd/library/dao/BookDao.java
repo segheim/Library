@@ -99,7 +99,7 @@ public class BookDao extends AbstractDao<Book> implements BasicBookDao{
             if (numberChangedLines > 0) {
                 createBookInAuthorToBook = true;
             } else {
-                throw new BookDaoException("could not changed lines for create in table author_to_book");
+                throw new BookDaoException("could not change lines for create in table author_to_book");
             }
         } catch (SQLException e) {
             LOG.error("sql error, could not create book in author to book", e);
@@ -176,7 +176,7 @@ public class BookDao extends AbstractDao<Book> implements BasicBookDao{
                 updatedBook = read(book.getId());
                 return updatedBook;
             } else {
-                throw new BookDaoException("could not changed lines for update book");
+                throw new BookDaoException("could not change lines for update book");
             }
         } catch (SQLException e) {
             LOG.error("sql error, could not update book", e);

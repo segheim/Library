@@ -1,15 +1,27 @@
 package com.epam.jwd.library.service;
 
 import at.favre.lib.crypto.bcrypt.BCrypt;
+import com.epam.jwd.library.connection.ConnectionPool;
 import com.epam.jwd.library.dao.AccountDao;
+import com.epam.jwd.library.dao.AccountDetailsDao;
+import com.epam.jwd.library.exception.AccountDaoException;
 import com.epam.jwd.library.model.Account;
+import com.epam.jwd.library.model.AccountDetails;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
+import java.sql.Connection;
+import java.sql.SQLException;
 import java.util.List;
 import java.util.Optional;
 
-public class AccountService implements BasicAccountService, Service<Account>{
+public class AccountService implements BasicAccountService<Account>, Service<Account> {
+
+    private static final Logger LOG = LogManager.getLogger(AccountService.class);
 
     private static final char[] PASSWORD_FOR_FUN = "bcrypt".toCharArray();
+    private static final int MIN_COST_FOR_HASHING = 4;
+
     private final AccountDao accountDao;
 
     public AccountService(AccountDao accountDao) {
@@ -36,11 +48,30 @@ public class AccountService implements BasicAccountService, Service<Account>{
     }
 
     @Override
-    public Optional<Account> create(Account account) {
-        final String rawPassword = account.getPassword();
-        final String hashedPassword = BCrypt.withDefaults().hashToString(4, rawPassword.toCharArray());
-        final Account hashedAccount = account.withPassword(hashedPassword);
-        return accountDao.create(hashedAccount);
+    public boolean create(String login, String password, String firstName, String lastName) {
+        boolean createAccountWithDetails = false;
+        final String hashedPassword = BCrypt.withDefaults().hashToString(MIN_COST_FOR_HASHING, password.toCharArray());
+        final Account account = new Account(login, hashedPassword);
+        try (Connection connection = ConnectionPool.lockingPool().takeConnection()) {
+            connection.setAutoCommit(false);
+            AccountDao accountDao = AccountDao.getInstance();
+            AccountDetailsDao accountDetailsDao = AccountDetailsDao.getInstance();
+            final Long idAccount = accountDao.create(account)
+                    .map(Account::getId)
+                    .orElseThrow(() -> new AccountDaoException("could not create account"));
+            if (accountDetailsDao.create(new AccountDetails(idAccount, firstName, lastName)).isPresent()) {
+                createAccountWithDetails = true;
+            }
+            connection.setAutoCommit(true);
+        } catch (SQLException e) {
+            LOG.error("sql error, database access error occurs", e);
+        } catch (InterruptedException e) {
+            LOG.error("method takeConnection from ConnectionPool was interrupted", e);
+            Thread.currentThread().interrupt();
+        } catch (AccountDaoException e) {
+            LOG.error("could not create new account", e);
+        }
+        return createAccountWithDetails;
     }
 
     @Override
@@ -53,9 +84,9 @@ public class AccountService implements BasicAccountService, Service<Account>{
         return accountDao.readAll();
     }
 
-        @Override
+    @Override
     public boolean delete(Long id) {
-        return false;
+        return accountDao.delete(id);
     }
 
     public static AccountService getInstance() {

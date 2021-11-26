@@ -78,9 +78,9 @@ public class AuthorDao extends AbstractDao<Author> implements BasicAuthorDao {
             }
             return author;
         } catch (SQLException e) {
-            LOG.error("sql error, could not found a author", e);
+            LOG.error("sql error, could not find a author", e);
         } catch (AuthorDaoException e) {
-            LOG.error("could not found a author", e);
+            LOG.error("could not find a author", e);
         } catch (InterruptedException e) {
             LOG.error("method takeConnection from ConnectionPool was interrupted", e);
             Thread.currentThread().interrupt();
@@ -148,9 +148,8 @@ public class AuthorDao extends AbstractDao<Author> implements BasicAuthorDao {
             final int numberChangedLines = preparedStatement.executeUpdate();
             if (numberChangedLines != 0) {
                 deleteAuthor = true;
-                LOG.info("deleted author with id: {}", idAuthor);
             } else
-                throw new BookDaoException("could not delete author");
+                throw new BookDaoException("could not change lines delete author");
         } catch (SQLException e) {
             LOG.error("sql error, could not delete author", e);
         } catch (BookDaoException e) {
