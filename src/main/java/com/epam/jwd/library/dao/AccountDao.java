@@ -79,7 +79,6 @@ public class AccountDao extends AbstractDao<Account> implements BasicAccountDao 
             preparedStatement.setString(2, account.getPassword());
             preparedStatement.setInt(3, account.getRole().ordinal());
             final int numberChangedLines = preparedStatement.executeUpdate();
-            LOG.info("number = {}", numberChangedLines);
             if (numberChangedLines != 0) {
                 final ResultSet generatedKeys = preparedStatement.getGeneratedKeys();
                 if (generatedKeys.next()) {

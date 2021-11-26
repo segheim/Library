@@ -32,5 +32,4 @@ public class ShowCatalogPageCommand implements Command{
     private static class Holder {
         public static final ShowCatalogPageCommand INSTANCE = new ShowCatalogPageCommand(BookService.getInstance());
     }
-
 }
