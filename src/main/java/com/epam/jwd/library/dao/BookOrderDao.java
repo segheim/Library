@@ -22,32 +22,33 @@ public class BookOrderDao extends AbstractDao<BookOrder>{
 
     @Override
     public Optional<BookOrder> create(BookOrder order) {
-        LOG.trace("start create book order");
-        Optional<BookOrder> createdOrder = Optional.empty();
-        try (final Connection connection = pool.takeConnection();
-             final PreparedStatement preparedStatement = connection.prepareStatement(, Statement.RETURN_GENERATED_KEYS)) {
-            preparedStatement.setString(1, );
-            preparedStatement.setString(2, );
-            preparedStatement.setInt(3, );
-            final int numberChangedLines = preparedStatement.executeUpdate();
-            if (numberChangedLines != 0) {
-                final ResultSet generatedKeys = preparedStatement.getGeneratedKeys();
-                if (generatedKeys.next()) {
-                    long key = generatedKeys.getLong(1);
-                    createdOrder = read(key);
-                    return createdOrder;
-                }
-            } else
-                throw new BookOrderDaoException("could not change lines for create book order");
-        } catch (SQLException e) {
-            LOG.error("sql error, could not create book order", e);
-        } catch (BookOrderDaoException e) {
-            LOG.error("could not create new book order", e);
-        } catch (InterruptedException e) {
-            LOG.error("method takeConnection from ConnectionPool was interrupted", e);
-            Thread.currentThread().interrupt();
-        }
-        return createdOrder;
+//        LOG.trace("start create book order");
+//        Optional<BookOrder> createdOrder = Optional.empty();
+//        try (final Connection connection = pool.takeConnection();
+//             final PreparedStatement preparedStatement = connection.prepareStatement(, Statement.RETURN_GENERATED_KEYS)) {
+//            preparedStatement.setString(1, );
+//            preparedStatement.setString(2, );
+//            preparedStatement.setInt(3, );
+//            final int numberChangedLines = preparedStatement.executeUpdate();
+//            if (numberChangedLines != 0) {
+//                final ResultSet generatedKeys = preparedStatement.getGeneratedKeys();
+//                if (generatedKeys.next()) {
+//                    long key = generatedKeys.getLong(1);
+//                    createdOrder = read(key);
+//                    return createdOrder;
+//                }
+//            } else
+//                throw new BookOrderDaoException("could not change lines for create book order");
+//        } catch (SQLException e) {
+//            LOG.error("sql error, could not create book order", e);
+//        } catch (BookOrderDaoException e) {
+//            LOG.error("could not create new book order", e);
+//        } catch (InterruptedException e) {
+//            LOG.error("method takeConnection from ConnectionPool was interrupted", e);
+//            Thread.currentThread().interrupt();
+//        }
+//        return createdOrder;
+        return Optional.empty();
     }
 
     @Override
@@ -68,5 +69,13 @@ public class BookOrderDao extends AbstractDao<BookOrder>{
     @Override
     public boolean delete(Long id) {
         return false;
+    }
+
+    public static BookOrderDao getInstance() {
+        return Holder.INSTANCE;
+    }
+
+    private static class Holder {
+        public static final BookOrderDao INSTANCE = new BookOrderDao(ConnectionPool.lockingPool());
     }
 }

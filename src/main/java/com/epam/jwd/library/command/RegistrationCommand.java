@@ -24,7 +24,7 @@ public class RegistrationCommand implements Command{
         if (accountService.create(login, password, firstName, lastName)) {
             final List<Account> accounts = accountService.findAll();
             request.addAttributeToJsp("accounts", accounts);
-            return requestFactory.createForwardResponse("/WEB-INF/jsp/accounts.jsp");
+            return requestFactory.createRedirectResponse("controller?command=account_page");
         } else {
             request.addAttributeToJsp("errorRegistrationMessage", "Incorrect dates, please try again");
             return requestFactory.createForwardResponse("/WEB-INF/jsp/registration.jsp");

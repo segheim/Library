@@ -248,7 +248,7 @@ public class BookDao extends AbstractDao<Book> implements BasicBookDao{
             while (resultSet.next()) {
                 final Book book = executeBookWithAuthors(resultSet).orElseThrow(()
                         -> new BookDaoException("could not extract book"));
-                if (idLastBook == book.getId() && (book.getAuthors().size() > 1)) {
+                if (idLastBook == book.getId() && !books.isEmpty()) {
                     idLastBook = book.getId();
                     final Book lastBook = books.getLast();
                     books.removeLast();

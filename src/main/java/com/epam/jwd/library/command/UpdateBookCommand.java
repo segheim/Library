@@ -27,7 +27,7 @@ public class UpdateBookCommand implements Command {
         if (updateBook.isPresent()) {
             final List<Book> books = bookService.findAll();
             request.addAttributeToJsp("books", books);
-            return requestFactory.createForwardResponse("/WEB-INF/jsp/catalog.jsp");
+            return requestFactory.createRedirectResponse("controller?command=catalog_page");
         }else {
             request.addAttributeToJsp("errorPassMassage", "Could not update book");
             return requestFactory.createForwardResponse("/WEB-INF/jsp/error.jsp");

@@ -46,6 +46,8 @@ public class RoleFilter implements Filter {
         commandsForReader.add(ShowErrorPageCommand.getInstance());
         commandsForReader.add(ShowAuthorPageCommand.getInstance());
         commandsForReader.add(ShowCatalogPageCommand.getInstance());
+        commandsForReader.add(ShowBookPageCommand.getInstance());
+        commandsForReader.add(ShowBookOrderPageCommand.getInstance());
         commandsForReader.add(LogoutCommand.getInstance());
 
         Set<Command> commandsForGuest = new HashSet<>();

@@ -26,8 +26,9 @@ public class AccountDao extends AbstractDao<Account> implements BasicAccountDao 
             "join account_details ad on l_account.a_id = ad.account_id";
 
     private static final String SELECT_BY_LOGIN = "select a_id as id, a_login as login, a_password as password, " +
-            "a_role.role_name as role_name from l_account join a_role  on a_role.role_id = l_account.a_role_id " +
-            "where a_login=?";
+            "a_role.role_name as role_name, ad_first_name as ad_f_name, ad_last_name as ad_l_name " +
+            "from l_account join a_role  on a_role.role_id = l_account.a_role_id " +
+            "join account_details ad on l_account.a_id = ad.account_id where a_login=?";
 
     private static final String SELECT_ACCOUNT_BY_ID = "select a_id as id, a_login as login, a_password as password, " +
             "ar.role_name as role_name from l_account join a_role ar on l_account.a_role_id = ar.role_id where a_id=?";
@@ -43,30 +44,6 @@ public class AccountDao extends AbstractDao<Account> implements BasicAccountDao 
 
     protected AccountDao(ConnectionPool pool) {
         super(pool, LOG);
-    }
-
-    public Optional<Account> readByLogin(String login) {
-        LOG.trace("start read account by login");
-        Optional<Account> account = Optional.empty();
-        try (final Connection connection = pool.takeConnection();
-             final PreparedStatement preparedStatement = connection.prepareStatement(SELECT_BY_LOGIN)) {
-            preparedStatement.setString(1, login);
-            final ResultSet resultSet = preparedStatement.executeQuery();
-            if (resultSet.next()) {
-                final Account executedAccount = executeAccountWithoutDetails(resultSet).orElseThrow(()
-                        -> new AccountDaoException("could not extract account"));
-                account = Optional.of(executedAccount);
-                return account;
-            }
-        } catch (SQLException e) {
-            LOG.error("sql error, could not found a account", e);
-        } catch (AccountDaoException e) {
-            LOG.error("could not found a account", e);
-        } catch (InterruptedException e) {
-            LOG.error("method takeConnection from ConnectionPool was interrupted", e);
-            Thread.currentThread().interrupt();
-        }
-        return account;
     }
 
     @Override
@@ -172,6 +149,30 @@ public class AccountDao extends AbstractDao<Account> implements BasicAccountDao 
             Thread.currentThread().interrupt();
         }
         return deleteAccount;
+    }
+
+    public Optional<Account> readByLogin(String login) {
+        LOG.trace("start read account by login");
+        Optional<Account> account = Optional.empty();
+        try (final Connection connection = pool.takeConnection();
+             final PreparedStatement preparedStatement = connection.prepareStatement(SELECT_BY_LOGIN)) {
+            preparedStatement.setString(1, login);
+            final ResultSet resultSet = preparedStatement.executeQuery();
+            if (resultSet.next()) {
+                final Account executedAccount = executeAccount(resultSet).orElseThrow(()
+                        -> new AccountDaoException("could not extract account"));
+                account = Optional.of(executedAccount);
+                return account;
+            }
+        } catch (SQLException e) {
+            LOG.error("sql error, could not found a account", e);
+        } catch (AccountDaoException e) {
+            LOG.error("could not found a account", e);
+        } catch (InterruptedException e) {
+            LOG.error("method takeConnection from ConnectionPool was interrupted", e);
+            Thread.currentThread().interrupt();
+        }
+        return account;
     }
 
     private Optional<Account> executeAccount(ResultSet resultSet) {

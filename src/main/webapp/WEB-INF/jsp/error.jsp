@@ -4,7 +4,7 @@
     <title>Error</title>
 </head>
 <body>
-<h3>Oops! Something unpleasant happened...</h3>
+<h3>Oops! Something unpleasant happened... &#9785</h3>
 <h1>${errorPassMassage}</h1>
 </body>
 </html>

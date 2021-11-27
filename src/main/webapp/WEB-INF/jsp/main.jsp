@@ -10,7 +10,7 @@
 <i>Сегодня: <%= new Date() %></i>
 </b>
 <c:if test="${not empty sessionScope.account}">
-    <h1> Hello, dear ${sessionScope.account.login}!</h1>
+    <h1> Hello, dear ${sessionScope.account.details.firstName}!</h1>
 </c:if>
 <p>
     <a href="/controller?command=author_page">authors</a>

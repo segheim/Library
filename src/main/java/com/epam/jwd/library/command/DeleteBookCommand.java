@@ -8,7 +8,7 @@ import java.util.List;
 
 public class DeleteBookCommand implements Command{
 
-    private static final String PATH_CATALOG_JSP = "/WEB-INF/jsp/catalog.jsp";
+    private static final String URL_CATALOG_PAGE = "controller?command=catalog_page";
     private static final String ID_PARAMETER_NAME = "id";
     private static final String REQUEST_ATTRIBUTE_NAME = "books";
     private final BookService bookService;
@@ -24,7 +24,7 @@ public class DeleteBookCommand implements Command{
         if (bookService.delete(id)) {
             final List<Book> books = bookService.findAll();
             request.addAttributeToJsp(REQUEST_ATTRIBUTE_NAME, books);
-            return requestFactory.createForwardResponse(PATH_CATALOG_JSP);
+            return requestFactory.createForwardResponse(URL_CATALOG_PAGE);
         } else {
             request.addAttributeToJsp("errorPassMassage", "Could not delete book");
             return requestFactory.createForwardResponse("/WEB-INF/jsp/error.jsp");

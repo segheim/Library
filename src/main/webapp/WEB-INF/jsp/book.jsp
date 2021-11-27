@@ -23,5 +23,8 @@
 <p>
     <a href="/controller?command=update_book_page&id=${book.id}">Update book</a>
 </p>
+<p>
+    <a href="/controller?command=book_order_page&id=${book.id}">Add to order</a>
+</p>
 </body>
 </html>

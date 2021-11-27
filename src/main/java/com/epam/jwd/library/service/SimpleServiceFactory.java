@@ -21,9 +21,9 @@ public class SimpleServiceFactory implements ServiceFactory{
         Service service;
 
         switch (serviceType) {
-            case ACCOUNT_SERVICE:
-                service = UserService.getInstance();
-                break;
+//            case ACCOUNT_SERVICE:
+//                service = UserService.getInstance();
+//                break;
             case BOOK_SERVICE:
                 service = BookService.getInstance();
                 break;

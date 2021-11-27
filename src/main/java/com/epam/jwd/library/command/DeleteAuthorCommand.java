@@ -21,7 +21,7 @@ public class DeleteAuthorCommand implements Command{
         if (authorService.delete(idAuthor)) {
             final List<Author> authors = authorService.findAll();
             request.addAttributeToJsp("authors", authors);
-            return requestFactory.createForwardResponse("/WEB-INF/jsp/authors.jsp");
+            return requestFactory.createRedirectResponse("controller?command=author_page");
         } else {
             request.addAttributeToJsp("errorPassMassage", "Could not delete author");
             return requestFactory.createForwardResponse("/WEB-INF/jsp/error.jsp");

@@ -18,8 +18,8 @@
     <br/>Author last name:<br/>
     <input type="text" name="author_last_name" value=""/>
     <br/>
-    <c:if test="${not empty requestScope.errorLoginPassMessage}">
-        <b style="color: red">${requestScope.errorLoginPassMessage}</b>
+    <c:if test="${not empty requestScope.errorCreateBookPassMessage}">
+        <b style="color: red">${requestScope.errorCreateBookPassMessage}</b>
         <br>
     </c:if>
     <input type="submit" value="create"/>

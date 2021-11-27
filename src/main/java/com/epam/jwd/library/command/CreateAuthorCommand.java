@@ -24,7 +24,7 @@ public class CreateAuthorCommand implements Command{
         if (author.isPresent()) {
             final List<Author> authors = authorService.findAll();
             request.addAttributeToJsp("authors", authors);
-            return requestFactory.createForwardResponse("/WEB-INF/jsp/authors.jsp");
+            return requestFactory.createRedirectResponse("controller?command=author_page");
         } else {
             request.addAttributeToJsp("errorCreateAuthorMessage", "Incorrect dates, please try again");
             return requestFactory.createForwardResponse("/WEB-INF/jsp/createauthor.jsp");

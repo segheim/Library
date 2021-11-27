@@ -25,7 +25,7 @@ public class UpdateAuthorCommand implements Command {
         if (updatedAuthor.isPresent()) {
             final List<Author> authors = authorService.findAll();
             request.addAttributeToJsp("authors", authors);
-            return requestFactory.createForwardResponse("/WEB-INF/jsp/authors.jsp");
+            return requestFactory.createRedirectResponse("controller?command=author_page");
         } else {
             request.addAttributeToJsp("errorPassMassage", "Could not update author");
             return requestFactory.createForwardResponse("/WEB-INF/jsp/error.jsp");
