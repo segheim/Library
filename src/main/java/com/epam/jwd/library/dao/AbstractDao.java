@@ -1,7 +1,6 @@
 package com.epam.jwd.library.dao;
 
 import com.epam.jwd.library.connection.ConnectionPool;
-import com.epam.jwd.library.model.Book;
 import com.epam.jwd.library.model.Entity;
 import org.apache.logging.log4j.Logger;
 

@@ -76,7 +76,6 @@ public class AuthorDao extends AbstractDao<Author> implements BasicAuthorDao {
                         -> new AuthorDaoException("could not extract author"));
                 author = Optional.of(executedAuthor);
             }
-            return author;
         } catch (SQLException e) {
             LOG.error("sql error, could not find a author", e);
         } catch (AuthorDaoException e) {

@@ -6,6 +6,8 @@ public interface CommandRequest {
 
     String getParameter(String name);
 
+    String[] getParameterValues(String name);
+
     void addAttributeToJsp(String name, Object attribute);
 
     void createSession();

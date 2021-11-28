@@ -1,26 +1,22 @@
 package com.epam.jwd.library.command;
 
 import com.epam.jwd.library.controller.RequestFactory;
-import com.epam.jwd.library.model.Book;
-import com.epam.jwd.library.service.BookService;
-
-import java.util.Optional;
+import com.epam.jwd.library.service.BookOrderService;
 
 public class ShowBookOrderPageCommand implements Command{
 
-    private final BookService bookService;
+    private final BookOrderService bookOrderService;
     private final RequestFactory requestFactory = RequestFactory.getInstance();
 
-    public ShowBookOrderPageCommand(BookService bookService) {
-        this.bookService = bookService;
+    public ShowBookOrderPageCommand(BookOrderService bookOrderService) {
+        this.bookOrderService = bookOrderService;
     }
 
     @Override
     public CommandResponse execute(CommandRequest request) {
-        final Long idBook = Long.valueOf(request.getParameter("id"));
-        final Optional<Book> book = bookService.findById(idBook);
-        request.addAttributeToJsp("book", book.get());
-        return requestFactory.createForwardResponse("/WEB-INF/jsp/bookorder.jsp");
+
+//        bookOrderService.findById();
+        return null;
     }
 
     public static ShowBookOrderPageCommand getInstance() {
@@ -28,6 +24,6 @@ public class ShowBookOrderPageCommand implements Command{
     }
 
     private static class Holder {
-        public static final ShowBookOrderPageCommand INSTANCE = new ShowBookOrderPageCommand(BookService.getInstance());
+        public static final ShowBookOrderPageCommand INSTANCE = new ShowBookOrderPageCommand(BookOrderService.getInstance());
     }
 }

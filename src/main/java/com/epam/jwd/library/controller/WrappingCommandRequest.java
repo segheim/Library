@@ -25,6 +25,12 @@ public class WrappingCommandRequest implements CommandRequest {
     }
 
     @Override
+    public String[] getParameterValues(String name) {
+        final String[] parameters = httpServletRequest.getParameterValues(name);
+        return parameters;
+    }
+
+    @Override
     public void createSession() {
         httpServletRequest.getSession();
     }

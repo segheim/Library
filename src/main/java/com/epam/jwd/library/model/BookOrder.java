@@ -28,6 +28,11 @@ public class BookOrder implements Entity{
         this.status = status;
     }
 
+    private BookOrder(AccountDetails details, Book book, OrderType type, Date dateCreate,
+                      Date dateIssue, Date dateReturn, OrderStatus status) {
+        this(null, details, book, type, dateCreate, dateIssue, dateReturn, status);
+    }
+
     @Override
     public Long getId() {
         return id;
@@ -157,7 +162,10 @@ public class BookOrder implements Entity{
             return new BookOrder(id, details, book, type,
                     dateCreate, dateIssue, dateReturn, status);
         }
+
+        public BookOrder createWithoutId() {
+            return new BookOrder(details, book, type,
+                    dateCreate, dateIssue, dateReturn, status);
+        }
     }
-
-
 }

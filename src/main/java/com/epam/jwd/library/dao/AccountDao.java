@@ -21,12 +21,12 @@ public class AccountDao extends AbstractDao<Account> implements BasicAccountDao 
     private static final String INSERT_NEW_ACCOUNT = "insert into l_account (a_login, a_password, a_role_id) values (?,?,?)";
 
     private static final String SELECT_ALL_ACCOUNTS = "select a_id as id, a_login as login, a_password as password, " +
-            "a_role.role_name as role_name, ad.ad_first_name as ad_f_name, ad.ad_last_name as ad_l_name " +
+            "a_role.role_name as role_name, ad.account_id as account_id, ad.ad_first_name as ad_f_name, ad.ad_last_name as ad_l_name " +
             "from l_account join a_role  on a_role.role_id = l_account.a_role_id " +
             "join account_details ad on l_account.a_id = ad.account_id";
 
     private static final String SELECT_BY_LOGIN = "select a_id as id, a_login as login, a_password as password, " +
-            "a_role.role_name as role_name, ad_first_name as ad_f_name, ad_last_name as ad_l_name " +
+            "a_role.role_name as role_name, ad.account_id as account_id, ad.ad_first_name as ad_f_name, ad.ad_last_name as ad_l_name " +
             "from l_account join a_role  on a_role.role_id = l_account.a_role_id " +
             "join account_details ad on l_account.a_id = ad.account_id where a_login=?";
 
@@ -41,6 +41,7 @@ public class AccountDao extends AbstractDao<Account> implements BasicAccountDao 
     private static final String ROLE_NAME_COLUMN_NAME = "role_name";
     private static final String ACCOUNT_DETAILS_FIRST_NAME_COLUMN_NAME = "ad_f_name";
     private static final String ACCOUNT_DETAILS_LAST_NAME_COLUMN_NAME = "ad_l_name";
+    private static final String ACCOUNT_ID_COLUMN_NAME = "account_id";
 
     protected AccountDao(ConnectionPool pool) {
         super(pool, LOG);
@@ -180,7 +181,7 @@ public class AccountDao extends AbstractDao<Account> implements BasicAccountDao 
             return Optional.of(new Account(resultSet.getLong(ID_COLUMN_NAME),
                     resultSet.getString(LOGIN_COLUMN_NAME), resultSet.getString(PASSWORD_COLUMN_NAME),
                     Role.valueOf(resultSet.getString(ROLE_NAME_COLUMN_NAME).toUpperCase()),
-                    new AccountDetails(resultSet.getString(ACCOUNT_DETAILS_FIRST_NAME_COLUMN_NAME),
+                    new AccountDetails(resultSet.getLong(ACCOUNT_ID_COLUMN_NAME), resultSet.getString(ACCOUNT_DETAILS_FIRST_NAME_COLUMN_NAME),
                             resultSet.getString(ACCOUNT_DETAILS_LAST_NAME_COLUMN_NAME))));
         } catch (SQLException e) {
             LOG.error("could not extract account from executeBook", e);

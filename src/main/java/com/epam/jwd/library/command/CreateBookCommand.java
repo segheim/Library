@@ -16,7 +16,7 @@ public class CreateBookCommand implements Command{
     private static final String AUTHOR_LAST_NAME_PARAMETER_NAME = "author_last_name";
     private static final String REQUEST_ATTRIBUTE_NAME = "books";
     private static final String URL_CATALOG_PAGE = "controller?command=catalog_page";
-    private static final String PATH_CREATE_BOOK_JSP = "/WEB-INF/jsp/create_book_page.jsp";
+    private static final String PATH_CREATE_BOOK_JSP = "/WEB-INF/jsp/createbook.jsp";
     private static final String ERROR_CREATE_BOOK_MASSAGE_NAME = "errorCreateBookMassage";
     private static final String ERROR_CREATE_BOOK_MASSAGE_ATTRIBUTE = "Incorrect dates, please try again";
 

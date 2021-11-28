@@ -31,6 +31,9 @@ public class Book implements Entity{
     public Book(Long id, String title, Date datePublished, Integer amountOfLeft) {
         this(id, title, datePublished, amountOfLeft, null);
     }
+    public Book(Long id, String title, Date datePublished) {
+        this(id, title, datePublished, null, null);
+    }
 
     public Long getId() {
         return id;

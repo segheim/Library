@@ -21,10 +21,10 @@
     Quantity of items: ${requestScope.book.amountOfLeft}
 </p>
 <p>
-    <a href="/controller?command=update_book_page&id=${book.id}">Update book</a>
+    <a href="/controller?command=update_book_page&id=${requestScope.book.id}">Update book</a>
 </p>
 <p>
-    <a href="/controller?command=book_order_page&id=${book.id}">Add to order</a>
+    <a href="/controller?command=create_book_order_page&id=${requestScope.book.id}">Add to order</a>
 </p>
 </body>
 </html>

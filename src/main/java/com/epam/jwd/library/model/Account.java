@@ -60,7 +60,9 @@ public class Account implements Entity{
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         Account account = (Account) o;
-        return Objects.equals(id, account.id) && Objects.equals(login, account.login) && Objects.equals(password, account.password) && role == account.role && Objects.equals(details, account.details);
+        return Objects.equals(id, account.id) && Objects.equals(login, account.login)
+                && Objects.equals(password, account.password) && role == account.role
+                && Objects.equals(details, account.details);
     }
 
     @Override

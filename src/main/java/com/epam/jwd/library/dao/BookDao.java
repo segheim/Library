@@ -15,33 +15,33 @@ public class BookDao extends AbstractDao<Book> implements BasicBookDao{
 
     private static final Logger LOG = LogManager.getLogger(BookDao.class);
 
-    private static final String INSERT_BOOK = "insert into book (title, date_published, amount_of_left) values (?,?,?)";
+    private static final String INSERT_BOOK = "insert into book (b_title, b_date_published, b_amount_of_left) values (?,?,?)";
 
     private static final String INSERT_BOOK_IN_AUTHOR_TO_BOOK = "insert into author_to_book (book_id, author_id) values (?,?)";
 
-    private static final String SELECT_BY_ID = "select id as id_book, title as book_title, date_published as book_date_published, amount_of_left as book_amount_of_left from book where id = ?";
+    private static final String SELECT_BY_ID = "select b_id as id_book, b_title as book_title, b_date_published as book_date_published, b_amount_of_left as book_amount_of_left from book where id = ?";
 
-    private static final String SELECT_ALL_BOOKS = "select id as id_book, title as book_title, date_published as book_date_published, amount_of_left as book_amount_of_left from book";
+    private static final String SELECT_ALL_BOOKS = "select b_id as id_book, b_title as book_title, b_date_published as book_date_published, b_amount_of_left as book_amount_of_left from book";
 
-    private static final String UPDATE_BOOK = "update book set title=?, date_published=?, amount_of_left=? where id=?";
+    private static final String UPDATE_BOOK = "update book set b_title=?, b_date_published=?, b_amount_of_left=? where b_id=?";
 
-    private static final String DELETE_BOOK_BY_ID = "delete from book where id=?";
+    private static final String DELETE_BOOK_BY_ID = "delete from book where b_id=?";
 
-    private static final String SELECT_ALL_BOOKS_WITH_AUTHORS = "select b.id as id_book, b.title as book_title, " +
-            "b.date_published as book_date_published, b.amount_of_left as book_amount_of_left, " +
+    private static final String SELECT_ALL_BOOKS_WITH_AUTHORS = "select b.b_id as id_book, b.b_title as book_title, " +
+            "b.b_date_published as book_date_published, b.b_amount_of_left as book_amount_of_left, " +
             "a.id as id_author, a.first_name as author_f_name, a.last_name as author_l_name " +
-            "from book b join author_to_book atb on b.id = atb.book_id join author a " +
-            "on atb.author_id = a.id order by b.id";
+            "from book b join author_to_book atb on b.b_id = atb.book_id join author a " +
+            "on atb.author_id = a.id order by b.b_id";
 
-    private static final String SELECT_BOOK_BY_ID_WITH_AUTHORS = "select book.id as id_book, author.id as id_author, author.first_name as author_f_name, author.last_name as author_l_name, book.title as book_title," +
-            " book.date_published as book_date_published, book.amount_of_left as book_amount_of_left from author join author_to_book atb" +
-            " on author.id = atb.author_id join book on atb.book_id = book.id where book.id = ?";
+    private static final String SELECT_BOOK_BY_ID_WITH_AUTHORS = "select book.b_id as id_book, author.id as id_author, author.first_name as author_f_name, author.last_name as author_l_name, book.b_title as book_title," +
+            " book.b_date_published as book_date_published, book.b_amount_of_left as book_amount_of_left from author join author_to_book atb" +
+            " on author.id = atb.author_id join book on atb.book_id = book.b_id where book.b_id = ?";
 
-    private static final String SELECT_BOOK_BY_ID_AUTHOR = "select author.first_name, author.last_name,book.title," +
-            " book.date_published, book.amount_of_left from author join author_to_book atb " +
-            "on author.id = atb.author_id join book on atb.book_id = book.id where author.id = ?";
+    private static final String SELECT_BOOK_BY_ID_AUTHOR = "select author.first_name as author_f_name, author.last_name as author_l_name, book.b_title as book_title," +
+            " book.b_date_published as book_date_published, book.b_amount_of_left as book_amount_of_left from author join author_to_book atb " +
+            "on author.id = atb.author_id join book on atb.book_id = book.b_id where author.id = ?";
 
-    private static final String SELECT_BY_TITLE = "select id, title from book where title = ?";
+    private static final String SELECT_BY_TITLE = "select b_id, b_title from book where b_title = ?";
 
     private static final String ID_BOOK_COLUMN_NAME = "id_book";
     private static final String BOOK_TITLE_COLUMN_NAME = "book_title";
