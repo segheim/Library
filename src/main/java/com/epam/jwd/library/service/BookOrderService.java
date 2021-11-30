@@ -55,6 +55,12 @@ public class BookOrderService implements Service<BookOrder>, BasicBookOrderServi
         return bookOrderDao.create(bookOrder);
     }
 
+    @Override
+    public List<BookOrder> findByIdAccount(Long id) {
+
+        return bookOrderDao.readByIdAccount(id);
+    }
+
     public static BookOrderService getInstance() {
         return Holder.INSTANCE;
     }

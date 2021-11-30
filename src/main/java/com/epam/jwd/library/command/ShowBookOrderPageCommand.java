@@ -1,7 +1,14 @@
 package com.epam.jwd.library.command;
 
 import com.epam.jwd.library.controller.RequestFactory;
+import com.epam.jwd.library.model.Account;
+import com.epam.jwd.library.model.BookOrder;
+import com.epam.jwd.library.model.Role;
 import com.epam.jwd.library.service.BookOrderService;
+
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Optional;
 
 public class ShowBookOrderPageCommand implements Command{
 
@@ -14,9 +21,17 @@ public class ShowBookOrderPageCommand implements Command{
 
     @Override
     public CommandResponse execute(CommandRequest request) {
-
-//        bookOrderService.findById();
-        return null;
+        final Optional<Object> accountSession = request.takeFromSession("account");
+        final Account account = (Account)accountSession.get();
+        final Role role = account.getRole();
+        List<BookOrder> bookOrders = new ArrayList<>();
+        if (Role.READER.equals(role)) {
+            bookOrders = bookOrderService.findByIdAccount(account.getId());
+        } else {
+            bookOrders = bookOrderService.findAll();
+        }
+        request.addAttributeToJsp("bookOrders", bookOrders);
+        return requestFactory.createForwardResponse("/WEB-INF/jsp/bookorder.jsp");
     }
 
     public static ShowBookOrderPageCommand getInstance() {

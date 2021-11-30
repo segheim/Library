@@ -49,7 +49,7 @@ public class CreateBookOrderCommand implements Command{
         if (bookOrderService.createBookOrder(account, book, orderType).isPresent()) {
             final List<BookOrder> bookOrders = bookOrderService.findAll();
             request.addAttributeToJsp("bookOrders", bookOrders);
-            return requestFactory.createForwardResponse("/WEB-INF/jsp/readerbookorder.jsp");
+            return requestFactory.createForwardResponse("/WEB-INF/jsp/bookorder.jsp");
         } else {
             request.addAttributeToJsp("errorCreateBookOrderPassMessage", "Please, check checkbox");
             return requestFactory.createForwardResponse("/WEB-INF/jsp/createbookorder.jsp");

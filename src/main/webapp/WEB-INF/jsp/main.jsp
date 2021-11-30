@@ -22,6 +22,9 @@
     <p>
         <a href="/controller?command=author_page">authors</a>
     </p>
+    <p>
+        <a href="/controller?command=book_order_page">orders</a>
+    </p>
 </c:if>
 <c:if test="${not empty sessionScope.account && sessionScope.account.role eq Role.ADMIN}">
     <p>

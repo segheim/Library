@@ -20,10 +20,6 @@ public class Book implements Entity{
         this.authors = authors;
     }
 
-//    public Book(String title, Date date_published, Integer amount_of_left) {
-//        this(null, title, date_published, amount_of_left);
-//    }
-
     public Book(String title, Date datePublished, Integer amountOfLeft) {
         this(null, title, datePublished, amountOfLeft);
     }
