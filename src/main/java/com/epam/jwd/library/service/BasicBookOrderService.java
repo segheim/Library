@@ -13,4 +13,12 @@ public interface BasicBookOrderService<T extends Entity> {
     Optional<T> createBookOrder(Account account, Book book, String orderType);
 
     List<T> findByIdAccount(Long id);
+
+    List<T> findAllUncompleted();
+
+    boolean isAccountWithOrderStatusIssue(Long id);
+
+    boolean changeStatusBookOrderOnIssued(Long id);
+
+    boolean changeStatusBookOrderOnEnded(Long id);
 }

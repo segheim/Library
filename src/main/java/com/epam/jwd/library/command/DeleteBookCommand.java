@@ -24,7 +24,7 @@ public class DeleteBookCommand implements Command{
         if (bookService.delete(id)) {
             final List<Book> books = bookService.findAll();
             request.addAttributeToJsp(REQUEST_ATTRIBUTE_NAME, books);
-            return requestFactory.createForwardResponse(URL_CATALOG_PAGE);
+            return requestFactory.createRedirectResponse(URL_CATALOG_PAGE);
         } else {
             request.addAttributeToJsp("errorPassMassage", "Could not delete book");
             return requestFactory.createForwardResponse("/WEB-INF/jsp/error.jsp");

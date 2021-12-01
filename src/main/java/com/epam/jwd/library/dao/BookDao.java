@@ -25,6 +25,8 @@ public class BookDao extends AbstractDao<Book> implements BasicBookDao{
 
     private static final String UPDATE_BOOK = "update book set b_title=?, b_date_published=?, b_amount_of_left=? where b_id=?";
 
+    private static final String DECREASE_BOOK_AMOUNT_OF_LEFT = "update book set b_amount_of_left=? where b_id=?";
+
     private static final String DELETE_BOOK_BY_ID = "delete from book where b_id=?";
 
     private static final String SELECT_ALL_BOOKS_WITH_AUTHORS = "select b.b_id as id_book, b.b_title as book_title, " +
@@ -40,6 +42,8 @@ public class BookDao extends AbstractDao<Book> implements BasicBookDao{
     private static final String SELECT_BOOK_BY_ID_AUTHOR = "select author.first_name as author_f_name, author.last_name as author_l_name, book.b_title as book_title," +
             " book.b_date_published as book_date_published, book.b_amount_of_left as book_amount_of_left from author join author_to_book atb " +
             "on author.id = atb.author_id join book on atb.book_id = book.b_id where author.id = ?";
+
+    private static final String SELECT_AMOUNT_OF_LEFT_BY_ID = "select b_amount_of_left from book where b_id=?";
 
     private static final String SELECT_BY_TITLE = "select b_id, b_title from book where b_title = ?";
 
@@ -329,6 +333,32 @@ public class BookDao extends AbstractDao<Book> implements BasicBookDao{
         }
         return Collections.emptyList();
     }
+
+    public boolean decreaseAmountOfLeft(Long idBook, Integer amountOfLeft) {
+        LOG.trace("start decrease amount of left");
+        boolean createBookInAuthorToBook = false;
+        try (final Connection connection = pool.takeConnection();
+             final PreparedStatement preparedStatement = connection.prepareStatement(DECREASE_BOOK_AMOUNT_OF_LEFT)) {
+            preparedStatement.setInt(1, amountOfLeft);
+            preparedStatement.setLong(2, idBook);
+            final int numberChangedLines = preparedStatement.executeUpdate();
+            if (numberChangedLines > 0) {
+                createBookInAuthorToBook = true;
+            } else {
+                throw new BookDaoException("could not change lines for create in table author_to_book");
+            }
+        } catch (SQLException e) {
+            LOG.error("sql error, could not create book in author to book", e);
+        } catch (InterruptedException e) {
+            LOG.error("method takeConnection from ConnectionPool was interrupted", e);
+            Thread.currentThread().interrupt();
+        } catch (BookDaoException e) {
+            LOG.error("could not create in author_to_book");
+        }
+        return createBookInAuthorToBook;
+    }
+
+
 
     public Optional<Book> readByTitle(String title) {
         Optional<Book> book = Optional.empty();

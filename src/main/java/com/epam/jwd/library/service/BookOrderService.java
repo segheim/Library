@@ -1,12 +1,20 @@
 package com.epam.jwd.library.service;
 
+import com.epam.jwd.library.connection.ConnectionPool;
+import com.epam.jwd.library.dao.AuthorDao;
+import com.epam.jwd.library.dao.BookDao;
 import com.epam.jwd.library.dao.BookOrderDao;
+import com.epam.jwd.library.exception.AuthorDaoException;
+import com.epam.jwd.library.exception.BookDaoException;
+import com.epam.jwd.library.exception.ServiceException;
 import com.epam.jwd.library.model.*;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import sun.util.resources.LocaleData;
 
+import java.sql.Connection;
 import java.sql.Date;
+import java.sql.SQLException;
 import java.time.LocalDate;
 import java.util.List;
 import java.util.Optional;
@@ -57,8 +65,81 @@ public class BookOrderService implements Service<BookOrder>, BasicBookOrderServi
 
     @Override
     public List<BookOrder> findByIdAccount(Long id) {
-
         return bookOrderDao.readByIdAccount(id);
+    }
+
+    @Override
+    public List<BookOrder> findAllUncompleted() {
+        return bookOrderDao.readAllUncompleted();
+    }
+
+    @Override
+    public boolean isAccountWithOrderStatusIssue(Long id) {
+        return bookOrderDao.readByAccountWithOrderStatusIssue(id).isPresent();
+    }
+
+    @Override
+    public boolean changeStatusBookOrderOnIssued(Long idBookOrder) {
+        boolean changedStatusBookOrder = false;
+        try (Connection connection = ConnectionPool.lockingPool().takeConnection()) {
+            connection.setAutoCommit(false);
+            BookOrderDao bookOrderDao = BookOrderDao.getInstance();
+            BookDao bookDao = BookDao.getInstance();
+            final boolean isChangedStatusOnIssue = bookOrderDao.updateStatusOnIssuedById(idBookOrder);
+            final LocalDate date = LocalDate.now();
+            Date sqlDateIssue = Date.valueOf(date);
+            final boolean isRegisteredDateIssue = bookOrderDao.registerDateOfIssueById(idBookOrder, sqlDateIssue);
+            final BookOrder bookOrder = bookOrderDao.read(idBookOrder).orElseThrow(() -> new ServiceException("could not get BookOrder"));
+            final Book book = bookOrder.getBook();
+            final Long id = book.getId();
+            final Integer amountOfLeft = book.getAmountOfLeft();
+            final boolean isDecreasedAmountOfLeftInBook = bookDao.decreaseAmountOfLeft(id,  amountOfLeft - 1);
+            if (!isChangedStatusOnIssue || !isRegisteredDateIssue || !isDecreasedAmountOfLeftInBook) {
+                throw new ServiceException("could not changed status, date issue, amount of left in book");
+            }
+            changedStatusBookOrder = true;
+            connection.setAutoCommit(true);
+        } catch (InterruptedException e) {
+            LOG.error("method takeConnection from ConnectionPool was interrupted", e);
+            Thread.currentThread().interrupt();
+        } catch (ServiceException e) {
+            LOG.error("could not change status book order on issue", e);
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return changedStatusBookOrder;
+    }
+
+    @Override
+    public boolean changeStatusBookOrderOnEnded(Long idBookOrder) {
+        boolean changedStatusBookOrder = false;
+        try (Connection connection = ConnectionPool.lockingPool().takeConnection()) {
+            connection.setAutoCommit(false);
+            BookOrderDao bookOrderDao = BookOrderDao.getInstance();
+            BookDao bookDao = BookDao.getInstance();
+            final boolean isChangedStatusOnEnded = bookOrderDao.updateStatusOnEndedById(idBookOrder);
+            final LocalDate date = LocalDate.now();
+            Date sqlDateIssue = Date.valueOf(date);
+            final boolean isRegisteredDateEnded = bookOrderDao.registerDateOfEndById(idBookOrder, sqlDateIssue);
+            final Book book = bookOrderDao.read(idBookOrder).orElseThrow(() -> new ServiceException("could not get BookOrder"))
+                    .getBook();
+            final Long idBook = book.getId();
+            final Integer amountOfLeftBook = book.getAmountOfLeft();
+            final boolean isIncreasedAmountOfLeftInBook = bookDao.decreaseAmountOfLeft(idBook,  amountOfLeftBook + 1);
+            if (!isChangedStatusOnEnded || !isRegisteredDateEnded || !isIncreasedAmountOfLeftInBook) {
+                throw new ServiceException("could not changed status, date ended, amount of left in book");
+            }
+            changedStatusBookOrder = true;
+            connection.setAutoCommit(true);
+        } catch (InterruptedException e) {
+            LOG.error("method takeConnection from ConnectionPool was interrupted", e);
+            Thread.currentThread().interrupt();
+        } catch (ServiceException e) {
+            LOG.error("could not change status book order on issue", e);
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return changedStatusBookOrder;
     }
 
     public static BookOrderService getInstance() {

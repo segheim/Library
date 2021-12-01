@@ -18,12 +18,14 @@
 <p>
     <a href="/controller?command=catalog_page">catalog</a>
 </p>
-<c:if test="${not empty sessionScope.account and ((sessionScope.account.role eq Role.ADMIN) or (sessionScope.account.role eq Role.LIBRARIAN) or (sessionScope.account.role eq Role.READER))}">
+<c:if test="${not empty sessionScope.account and ((sessionScope.account.role eq Role.ADMIN) or (sessionScope.account.role eq Role.LIBRARIAN))}">
     <p>
-        <a href="/controller?command=author_page">authors</a>
+        <a href="/controller?command=librarian_book_order_page">check orders</a>
     </p>
+</c:if>
+<c:if test="${not empty sessionScope.account and (sessionScope.account.role eq Role.READER)}">
     <p>
-        <a href="/controller?command=book_order_page">orders</a>
+        <a href="/controller?command=reader_book_order_page">order</a>
     </p>
 </c:if>
 <c:if test="${not empty sessionScope.account && sessionScope.account.role eq Role.ADMIN}">

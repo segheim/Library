@@ -19,10 +19,15 @@ public class BookOrderDao extends AbstractDao<BookOrder>{
     private static final String INSERT_NEW_BOOK_ORDER = "insert into book_order (account_details_id, book_id, " +
             "order_type_id, date_create) values (?,?,?,?)";
 
+    private static final String UPDATE_STATUS_ON_ISSUED_BY_ID_ACCOUNT = "update book_order bo set status_id=4 " +
+            "where bo.book_order_id=?";
+
+    private static final String REGISTER_DATE_ISSUE_BY_ID = "update book_order set date_issue=? where book_order_id=?";
+
     private static final String SELECT_ALL_BOOK_ORDERS = "select bo.book_order_id as book_order_id, " +
             "ad.account_id as account_id, ad.ad_first_name as ad_f_name, ad.ad_last_name as ad_l_name, " +
-            "b.b_id as book_id, b.b_title as book_title, b.b_date_published as book_date_published, " +
-            "ot.o_t_id as a_t_id, ot.o_t_name as o_t_name, bo.date_create as date_create, bo.date_issue " +
+            "b.b_id as book_id, b.b_title as book_title, b.b_date_published as book_date_published, b.b_amount_of_left " +
+            "as b_amount_of_left, ot.o_t_id as a_t_id, ot.o_t_name as o_t_name, bo.date_create as date_create, bo.date_issue " +
             "as date_issue, bo.date_return as date_return, os.o_s_id as o_s_id, os.o_s_name as o_s_name " +
             "from book_order bo join account_details ad on ad.account_id = bo.account_details_id " +
             "join book b on bo.book_id = b.b_id join order_type ot on ot.o_t_id = bo.order_type_id " +
@@ -30,8 +35,8 @@ public class BookOrderDao extends AbstractDao<BookOrder>{
 
     private static final String SELECT_BOOK_ORDER_BY_ID_ACCOUNT = "select bo.book_order_id as book_order_id, " +
             "ad.account_id as account_id, ad.ad_first_name as ad_f_name, ad.ad_last_name as ad_l_name, " +
-            "b.b_id as book_id, b.b_title as book_title, b.b_date_published as book_date_published, " +
-            "ot.o_t_id as a_t_id, ot.o_t_name as o_t_name, bo.date_create as date_create, bo.date_issue " +
+            "b.b_id as book_id, b.b_title as book_title, b.b_date_published as book_date_published, b.b_amount_of_left " +
+            "as b_amount_of_left, ot.o_t_id as a_t_id, ot.o_t_name as o_t_name, bo.date_create as date_create, bo.date_issue " +
             "as date_issue, bo.date_return as date_return, os.o_s_id as o_s_id, os.o_s_name as o_s_name " +
             "from book_order bo join account_details ad on ad.account_id = bo.account_details_id " +
             "join book b on bo.book_id = b.b_id join order_type ot on ot.o_t_id = bo.order_type_id " +
@@ -39,12 +44,30 @@ public class BookOrderDao extends AbstractDao<BookOrder>{
 
     private static final String SELECT_BOOK_ORDER_BY_ID = "select bo.book_order_id as book_order_id, " +
             "ad.account_id as account_id, ad.ad_first_name as ad_f_name, ad.ad_last_name as ad_l_name, " +
-            "b.b_id as book_id, b.b_title as book_title, b.b_date_published as book_date_published, " +
-            "ot.o_t_id as a_t_id, ot.o_t_name as o_t_name, bo.date_create as date_create, bo.date_issue " +
+            "b.b_id as book_id, b.b_title as book_title, b.b_date_published as book_date_published, b.b_amount_of_left " +
+            "as b_amount_of_left, ot.o_t_id as a_t_id, ot.o_t_name as o_t_name, bo.date_create as date_create, bo.date_issue " +
             "as date_issue, bo.date_return as date_return, os.o_s_id as o_s_id, os.o_s_name as o_s_name " +
             "from book_order bo join account_details ad on ad.account_id = bo.account_details_id " +
             "join book b on bo.book_id = b.b_id join order_type ot on ot.o_t_id = bo.order_type_id " +
-            "join order_status os on bo.status_id = os.o_s_id where ad.book_order_id=?";
+            "join order_status os on bo.status_id = os.o_s_id where bo.book_order_id=?";
+
+    private static final String SELECT_BY_ACCOUNT_WITH_ORDER_STATUS_ISSUED = "select bo.book_order_id as book_order_id," +
+            "ad.account_id as account_id, ad.ad_first_name as ad_f_name, ad.ad_last_name as ad_l_name,b.b_id as " +
+            "book_id, b.b_title as book_title, b.b_date_published as book_date_published, b.b_amount_of_left as b_amount_of_left, " +
+            "ot.o_t_id as a_t_id, ot.o_t_name as o_t_name, bo.date_create as date_create, bo.date_issue as date_issue, bo.date_return " +
+            "as date_return, os.o_s_id as o_s_id, os.o_s_name as o_s_name from book_order bo join account_details ad " +
+            "on ad.account_id = bo.account_details_id join book b on bo.book_id = b.b_id join order_type ot " +
+            "on ot.o_t_id = bo.order_type_id join order_status os on bo.status_id = os.o_s_id where ad.account_id=? " +
+            "and os.o_s_name='issued'";
+
+    private static final String SELECT_ALL_UNCOMPLETED = "select bo.book_order_id as book_order_id, ad.account_id " +
+            "as account_id, ad.ad_first_name as ad_f_name, ad.ad_last_name as ad_l_name,b.b_id as book_id, b.b_title " +
+            "as book_title, b.b_date_published as book_date_published, b.b_amount_of_left as b_amount_of_left, ot.o_t_id " +
+            "as a_t_id, ot.o_t_name as o_t_name,bo.date_create as date_create, bo.date_issue as date_issue, bo.date_return " +
+            "as date_return, os.o_s_id as o_s_id, os.o_s_name as o_s_name from book_order bo join account_details ad " +
+            "on ad.account_id = bo.account_details_id join book b on bo.book_id = b.b_id join order_type ot " +
+            "on ot.o_t_id = bo.order_type_id join order_status os on bo.status_id = os.o_s_id " +
+            "where os.o_s_name='claimed' or os.o_s_name='issued'";
 
     protected BookOrderDao(ConnectionPool pool) {
         super(pool, LOG);
@@ -133,6 +156,29 @@ public class BookOrderDao extends AbstractDao<BookOrder>{
         return Collections.emptyList();
     }
 
+    public List<BookOrder> readAllUncompleted() {
+        LOG.trace("start readAll uncompleted orders");
+        List<BookOrder> bookOrders = new ArrayList<>();
+        try (final Connection connection = pool.takeConnection();
+             final Statement statement = connection.createStatement();
+             final ResultSet resultSet = statement.executeQuery(SELECT_ALL_UNCOMPLETED)) {
+            while (resultSet.next()) {
+                final BookOrder bookOrder = executeBookOrder(resultSet).orElseThrow(() ->
+                        new BookOrderDaoException("could not extract book order"));
+                bookOrders.add(bookOrder);
+            }
+            return bookOrders;
+        } catch (SQLException e) {
+            LOG.error("sql error, could not read book order", e);
+        } catch (BookOrderDaoException e) {
+            LOG.error("could not read book order", e);
+        } catch (InterruptedException e) {
+            LOG.error("method takeConnection from ConnectionPool was interrupted", e);
+            Thread.currentThread().interrupt();
+        }
+        return Collections.emptyList();
+    }
+
     public List<BookOrder> readByIdAccount(Long idAccount) {
         LOG.trace("start read order by id account");
         List<BookOrder> bookOrders = new ArrayList<>();
@@ -166,13 +212,70 @@ public class BookOrderDao extends AbstractDao<BookOrder>{
         return false;
     }
 
+    public Optional<BookOrder> readByAccountWithOrderStatusIssue(Long idAccount) {
+        try (final Connection connection = pool.takeConnection();
+             final PreparedStatement preparedStatement = connection.prepareStatement(SELECT_BY_ACCOUNT_WITH_ORDER_STATUS_ISSUED)) {
+            preparedStatement.setLong(1, idAccount);
+            final ResultSet resultSet = preparedStatement.executeQuery();
+            if (resultSet.next()) {
+                final BookOrder bookOrder = executeBookOrder(resultSet).orElseThrow(() ->
+                        new BookOrderDaoException("could not extract book order"));
+            }
+        } catch (SQLException e) {
+            LOG.error("sql error, could not read book order", e);
+        } catch (BookOrderDaoException e) {
+            LOG.error("could not read book order", e);
+        } catch (InterruptedException e) {
+            LOG.error("method takeConnection from ConnectionPool was interrupted", e);
+            Thread.currentThread().interrupt();
+        }
+        return Optional.empty();
+    }
+
+    public boolean updateStatusOnIssuedById(Long idBookOrder) {
+        boolean updatedStatusBookOrder = false;
+        try (final Connection connection = pool.takeConnection();
+             final PreparedStatement preparedStatement = connection.prepareStatement(UPDATE_STATUS_ON_ISSUED_BY_ID_ACCOUNT)) {
+            preparedStatement.setLong(1, idBookOrder);
+            final int NumberChangedLines = preparedStatement.executeUpdate();
+            if (NumberChangedLines != 0) {
+                updatedStatusBookOrder = true;
+            }
+        } catch (SQLException e) {
+            LOG.error("sql error, could not read book order", e);
+        } catch (InterruptedException e) {
+            LOG.error("method takeConnection from ConnectionPool was interrupted", e);
+            Thread.currentThread().interrupt();
+        }
+        return updatedStatusBookOrder;
+    }
+
+    public boolean registerDateOfIssueById(Long idBookOrder, Date dateIssue) {
+        boolean updatedStatusBookOrder = false;
+        try (final Connection connection = pool.takeConnection();
+             final PreparedStatement preparedStatement = connection.prepareStatement(REGISTER_DATE_ISSUE_BY_ID)) {
+            preparedStatement.setDate(1, dateIssue);
+            preparedStatement.setLong(2, idBookOrder);
+            final int NumberChangedLines = preparedStatement.executeUpdate();
+            if (NumberChangedLines != 0) {
+                updatedStatusBookOrder = true;
+            }
+        } catch (SQLException e) {
+            LOG.error("sql error, could not read book order", e);
+        } catch (InterruptedException e) {
+            LOG.error("method takeConnection from ConnectionPool was interrupted", e);
+            Thread.currentThread().interrupt();
+        }
+        return updatedStatusBookOrder;
+    }
+
     private Optional<BookOrder> executeBookOrder(ResultSet resultSet) {
         try {
             return Optional.of(BookOrder.with().id(resultSet.getLong("book_order_id"))
                     .details(new AccountDetails(resultSet.getLong("account_id"),
                             resultSet.getString("ad_f_name"), resultSet.getString("ad_l_name")))
                     .book(new Book(resultSet.getLong("book_id"), resultSet.getString("book_title"),
-                            resultSet.getDate("book_date_published")))
+                            resultSet.getDate("book_date_published"), resultSet.getInt("b_amount_of_left")))
                     .type(OrderType.valueOf(resultSet.getString("o_t_name").toUpperCase()))
                     .dateCreate(resultSet.getDate("date_create"))
                     .dateIssue(resultSet.getDate("date_issue"))

@@ -19,8 +19,10 @@ public class CreateBookOrderCommand implements Command{
 
     private static final Logger LOG = LogManager.getLogger(CreateBookOrderCommand.class);
 
-    private static final String ERROR_PASS_MASSAGE = "errorBookOrderMassage";
-    private static final String ERROR_CREATE_BOOK_ORDER_ATTRIBUTE = "Where your account? oO";
+    private static final String ERROR_CREATE_BOOK_ORDER_MASSAGE = "errorCreateBookOrderMassage";
+    private static final String ERROR_CREATE_BOOK_ORDER_ATTRIBUTE = "Please, check entered data";
+    private static final String ERROR_CREATE_SECOND_BOOK_ORDER_ATTRIBUTE = "Please, return the book to the library";
+    private static final String ERROR_CREATE_BOOK_ORDER_WITHOUT_ORDER_TYPE_ATTRIBUTE = "Please, check checkbox";
     private static final String PATH_ERROR_JSP = "/WEB-INF/jsp/error.jsp";
 
     private final BookOrderService bookOrderService;
@@ -32,7 +34,6 @@ public class CreateBookOrderCommand implements Command{
         this.bookService = bookService;
     }
 
-
     @Override
     public CommandResponse execute(CommandRequest request) {
         final Optional<Object> accountSession = request.takeFromSession("account");
@@ -40,18 +41,22 @@ public class CreateBookOrderCommand implements Command{
         final Optional<Book> readBook = bookService.findById(idBook);
         final String[] orderTypes = request.getParameterValues("order_type");
         if (!accountSession.isPresent() && !readBook.isPresent() && (orderTypes.length > 1)) {
-            request.addAttributeToJsp(ERROR_PASS_MASSAGE, ERROR_CREATE_BOOK_ORDER_ATTRIBUTE);
+            request.addAttributeToJsp(ERROR_CREATE_BOOK_ORDER_MASSAGE, ERROR_CREATE_BOOK_ORDER_ATTRIBUTE);
             return requestFactory.createForwardResponse(PATH_ERROR_JSP);
         }
         final Account account = (Account)accountSession.get();
         final Book book = readBook.get();
         final String orderType = orderTypes[0];
+        if (bookOrderService.isAccountWithOrderStatusIssue(account.getId())) {
+            request.addAttributeToJsp(ERROR_CREATE_BOOK_ORDER_MASSAGE, ERROR_CREATE_SECOND_BOOK_ORDER_ATTRIBUTE);
+            return requestFactory.createForwardResponse(PATH_ERROR_JSP);
+        }
         if (bookOrderService.createBookOrder(account, book, orderType).isPresent()) {
             final List<BookOrder> bookOrders = bookOrderService.findAll();
             request.addAttributeToJsp("bookOrders", bookOrders);
-            return requestFactory.createForwardResponse("/WEB-INF/jsp/bookorder.jsp");
+            return requestFactory.createRedirectResponse("controller?command=reader_book_order_page");
         } else {
-            request.addAttributeToJsp("errorCreateBookOrderPassMessage", "Please, check checkbox");
+            request.addAttributeToJsp(ERROR_CREATE_BOOK_ORDER_MASSAGE, ERROR_CREATE_BOOK_ORDER_WITHOUT_ORDER_TYPE_ATTRIBUTE);
             return requestFactory.createForwardResponse("/WEB-INF/jsp/createbookorder.jsp");
         }
     }

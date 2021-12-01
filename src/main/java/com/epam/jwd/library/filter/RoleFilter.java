@@ -39,7 +39,8 @@ public class RoleFilter implements Filter {
         commandsForLibrarian.add(ShowAuthorPageCommand.getInstance());
         commandsForLibrarian.add(ShowCatalogPageCommand.getInstance());
         commandsForLibrarian.add(ShowAccountPageCommand.getInstance());
-        commandsForLibrarian.add(ShowBookOrderPageCommand.getInstance());
+        commandsForLibrarian.add(ShowLibrarianBookOrderPageCommand.getInstance());
+        commandsForLibrarian.add(IssueBookCommand.getInstance());
         commandsForLibrarian.add(LogoutCommand.getInstance());
 
         Set<Command> commandsForReader = new HashSet<>();
@@ -49,7 +50,7 @@ public class RoleFilter implements Filter {
         commandsForReader.add(ShowCatalogPageCommand.getInstance());
         commandsForReader.add(ShowBookPageCommand.getInstance());
         commandsForReader.add(ShowCreateBookOrderPageCommand.getInstance());
-        commandsForReader.add(ShowBookOrderPageCommand.getInstance());
+        commandsForReader.add(ShowReaderBookOrderPageCommand.getInstance());
         commandsForReader.add(CreateBookOrderCommand.getInstance());
         commandsForReader.add(LogoutCommand.getInstance());
 
