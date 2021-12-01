@@ -37,7 +37,7 @@ public class BookOrderService implements Service<BookOrder>, BasicBookOrderServi
 
     @Override
     public boolean delete(Long id) {
-        return false;
+        return bookOrderDao.delete(id);
     }
 
     @Override

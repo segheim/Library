@@ -1,11 +1,9 @@
 package com.epam.jwd.library.command;
 
 import com.epam.jwd.library.controller.RequestFactory;
-import com.epam.jwd.library.model.Book;
 import com.epam.jwd.library.service.BookService;
 
 import java.sql.Date;
-import java.util.List;
 
 public class CreateBookCommand implements Command{
 
@@ -14,7 +12,6 @@ public class CreateBookCommand implements Command{
     private static final String AMOUNT_OF_LEFT_PARAMETER_NAME = "amount_of_left";
     private static final String AUTHOR_FIRST_NAME_PARAMETER_NAME = "author_first_name";
     private static final String AUTHOR_LAST_NAME_PARAMETER_NAME = "author_last_name";
-    private static final String REQUEST_ATTRIBUTE_NAME = "books";
     private static final String URL_CATALOG_PAGE = "controller?command=catalog_page";
     private static final String PATH_CREATE_BOOK_JSP = "/WEB-INF/jsp/createbook.jsp";
     private static final String ERROR_CREATE_BOOK_MASSAGE_NAME = "errorCreateBookMassage";

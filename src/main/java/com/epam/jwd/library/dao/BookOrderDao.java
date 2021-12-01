@@ -1,6 +1,7 @@
 package com.epam.jwd.library.dao;
 
 import com.epam.jwd.library.connection.ConnectionPool;
+import com.epam.jwd.library.exception.BookDaoException;
 import com.epam.jwd.library.exception.BookOrderDaoException;
 import com.epam.jwd.library.model.*;
 import org.apache.logging.log4j.LogManager;
@@ -24,6 +25,8 @@ public class BookOrderDao extends AbstractDao<BookOrder> implements BasicBookOrd
 
     private static final String UPDATE_STATUS_ON_ENDED_BY_ID_ACCOUNT = "update book_order bo set status_id=5 " +
             "where bo.book_order_id=?";
+
+    private static final String DELETE_BOOK_ORDER_BY_ID = "delete from book_order where book_order_id=?";
 
     private static final String REGISTER_DATE_ISSUE_BY_ID = "update book_order set date_issue=? where book_order_id=?";
 
@@ -177,7 +180,25 @@ public class BookOrderDao extends AbstractDao<BookOrder> implements BasicBookOrd
 
     @Override
     public boolean delete(Long id) {
-        return false;
+        LOG.trace("start delete order");
+        boolean deleteBookOrder = false;
+        try (final Connection connection = pool.takeConnection();
+             final PreparedStatement preparedStatement = connection.prepareStatement(DELETE_BOOK_ORDER_BY_ID)) {
+            preparedStatement.setLong(1, id);
+            final int numberChangedLines = preparedStatement.executeUpdate();
+            if (numberChangedLines != 0) {
+                deleteBookOrder = true;
+            } else
+                throw new BookOrderDaoException("could not change lines delete book order");
+        } catch (SQLException e) {
+            LOG.error("sql error, could not delete book order", e);
+        } catch (BookOrderDaoException e) {
+            LOG.error("could not delete book order", e);
+        } catch (InterruptedException e) {
+            LOG.error("method takeConnection from ConnectionPool was interrupted", e);
+            Thread.currentThread().interrupt();
+        }
+        return deleteBookOrder;
     }
 
     public List<BookOrder> readAllUncompleted() {
@@ -216,9 +237,9 @@ public class BookOrderDao extends AbstractDao<BookOrder> implements BasicBookOrd
                 bookOrder = Optional.of(extractedBookOrder);
             }
         } catch (SQLException e) {
-            LOG.error("sql error, could not read book order", e);
+            LOG.error("sql error, could not read repeated book order", e);
         } catch (BookOrderDaoException e) {
-            LOG.error("could not read book order", e);
+            LOG.error("could not  repeated book order", e);
         } catch (InterruptedException e) {
             LOG.error("method takeConnection from ConnectionPool was interrupted", e);
             Thread.currentThread().interrupt();

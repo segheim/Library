@@ -18,6 +18,7 @@ public enum CommandRegistry {
     DELETE_BOOK(DeleteBookCommand.getInstance(), "delete_book"),
     DELETE_AUTHOR(DeleteAuthorCommand.getInstance(), "delete_author"),
     DELETE_ACCOUNT(DeleteAccountCommand.getInstance(), "delete_account"),
+    DELETE_BOOK_ORDER(DeleteBookOrderCommand.getInstance(), "delete_book_order"),
     UPDATE_BOOK(UpdateBookCommand.getInstance(), "update_book"),
     UPDATE_AUTHOR(UpdateAuthorCommand.getInstance(), "update_author"),
     LOGIN_PAGE(ShowLoginPageCommand.getInstance(), "login_page"),

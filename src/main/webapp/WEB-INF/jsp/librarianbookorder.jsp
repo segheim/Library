@@ -36,6 +36,7 @@
                 <p>
                     <a href="/controller?command=issue_book&id=${bookOrder.id}">issued</a>
                     <a href="/controller?command=end_book_order&id=${bookOrder.id}">ended</a>
+                    <a href="/controller?command=delete_book_order&id=${bookOrder.id}">delete order</a>
                 </p>
             </td>
         </tr>
