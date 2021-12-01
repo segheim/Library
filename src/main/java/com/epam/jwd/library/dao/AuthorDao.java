@@ -4,15 +4,13 @@ import com.epam.jwd.library.connection.ConnectionPool;
 import com.epam.jwd.library.exception.BookDaoException;
 import com.epam.jwd.library.model.Author;
 import com.epam.jwd.library.exception.AuthorDaoException;
-import com.epam.jwd.library.model.Book;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 import java.sql.*;
-import java.sql.Date;
 import java.util.*;
 
-public class AuthorDao extends AbstractDao<Author> implements BasicAuthorDao {
+public class AuthorDao extends AbstractDao<Author> implements BasicAuthorDao<Author> {
 
     private static final Logger LOG = LogManager.getLogger(AuthorDao.class);
 
@@ -163,7 +161,7 @@ public class AuthorDao extends AbstractDao<Author> implements BasicAuthorDao {
     public Optional<Author> readAuthorByLastName(String lastName) {
         Optional<Author> author = Optional.empty();
         try (final Connection connection = pool.takeConnection();
-             final PreparedStatement preparedStatement = connection.prepareStatement(DELETE_AUTHOR_BY_ID)) {
+             final PreparedStatement preparedStatement = connection.prepareStatement(SELECT_AUTHOR_BY_LAST_NAME)) {
             preparedStatement.setString(1, lastName);
             final ResultSet resultSet = preparedStatement.executeQuery();
             if (resultSet.next()) {

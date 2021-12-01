@@ -12,7 +12,7 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 
-public class BookOrderDao extends AbstractDao<BookOrder>{
+public class BookOrderDao extends AbstractDao<BookOrder> implements BasicBookOrderDao<BookOrder>{
 
     private static final Logger LOG = LogManager.getLogger(BookOrderDao.class);
 
@@ -170,6 +170,16 @@ public class BookOrderDao extends AbstractDao<BookOrder>{
         return Collections.emptyList();
     }
 
+    @Override
+    public Optional<BookOrder> update(BookOrder entity) {
+        return Optional.empty();
+    }
+
+    @Override
+    public boolean delete(Long id) {
+        return false;
+    }
+
     public List<BookOrder> readAllUncompleted() {
         LOG.trace("start readAll uncompleted orders");
         List<BookOrder> bookOrders = new ArrayList<>();
@@ -237,16 +247,6 @@ public class BookOrderDao extends AbstractDao<BookOrder>{
             Thread.currentThread().interrupt();
         }
         return bookOrders;
-    }
-
-    @Override
-    public Optional<BookOrder> update(BookOrder entity) {
-        return Optional.empty();
-    }
-
-    @Override
-    public boolean delete(Long id) {
-        return false;
     }
 
     public Optional<BookOrder> readByAccountWithOrderStatusIssue(Long idAccount) {

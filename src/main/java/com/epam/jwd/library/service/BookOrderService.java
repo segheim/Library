@@ -55,7 +55,6 @@ public class BookOrderService implements Service<BookOrder>, BasicBookOrderServi
                 .dateReturn(null)
                 .status(OrderStatus.CLAIMED)
                 .createWithoutId();
-        LOG.info("book order: {}", bookOrder);
         return bookOrderDao.create(bookOrder);
     }
 

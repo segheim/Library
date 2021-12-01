@@ -1,12 +1,18 @@
 package com.epam.jwd.library.dao;
 
-import com.epam.jwd.library.model.Author;
-import com.epam.jwd.library.model.Book;
-
 import java.util.List;
+import java.util.Optional;
 
-public interface BasicBookDao {
+public interface BasicBookDao<T> {
 
-    List<Book> readByIdAuthor(Author author);
+    Optional<T> readByTitle(String title);
+
+    boolean createBookInAuthorToBook(Long idBook, Long idAuthor);
+
+    Optional<T> readWithAuthors(Long id);
+
+    List<T> readAllWithAuthors();
+
+    boolean decreaseAmountOfLeft(Long idBook, Integer amountOfLeft);
 
 }

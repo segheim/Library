@@ -1,14 +1,12 @@
 package com.epam.jwd.library.dao;
 
 import com.epam.jwd.library.connection.ConnectionPool;
-import com.epam.jwd.library.exception.AccountDaoException;
 import com.epam.jwd.library.exception.AccountDetailsDaoException;
 import com.epam.jwd.library.model.AccountDetails;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 import java.sql.*;
-import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 
@@ -82,17 +80,17 @@ public class AccountDetailsDao extends AbstractDao<AccountDetails>{
 
     @Override
     public List<AccountDetails> readAll() {
-        return Collections.emptyList();
+        throw new UnsupportedOperationException();
     }
 
     @Override
     public Optional<AccountDetails> update(AccountDetails entity) {
-        return Optional.empty();
+        throw new UnsupportedOperationException();
     }
 
     @Override
     public boolean delete(Long id) {
-        return false;
+        throw new UnsupportedOperationException();
     }
 
     private Optional<AccountDetails> executeAccountDetails(ResultSet resultSet) {

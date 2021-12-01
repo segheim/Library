@@ -1,6 +1,9 @@
 package com.epam.jwd.library.dao;
 
-public interface BasicAuthorDao {
+import java.util.Optional;
 
+public interface BasicAuthorDao<T> {
+
+    Optional<T> readAuthorByLastName(String lastName);
 
 }

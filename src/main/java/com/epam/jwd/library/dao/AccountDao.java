@@ -14,7 +14,7 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 
-public class AccountDao extends AbstractDao<Account> implements BasicAccountDao {
+public class AccountDao extends AbstractDao<Account> implements BasicAccountDao<Account> {
 
     private static final Logger LOG = LogManager.getLogger(AccountDao.class);
 
@@ -125,7 +125,7 @@ public class AccountDao extends AbstractDao<Account> implements BasicAccountDao 
 
     @Override
     public Optional<Account> update(Account entity) {
-        return Optional.empty();
+        throw new UnsupportedOperationException();
     }
 
     @Override

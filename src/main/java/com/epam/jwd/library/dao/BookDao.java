@@ -11,7 +11,7 @@ import java.sql.*;
 import java.sql.Date;
 import java.util.*;
 
-public class BookDao extends AbstractDao<Book> implements BasicBookDao{
+public class BookDao extends AbstractDao<Book> implements BasicBookDao<Book>{
 
     private static final Logger LOG = LogManager.getLogger(BookDao.class);
 
@@ -90,30 +90,6 @@ public class BookDao extends AbstractDao<Book> implements BasicBookDao{
             Thread.currentThread().interrupt();
         }
         return createdBook;
-    }
-
-    public boolean createBookInAuthorToBook(Long idBook, Long idAuthor) {
-        LOG.trace("start create book in author to book");
-        boolean createBookInAuthorToBook = false;
-        try (final Connection connection = pool.takeConnection();
-             final PreparedStatement preparedStatement = connection.prepareStatement(INSERT_BOOK_IN_AUTHOR_TO_BOOK)) {
-            preparedStatement.setLong(1, idBook);
-            preparedStatement.setLong(2, idAuthor);
-            final int numberChangedLines = preparedStatement.executeUpdate();
-            if (numberChangedLines > 0) {
-                createBookInAuthorToBook = true;
-            } else {
-                throw new BookDaoException("could not change lines for create in table author_to_book");
-            }
-        } catch (SQLException e) {
-            LOG.error("sql error, could not create book in author to book", e);
-        } catch (InterruptedException e) {
-            LOG.error("method takeConnection from ConnectionPool was interrupted", e);
-            Thread.currentThread().interrupt();
-        } catch (BookDaoException e) {
-            LOG.error("could not create in author_to_book");
-        }
-        return createBookInAuthorToBook;
     }
 
     @Override
@@ -217,29 +193,28 @@ public class BookDao extends AbstractDao<Book> implements BasicBookDao{
         return deleteBook;
     }
 
-
-    private Optional<Book> executeBook(ResultSet resultSet){
-        try {
-            return Optional.of(new Book(resultSet.getLong(ID_BOOK_COLUMN_NAME), resultSet.getString(BOOK_TITLE_COLUMN_NAME),
-                    resultSet.getDate(BOOK_DATE_PUBLISHED_COLUMN_NAME), resultSet.getInt(BOOK_AMOUNT_OF_LEFT_COLUMN_NAME)));
+    public boolean createBookInAuthorToBook(Long idBook, Long idAuthor) {
+        LOG.trace("start create book in author to book");
+        boolean createBookInAuthorToBook = false;
+        try (final Connection connection = pool.takeConnection();
+             final PreparedStatement preparedStatement = connection.prepareStatement(INSERT_BOOK_IN_AUTHOR_TO_BOOK)) {
+            preparedStatement.setLong(1, idBook);
+            preparedStatement.setLong(2, idAuthor);
+            final int numberChangedLines = preparedStatement.executeUpdate();
+            if (numberChangedLines > 0) {
+                createBookInAuthorToBook = true;
+            } else {
+                throw new BookDaoException("could not change lines for create in table author_to_book");
+            }
         } catch (SQLException e) {
-            LOG.error("could not extract book from executeBook", e);
-            return Optional.empty();
+            LOG.error("sql error, could not create book in author to book", e);
+        } catch (InterruptedException e) {
+            LOG.error("method takeConnection from ConnectionPool was interrupted", e);
+            Thread.currentThread().interrupt();
+        } catch (BookDaoException e) {
+            LOG.error("could not create in author_to_book");
         }
-    }
-
-    private Optional<Book> executeBookWithAuthors(ResultSet resultSet){
-        try {
-            List<Author> authors = new ArrayList<>();
-            authors.add(new Author(resultSet.getLong(ID_AUTHOR_COLUMN_NAME),resultSet.getString(AUTHOR_FIRST_NAME_COLUMN_NAME),
-                    resultSet.getString(AUTHOR_LAST_NAME_COLUMN_NAME)));
-            return Optional.of(new Book(resultSet.getLong(ID_BOOK_COLUMN_NAME), resultSet.getString(BOOK_TITLE_COLUMN_NAME),
-                    resultSet.getDate(BOOK_DATE_PUBLISHED_COLUMN_NAME), resultSet.getInt(BOOK_AMOUNT_OF_LEFT_COLUMN_NAME),
-                    authors));
-        } catch (SQLException e) {
-            LOG.error("could not extract book from executeBook", e);
-            return Optional.empty();
-        }
+        return createBookInAuthorToBook;
     }
 
     public Optional<Book> readWithAuthors(Long id) {
@@ -309,31 +284,6 @@ public class BookDao extends AbstractDao<Book> implements BasicBookDao{
         return Collections.emptyList();
     }
 
-    @Override
-    public List<Book> readByIdAuthor(Author author) {
-        LOG.trace("start readByAuthor");
-        List<Book> books = new ArrayList<>();
-        try (final Connection connection = pool.takeConnection();
-             final PreparedStatement preparedStatement = connection.prepareStatement(SELECT_BOOK_BY_ID_AUTHOR)) {
-            preparedStatement.setLong(1, author.getId());
-            final ResultSet resultSet = preparedStatement.executeQuery();
-            while (resultSet.next()) {
-                final Book book = executeBook(resultSet).orElseThrow(()
-                        -> new BookDaoException("could not extract book"));
-                books.add(book);
-            }
-            return books;
-        } catch (SQLException e) {
-            LOG.error("sql error, could not found a book", e);
-        } catch (BookDaoException e) {
-            LOG.error("could not found a book", e);
-        } catch (InterruptedException e) {
-            LOG.error("method takeConnection from ConnectionPool was interrupted", e);
-            Thread.currentThread().interrupt();
-        }
-        return Collections.emptyList();
-    }
-
     public boolean decreaseAmountOfLeft(Long idBook, Integer amountOfLeft) {
         LOG.trace("start decrease amount of left");
         boolean createBookInAuthorToBook = false;
@@ -358,8 +308,6 @@ public class BookDao extends AbstractDao<Book> implements BasicBookDao{
         return createBookInAuthorToBook;
     }
 
-
-
     public Optional<Book> readByTitle(String title) {
         Optional<Book> book = Optional.empty();
         try (final Connection connection = pool.takeConnection();
@@ -381,6 +329,30 @@ public class BookDao extends AbstractDao<Book> implements BasicBookDao{
             Thread.currentThread().interrupt();
         }
         return Optional.empty();
+    }
+
+    private Optional<Book> executeBook(ResultSet resultSet){
+        try {
+            return Optional.of(new Book(resultSet.getLong(ID_BOOK_COLUMN_NAME), resultSet.getString(BOOK_TITLE_COLUMN_NAME),
+                    resultSet.getDate(BOOK_DATE_PUBLISHED_COLUMN_NAME), resultSet.getInt(BOOK_AMOUNT_OF_LEFT_COLUMN_NAME)));
+        } catch (SQLException e) {
+            LOG.error("could not extract book from executeBook", e);
+            return Optional.empty();
+        }
+    }
+
+    private Optional<Book> executeBookWithAuthors(ResultSet resultSet){
+        try {
+            List<Author> authors = new ArrayList<>();
+            authors.add(new Author(resultSet.getLong(ID_AUTHOR_COLUMN_NAME),resultSet.getString(AUTHOR_FIRST_NAME_COLUMN_NAME),
+                    resultSet.getString(AUTHOR_LAST_NAME_COLUMN_NAME)));
+            return Optional.of(new Book(resultSet.getLong(ID_BOOK_COLUMN_NAME), resultSet.getString(BOOK_TITLE_COLUMN_NAME),
+                    resultSet.getDate(BOOK_DATE_PUBLISHED_COLUMN_NAME), resultSet.getInt(BOOK_AMOUNT_OF_LEFT_COLUMN_NAME),
+                    authors));
+        } catch (SQLException e) {
+            LOG.error("could not extract book from executeBook", e);
+            return Optional.empty();
+        }
     }
 
     private static class Holder {
