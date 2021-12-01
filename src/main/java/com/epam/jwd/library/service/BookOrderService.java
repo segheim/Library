@@ -1,16 +1,12 @@
 package com.epam.jwd.library.service;
 
 import com.epam.jwd.library.connection.ConnectionPool;
-import com.epam.jwd.library.dao.AuthorDao;
 import com.epam.jwd.library.dao.BookDao;
 import com.epam.jwd.library.dao.BookOrderDao;
-import com.epam.jwd.library.exception.AuthorDaoException;
-import com.epam.jwd.library.exception.BookDaoException;
 import com.epam.jwd.library.exception.ServiceException;
 import com.epam.jwd.library.model.*;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import sun.util.resources.LocaleData;
 
 import java.sql.Connection;
 import java.sql.Date;
@@ -64,8 +60,8 @@ public class BookOrderService implements Service<BookOrder>, BasicBookOrderServi
     }
 
     @Override
-    public List<BookOrder> findByIdAccount(Long id) {
-        return bookOrderDao.readByIdAccount(id);
+    public List<BookOrder> findOrdersByIdAccount(Long idAccount) {
+        return bookOrderDao.readByIdAccount(idAccount);
     }
 
     @Override
@@ -119,8 +115,8 @@ public class BookOrderService implements Service<BookOrder>, BasicBookOrderServi
             BookDao bookDao = BookDao.getInstance();
             final boolean isChangedStatusOnEnded = bookOrderDao.updateStatusOnEndedById(idBookOrder);
             final LocalDate date = LocalDate.now();
-            Date sqlDateIssue = Date.valueOf(date);
-            final boolean isRegisteredDateEnded = bookOrderDao.registerDateOfEndById(idBookOrder, sqlDateIssue);
+            Date sqlDateReturn = Date.valueOf(date);
+            final boolean isRegisteredDateEnded = bookOrderDao.registerDateOfEndedById(idBookOrder, sqlDateReturn);
             final Book book = bookOrderDao.read(idBookOrder).orElseThrow(() -> new ServiceException("could not get BookOrder"))
                     .getBook();
             final Long idBook = book.getId();
@@ -140,6 +136,11 @@ public class BookOrderService implements Service<BookOrder>, BasicBookOrderServi
             e.printStackTrace();
         }
         return changedStatusBookOrder;
+    }
+
+    @Override
+    public boolean isRepeatedBookInNoEndedBookOrders(Long idAccount, Long idBook) {
+       return bookOrderDao.readRepeatedBook(idAccount, idBook).isPresent();
     }
 
     public static BookOrderService getInstance() {

@@ -36,8 +36,6 @@ public class CreateBookCommand implements Command{
         final String authorLastName = request.getParameter(AUTHOR_LAST_NAME_PARAMETER_NAME);
         final boolean isCreateBook = bookService.createBookWithAuthor(title, datePublished, amountOfLeft, authorFirstName, authorLastName);
         if (isCreateBook) {
-            final List<Book> books = bookService.findAll();
-            request.addAttributeToJsp(REQUEST_ATTRIBUTE_NAME, books);
             return requestFactory.createRedirectResponse(URL_CATALOG_PAGE);
         } else {
             request.addAttributeToJsp(ERROR_CREATE_BOOK_MASSAGE_NAME, ERROR_CREATE_BOOK_MASSAGE_ATTRIBUTE);

@@ -22,7 +22,7 @@ public class ShowReaderBookOrderPageCommand implements Command{
     public CommandResponse execute(CommandRequest request) {
         final Optional<Object> accountSession = request.takeFromSession("account");
         final Account account = (Account)accountSession.get();
-        final List<BookOrder> bookOrders = bookOrderService.findByIdAccount(account.getId());
+        final List<BookOrder> bookOrders = bookOrderService.findOrdersByIdAccount(account.getId());
         if (!bookOrders.isEmpty()) {
             request.addAttributeToJsp("bookOrders", bookOrders);
             return requestFactory.createForwardResponse("/WEB-INF/jsp/readerbookorder.jsp");

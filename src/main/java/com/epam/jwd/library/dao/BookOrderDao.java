@@ -22,7 +22,21 @@ public class BookOrderDao extends AbstractDao<BookOrder>{
     private static final String UPDATE_STATUS_ON_ISSUED_BY_ID_ACCOUNT = "update book_order bo set status_id=4 " +
             "where bo.book_order_id=?";
 
+    private static final String UPDATE_STATUS_ON_ENDED_BY_ID_ACCOUNT = "update book_order bo set status_id=5 " +
+            "where bo.book_order_id=?";
+
     private static final String REGISTER_DATE_ISSUE_BY_ID = "update book_order set date_issue=? where book_order_id=?";
+
+    private static final String REGISTER_DATE_RETURN_BY_ID = "update book_order set date_return=? where book_order_id=?";
+
+    private static final String SELECT_REPEATED_BOOK_IN_NO_ENDED_BOOK_ORDERS = "select bo.book_order_id as book_order_id, " +
+            "ad.account_id as account_id, ad.ad_first_name as ad_f_name, ad.ad_last_name as ad_l_name, " +
+            "b.b_id as book_id, b.b_title as book_title, b.b_date_published as book_date_published, b.b_amount_of_left " +
+            "as b_amount_of_left, ot.o_t_id as a_t_id, ot.o_t_name as o_t_name, bo.date_create as date_create, bo.date_issue " +
+            "as date_issue, bo.date_return as date_return, os.o_s_id as o_s_id, os.o_s_name as o_s_name " +
+            "from book_order bo join account_details ad on ad.account_id = bo.account_details_id " +
+            "join book b on bo.book_id = b.b_id join order_type ot on ot.o_t_id = bo.order_type_id " +
+            "join order_status os on bo.status_id = os.o_s_id where account_details_id=? and book_id=? and status_id<>5";
 
     private static final String SELECT_ALL_BOOK_ORDERS = "select bo.book_order_id as book_order_id, " +
             "ad.account_id as account_id, ad.ad_first_name as ad_f_name, ad.ad_last_name as ad_l_name, " +
@@ -40,7 +54,7 @@ public class BookOrderDao extends AbstractDao<BookOrder>{
             "as date_issue, bo.date_return as date_return, os.o_s_id as o_s_id, os.o_s_name as o_s_name " +
             "from book_order bo join account_details ad on ad.account_id = bo.account_details_id " +
             "join book b on bo.book_id = b.b_id join order_type ot on ot.o_t_id = bo.order_type_id " +
-            "join order_status os on bo.status_id = os.o_s_id where ad.account_id=?";
+            "join order_status os on bo.status_id = os.o_s_id where ad.account_id=? order by os.o_s_id";
 
     private static final String SELECT_BOOK_ORDER_BY_ID = "select bo.book_order_id as book_order_id, " +
             "ad.account_id as account_id, ad.ad_first_name as ad_f_name, ad.ad_last_name as ad_l_name, " +
@@ -179,6 +193,29 @@ public class BookOrderDao extends AbstractDao<BookOrder>{
         return Collections.emptyList();
     }
 
+    public Optional<BookOrder> readRepeatedBook(Long idAccount, Long idBook){
+        Optional<BookOrder> bookOrder = Optional.empty();
+        try (final Connection connection = pool.takeConnection();
+             final PreparedStatement preparedStatement = connection.prepareStatement(SELECT_REPEATED_BOOK_IN_NO_ENDED_BOOK_ORDERS)) {
+            preparedStatement.setLong(1, idAccount);
+            preparedStatement.setLong(2, idBook);
+            final ResultSet resultSet = preparedStatement.executeQuery();
+            if (resultSet.next()) {
+                final BookOrder extractedBookOrder = executeBookOrder(resultSet).orElseThrow(() ->
+                        new BookOrderDaoException("could not extract book order"));
+                bookOrder = Optional.of(extractedBookOrder);
+            }
+        } catch (SQLException e) {
+            LOG.error("sql error, could not read book order", e);
+        } catch (BookOrderDaoException e) {
+            LOG.error("could not read book order", e);
+        } catch (InterruptedException e) {
+            LOG.error("method takeConnection from ConnectionPool was interrupted", e);
+            Thread.currentThread().interrupt();
+        }
+        return bookOrder;
+    }
+
     public List<BookOrder> readByIdAccount(Long idAccount) {
         LOG.trace("start read order by id account");
         List<BookOrder> bookOrders = new ArrayList<>();
@@ -186,7 +223,7 @@ public class BookOrderDao extends AbstractDao<BookOrder>{
              final PreparedStatement preparedStatement = connection.prepareStatement(SELECT_BOOK_ORDER_BY_ID_ACCOUNT)) {
             preparedStatement.setLong(1, idAccount);
             final ResultSet resultSet = preparedStatement.executeQuery();
-            if (resultSet.next()) {
+            while (resultSet.next()) {
                 final BookOrder bookOrder = executeBookOrder(resultSet).orElseThrow(() ->
                         new BookOrderDaoException("could not extract book order"));
                 bookOrders.add(bookOrder);
@@ -213,13 +250,15 @@ public class BookOrderDao extends AbstractDao<BookOrder>{
     }
 
     public Optional<BookOrder> readByAccountWithOrderStatusIssue(Long idAccount) {
+        Optional<BookOrder> bookOrder = Optional.empty();
         try (final Connection connection = pool.takeConnection();
              final PreparedStatement preparedStatement = connection.prepareStatement(SELECT_BY_ACCOUNT_WITH_ORDER_STATUS_ISSUED)) {
             preparedStatement.setLong(1, idAccount);
             final ResultSet resultSet = preparedStatement.executeQuery();
             if (resultSet.next()) {
-                final BookOrder bookOrder = executeBookOrder(resultSet).orElseThrow(() ->
+                final BookOrder executedBookOrder = executeBookOrder(resultSet).orElseThrow(() ->
                         new BookOrderDaoException("could not extract book order"));
+                bookOrder = Optional.of(executedBookOrder);
             }
         } catch (SQLException e) {
             LOG.error("sql error, could not read book order", e);
@@ -229,7 +268,7 @@ public class BookOrderDao extends AbstractDao<BookOrder>{
             LOG.error("method takeConnection from ConnectionPool was interrupted", e);
             Thread.currentThread().interrupt();
         }
-        return Optional.empty();
+        return bookOrder;
     }
 
     public boolean updateStatusOnIssuedById(Long idBookOrder) {
@@ -242,7 +281,25 @@ public class BookOrderDao extends AbstractDao<BookOrder>{
                 updatedStatusBookOrder = true;
             }
         } catch (SQLException e) {
-            LOG.error("sql error, could not read book order", e);
+            LOG.error("sql error, could not update status on issued book order", e);
+        } catch (InterruptedException e) {
+            LOG.error("method takeConnection from ConnectionPool was interrupted", e);
+            Thread.currentThread().interrupt();
+        }
+        return updatedStatusBookOrder;
+    }
+
+    public boolean updateStatusOnEndedById(Long idBookOrder) {
+        boolean updatedStatusBookOrder = false;
+        try (final Connection connection = pool.takeConnection();
+             final PreparedStatement preparedStatement = connection.prepareStatement(UPDATE_STATUS_ON_ENDED_BY_ID_ACCOUNT)) {
+            preparedStatement.setLong(1, idBookOrder);
+            final int NumberChangedLines = preparedStatement.executeUpdate();
+            if (NumberChangedLines != 0) {
+                updatedStatusBookOrder = true;
+            }
+        } catch (SQLException e) {
+            LOG.error("sql error, could not update status on ended book order", e);
         } catch (InterruptedException e) {
             LOG.error("method takeConnection from ConnectionPool was interrupted", e);
             Thread.currentThread().interrupt();
@@ -261,7 +318,26 @@ public class BookOrderDao extends AbstractDao<BookOrder>{
                 updatedStatusBookOrder = true;
             }
         } catch (SQLException e) {
-            LOG.error("sql error, could not read book order", e);
+            LOG.error("sql error, could not registered date issue book order", e);
+        } catch (InterruptedException e) {
+            LOG.error("method takeConnection from ConnectionPool was interrupted", e);
+            Thread.currentThread().interrupt();
+        }
+        return updatedStatusBookOrder;
+    }
+
+    public boolean registerDateOfEndedById(Long idBookOrder, Date dateReturn) {
+        boolean updatedStatusBookOrder = false;
+        try (final Connection connection = pool.takeConnection();
+             final PreparedStatement preparedStatement = connection.prepareStatement(REGISTER_DATE_RETURN_BY_ID)) {
+            preparedStatement.setDate(1, dateReturn);
+            preparedStatement.setLong(2, idBookOrder);
+            final int NumberChangedLines = preparedStatement.executeUpdate();
+            if (NumberChangedLines != 0) {
+                updatedStatusBookOrder = true;
+            }
+        } catch (SQLException e) {
+            LOG.error("sql error, could not registered date return book order", e);
         } catch (InterruptedException e) {
             LOG.error("method takeConnection from ConnectionPool was interrupted", e);
             Thread.currentThread().interrupt();
