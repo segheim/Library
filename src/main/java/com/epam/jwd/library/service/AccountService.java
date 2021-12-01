@@ -29,25 +29,6 @@ public class AccountService implements BasicAccountService<Account>, Service<Acc
     }
 
     @Override
-    public Optional<Account> authenticate(String login, String password) {
-        if (login == null || password == null) {
-            return Optional.empty();
-        }
-        final Optional<Account> readAccount = accountDao.readByLogin(login);
-        if (readAccount.isPresent()) {
-            return readAccount.filter(account -> BCrypt.verifyer().verify(password.toCharArray(),
-                    account.getPassword().toCharArray()).verified);
-        } else {
-            protectFromTimingAttack(password);
-            return Optional.empty();
-        }
-    }
-
-    private void protectFromTimingAttack(String password) {
-        BCrypt.verifyer().verify(password.toCharArray(), PASSWORD_FOR_FUN);
-    }
-
-    @Override
     public boolean create(String login, String password, String firstName, String lastName) {
         boolean createAccountWithDetails = false;
         final String hashedPassword = BCrypt.withDefaults().hashToString(MIN_COST_FOR_HASHING, password.toCharArray());
@@ -76,7 +57,7 @@ public class AccountService implements BasicAccountService<Account>, Service<Acc
 
     @Override
     public Optional<Account> findById(Long id) {
-        return Optional.empty();
+        return accountDao.read(id);
     }
 
     @Override
@@ -88,6 +69,26 @@ public class AccountService implements BasicAccountService<Account>, Service<Acc
     public boolean delete(Long id) {
         return accountDao.delete(id);
     }
+
+    @Override
+    public Optional<Account> authenticate(String login, String password) {
+        if (login == null || password == null) {
+            return Optional.empty();
+        }
+        final Optional<Account> readAccount = accountDao.readByLogin(login);
+        if (readAccount.isPresent()) {
+            return readAccount.filter(account -> BCrypt.verifyer().verify(password.toCharArray(),
+                    account.getPassword().toCharArray()).verified);
+        } else {
+            protectFromTimingAttack(password);
+            return Optional.empty();
+        }
+    }
+
+    private void protectFromTimingAttack(String password) {
+        BCrypt.verifyer().verify(password.toCharArray(), PASSWORD_FOR_FUN);
+    }
+
 
     public static AccountService getInstance() {
         return Holder.INSTANCE;

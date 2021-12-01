@@ -26,6 +26,26 @@ public class BookService implements Service<Book>, BasicBookService<Book>{
     }
 
     @Override
+    public Optional<Book> findById(Long id) {
+        return bookDao.readWithAuthors(id);
+    }
+
+    public List<Book> findAll() {
+        return bookDao.readAllWithAuthors();
+    }
+
+    @Override
+    public Optional<Book> update(Long id, String title, java.sql.Date date, Integer amountOfLeft) {
+        Book book = new Book(id, title, date, amountOfLeft);
+        return bookDao.update(book);
+    }
+
+    @Override
+    public boolean delete(Long id) {
+        return bookDao.delete(id);
+    }
+
+    @Override
     public boolean createBookWithAuthor(String title, java.sql.Date date, int amountOfLeft, String authorFirstName, String authorLastName) {
         boolean createBookWithAuthor = false;
         Book book = new Book(title, date, amountOfLeft);
@@ -55,26 +75,6 @@ public class BookService implements Service<Book>, BasicBookService<Book>{
             LOG.error("could not create new book", e);
         }
         return createBookWithAuthor;
-    }
-
-    @Override
-    public Optional<Book> findById(Long id) {
-        return bookDao.readWithAuthors(id);
-    }
-
-    public List<Book> findAll() {
-        return bookDao.readAllWithAuthors();
-    }
-
-    @Override
-    public Optional<Book> update(Long id, String title, java.sql.Date date, Integer amountOfLeft) {
-        Book book = new Book(id, title, date, amountOfLeft);
-        return bookDao.update(book);
-    }
-
-    @Override
-    public boolean delete(Long id) {
-        return bookDao.delete(id);
     }
 
     public static BookService getInstance() {

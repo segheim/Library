@@ -27,7 +27,7 @@ public class BookOrderService implements Service<BookOrder>, BasicBookOrderServi
 
     @Override
     public Optional<BookOrder> findById(Long id) {
-        return Optional.empty();
+        return bookOrderDao.read(id);
     }
 
     @Override
