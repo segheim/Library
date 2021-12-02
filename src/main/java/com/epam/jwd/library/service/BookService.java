@@ -3,10 +3,11 @@ package com.epam.jwd.library.service;
 import com.epam.jwd.library.connection.ConnectionPool;
 import com.epam.jwd.library.dao.AuthorDao;
 import com.epam.jwd.library.dao.BookDao;
-import com.epam.jwd.library.exception.AuthorDaoException;
-import com.epam.jwd.library.exception.BookDaoException;
+import com.epam.jwd.library.exception.ServiceException;
 import com.epam.jwd.library.model.Author;
 import com.epam.jwd.library.model.Book;
+import com.epam.jwd.library.validation.FirstLastNameValidator;
+import com.epam.jwd.library.validation.BookValidator;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -35,44 +36,58 @@ public class BookService implements Service<Book>, BasicBookService<Book>{
     }
 
     @Override
-    public Optional<Book> update(Long id, String title, java.sql.Date date, Integer amountOfLeft) {
-        Book book = new Book(id, title, date, amountOfLeft);
-        return bookDao.update(book);
-    }
-
-    @Override
     public boolean delete(Long id) {
         return bookDao.delete(id);
     }
 
     @Override
+    public Optional<Book> update(Long id, String title, java.sql.Date date, Integer amountOfLeft) {
+        try {
+            if (!BookValidator.getInstance().validate(title, amountOfLeft)) {
+                throw new ServiceException("Data are not valid");
+            }
+            Book book = new Book(id, title, date, amountOfLeft);
+            return bookDao.update(book);
+        } catch (ServiceException e) {
+            LOG.error("Could not update book");
+        }
+        return Optional.empty();
+    }
+
+    @Override
     public boolean createBookWithAuthor(String title, java.sql.Date date, int amountOfLeft, String authorFirstName, String authorLastName) {
         boolean createBookWithAuthor = false;
-        Book book = new Book(title, date, amountOfLeft);
-        Author author = new Author(authorFirstName, authorLastName);
-        try (Connection connection = ConnectionPool.lockingPool().takeConnection()) {
+        Connection connection = ConnectionPool.lockingPool().takeConnection();
+        try {
+            if (!BookValidator.getInstance().validate(title, amountOfLeft)
+                    || !FirstLastNameValidator.getInstance().validate(authorFirstName, authorLastName)) {
+                throw new ServiceException("Data are not valid");
+            }
+            Book book = new Book(title, date, amountOfLeft);
+            Author author = new Author(authorFirstName, authorLastName);
             connection.setAutoCommit(false);
             BookDao bookDao = BookDao.getInstance();
             AuthorDao authorDao = AuthorDao.getInstance();
             final Long idBook = bookDao.create(book)
                     .map(Book::getId)
-                    .orElseThrow(() -> new BookDaoException("could not create book"));
+                    .orElseThrow(() -> new ServiceException("could not create book"));
             final Long idAuthor = authorDao.create(author)
                     .map(Author::getId)
-                    .orElseThrow(() -> new AuthorDaoException("could not create author"));
+                    .orElseThrow(() -> new ServiceException("could not create author"));
             if (bookDao.createBookInAuthorToBook(idBook, idAuthor)) {
                 createBookWithAuthor = true;
             }
             connection.setAutoCommit(true);
-        } catch (InterruptedException e) {
-            LOG.error("method takeConnection from ConnectionPool was interrupted", e);
-            Thread.currentThread().interrupt();
         } catch (SQLException e) {
-            LOG.error("sql error, database access error occurs", e);
-        } catch (AuthorDaoException e) {
-            LOG.error("could not create new author", e);
-        } catch (BookDaoException e) {
+            LOG.error("sql error, database access error occurs(setAutoCommit)", e);
+        } catch (ServiceException e) {
             LOG.error("could not create new book", e);
+        } finally {
+            try {
+                connection.close();
+            } catch (SQLException e) {
+                LOG.error("Database access error occurs from createBookWithAuthor", e);
+            }
         }
         return createBookWithAuthor;
     }

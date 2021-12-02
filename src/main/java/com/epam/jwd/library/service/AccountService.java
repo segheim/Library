@@ -46,9 +46,6 @@ public class AccountService implements BasicAccountService<Account>, Service<Acc
             connection.setAutoCommit(true);
         } catch (SQLException e) {
             LOG.error("sql error, database access error occurs", e);
-        } catch (InterruptedException e) {
-            LOG.error("method takeConnection from ConnectionPool was interrupted", e);
-            Thread.currentThread().interrupt();
         } catch (AccountDaoException e) {
             LOG.error("could not create new account", e);
         }

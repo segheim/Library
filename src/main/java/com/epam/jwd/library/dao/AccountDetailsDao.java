@@ -46,9 +46,6 @@ public class AccountDetailsDao extends AbstractDao<AccountDetails>{
             LOG.error("sql error, could not create account details", e);
         } catch (AccountDetailsDaoException e) {
             LOG.error("could not create new account details", e);
-        } catch (InterruptedException e) {
-            LOG.error("method takeConnection from ConnectionPool was interrupted", e);
-            Thread.currentThread().interrupt();
         }
         return createdAccountDetails;
     }
@@ -71,9 +68,6 @@ public class AccountDetailsDao extends AbstractDao<AccountDetails>{
             LOG.error("sql error, could not found an account details", e);
         } catch (AccountDetailsDaoException e) {
             LOG.error("could not found an account details", e);
-        } catch (InterruptedException e) {
-            LOG.error("method takeConnection from ConnectionPool was interrupted", e);
-            Thread.currentThread().interrupt();
         }
         return accountDetails;
     }

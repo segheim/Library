@@ -118,9 +118,6 @@ public class BookOrderDao extends AbstractDao<BookOrder> implements BasicBookOrd
             LOG.error("sql error, could not create book order", e);
         } catch (BookOrderDaoException e) {
             LOG.error("could not create new book order", e);
-        } catch (InterruptedException e) {
-            LOG.error("method takeConnection from ConnectionPool was interrupted", e);
-            Thread.currentThread().interrupt();
         }
         return createdOrder;
     }
@@ -142,9 +139,6 @@ public class BookOrderDao extends AbstractDao<BookOrder> implements BasicBookOrd
             LOG.error("sql error, could not read book order", e);
         } catch (BookOrderDaoException e) {
             LOG.error("could not read book order", e);
-        } catch (InterruptedException e) {
-            LOG.error("method takeConnection from ConnectionPool was interrupted", e);
-            Thread.currentThread().interrupt();
         }
         return bookOrder;
     }
@@ -166,9 +160,6 @@ public class BookOrderDao extends AbstractDao<BookOrder> implements BasicBookOrd
             LOG.error("sql error, could not read book order", e);
         } catch (BookOrderDaoException e) {
             LOG.error("could not read book order", e);
-        } catch (InterruptedException e) {
-            LOG.error("method takeConnection from ConnectionPool was interrupted", e);
-            Thread.currentThread().interrupt();
         }
         return Collections.emptyList();
     }
@@ -194,9 +185,6 @@ public class BookOrderDao extends AbstractDao<BookOrder> implements BasicBookOrd
             LOG.error("sql error, could not delete book order", e);
         } catch (BookOrderDaoException e) {
             LOG.error("could not delete book order", e);
-        } catch (InterruptedException e) {
-            LOG.error("method takeConnection from ConnectionPool was interrupted", e);
-            Thread.currentThread().interrupt();
         }
         return deleteBookOrder;
     }
@@ -217,9 +205,6 @@ public class BookOrderDao extends AbstractDao<BookOrder> implements BasicBookOrd
             LOG.error("sql error, could not read book order", e);
         } catch (BookOrderDaoException e) {
             LOG.error("could not read book order", e);
-        } catch (InterruptedException e) {
-            LOG.error("method takeConnection from ConnectionPool was interrupted", e);
-            Thread.currentThread().interrupt();
         }
         return Collections.emptyList();
     }
@@ -240,9 +225,6 @@ public class BookOrderDao extends AbstractDao<BookOrder> implements BasicBookOrd
             LOG.error("sql error, could not read repeated book order", e);
         } catch (BookOrderDaoException e) {
             LOG.error("could not  repeated book order", e);
-        } catch (InterruptedException e) {
-            LOG.error("method takeConnection from ConnectionPool was interrupted", e);
-            Thread.currentThread().interrupt();
         }
         return bookOrder;
     }
@@ -263,9 +245,6 @@ public class BookOrderDao extends AbstractDao<BookOrder> implements BasicBookOrd
             LOG.error("sql error, could not read book order", e);
         } catch (BookOrderDaoException e) {
             LOG.error("could not read book order", e);
-        } catch (InterruptedException e) {
-            LOG.error("method takeConnection from ConnectionPool was interrupted", e);
-            Thread.currentThread().interrupt();
         }
         return bookOrders;
     }
@@ -285,9 +264,6 @@ public class BookOrderDao extends AbstractDao<BookOrder> implements BasicBookOrd
             LOG.error("sql error, could not read book order", e);
         } catch (BookOrderDaoException e) {
             LOG.error("could not read book order", e);
-        } catch (InterruptedException e) {
-            LOG.error("method takeConnection from ConnectionPool was interrupted", e);
-            Thread.currentThread().interrupt();
         }
         return bookOrder;
     }
@@ -303,9 +279,6 @@ public class BookOrderDao extends AbstractDao<BookOrder> implements BasicBookOrd
             }
         } catch (SQLException e) {
             LOG.error("sql error, could not update status on issued book order", e);
-        } catch (InterruptedException e) {
-            LOG.error("method takeConnection from ConnectionPool was interrupted", e);
-            Thread.currentThread().interrupt();
         }
         return updatedStatusBookOrder;
     }
@@ -321,9 +294,6 @@ public class BookOrderDao extends AbstractDao<BookOrder> implements BasicBookOrd
             }
         } catch (SQLException e) {
             LOG.error("sql error, could not update status on ended book order", e);
-        } catch (InterruptedException e) {
-            LOG.error("method takeConnection from ConnectionPool was interrupted", e);
-            Thread.currentThread().interrupt();
         }
         return updatedStatusBookOrder;
     }
@@ -340,9 +310,6 @@ public class BookOrderDao extends AbstractDao<BookOrder> implements BasicBookOrd
             }
         } catch (SQLException e) {
             LOG.error("sql error, could not registered date issue book order", e);
-        } catch (InterruptedException e) {
-            LOG.error("method takeConnection from ConnectionPool was interrupted", e);
-            Thread.currentThread().interrupt();
         }
         return updatedStatusBookOrder;
     }
@@ -359,9 +326,6 @@ public class BookOrderDao extends AbstractDao<BookOrder> implements BasicBookOrd
             }
         } catch (SQLException e) {
             LOG.error("sql error, could not registered date return book order", e);
-        } catch (InterruptedException e) {
-            LOG.error("method takeConnection from ConnectionPool was interrupted", e);
-            Thread.currentThread().interrupt();
         }
         return updatedStatusBookOrder;
     }

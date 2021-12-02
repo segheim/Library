@@ -3,26 +3,27 @@ package com.epam.jwd.library.validation;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-public class AuthorValidator {
+public class FirstLastNameValidator {
 
-    private AuthorValidator() {
+    private FirstLastNameValidator() {
     }
 
-    public static AuthorValidator getInstance() {
+    public static FirstLastNameValidator getInstance() {
         return Holder.INSTANCE;
     }
 
     private static class Holder {
-        public static final AuthorValidator INSTANCE = new AuthorValidator();
+        public static final FirstLastNameValidator INSTANCE = new FirstLastNameValidator();
     }
 
     public boolean validate(String firstName, String lastName) {
         if (firstName == null || lastName == null) {
             return false;
         }
-        Pattern pattern = Pattern.compile("");
+        Pattern pattern = Pattern.compile("[A-Za-z]{1,20}");
         Matcher matcherFirstName = pattern.matcher(firstName);
         Matcher matcherLastName = pattern.matcher(lastName);
+
         return matcherFirstName.matches() && matcherLastName.matches();
     }
 }

@@ -10,7 +10,7 @@ public interface ConnectionPool {
 
     boolean shoutDown();
 
-    Connection takeConnection() throws InterruptedException;
+    Connection takeConnection();
 
     void returnConnection(Connection connection);
 

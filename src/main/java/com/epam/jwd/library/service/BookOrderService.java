@@ -96,9 +96,6 @@ public class BookOrderService implements Service<BookOrder>, BasicBookOrderServi
                 changedStatusBookOrder = true;
             }
             connection.setAutoCommit(true);
-        } catch (InterruptedException e) {
-            LOG.error("method takeConnection from ConnectionPool was interrupted", e);
-            Thread.currentThread().interrupt();
         } catch (ServiceException e) {
             LOG.error("could not change status book order on issue", e);
         } catch (SQLException e) {
@@ -128,9 +125,6 @@ public class BookOrderService implements Service<BookOrder>, BasicBookOrderServi
             }
             changedStatusBookOrder = true;
             connection.setAutoCommit(true);
-        } catch (InterruptedException e) {
-            LOG.error("method takeConnection from ConnectionPool was interrupted", e);
-            Thread.currentThread().interrupt();
         } catch (ServiceException e) {
             LOG.error("could not change status book order on issue", e);
         } catch (SQLException e) {

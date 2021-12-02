@@ -54,9 +54,6 @@ public class AuthorDao extends AbstractDao<Author> implements BasicAuthorDao<Aut
             LOG.error("sql error, could not create author", e);
         } catch (AuthorDaoException e) {
             LOG.error("could not create new author", e);
-        } catch (InterruptedException e) {
-            LOG.error("method takeConnection from ConnectionPool was interrupted", e);
-            Thread.currentThread().interrupt();
         }
         return createdAuthor;
     }
@@ -78,9 +75,6 @@ public class AuthorDao extends AbstractDao<Author> implements BasicAuthorDao<Aut
             LOG.error("sql error, could not find a author", e);
         } catch (AuthorDaoException e) {
             LOG.error("could not find a author", e);
-        } catch (InterruptedException e) {
-            LOG.error("method takeConnection from ConnectionPool was interrupted", e);
-            Thread.currentThread().interrupt();
         }
         return author;
     }
@@ -101,9 +95,6 @@ public class AuthorDao extends AbstractDao<Author> implements BasicAuthorDao<Aut
             LOG.error("sql error, could not found authors", e);
         } catch (AuthorDaoException e) {
             LOG.error("did not found authors", e);
-        } catch (InterruptedException e) {
-            LOG.error("method takeConnection from ConnectionPool was interrupted", e);
-            Thread.currentThread().interrupt();
         }
         return Collections.emptyList();
     }
@@ -128,9 +119,6 @@ public class AuthorDao extends AbstractDao<Author> implements BasicAuthorDao<Aut
             LOG.error("sql error, could not update author", e);
         } catch (AuthorDaoException e) {
             LOG.error("could not update author");
-        } catch (InterruptedException e) {
-            LOG.error("method takeConnection from ConnectionPool was interrupted", e);
-            Thread.currentThread().interrupt();
         }
         return updatedAuthor;
     }
@@ -151,9 +139,6 @@ public class AuthorDao extends AbstractDao<Author> implements BasicAuthorDao<Aut
             LOG.error("sql error, could not delete author", e);
         } catch (BookDaoException e) {
             LOG.error("could not delete new author", e);
-        } catch (InterruptedException e) {
-            LOG.error("method takeConnection from ConnectionPool was interrupted", e);
-            Thread.currentThread().interrupt();
         }
         return deleteAuthor;
     }
@@ -174,9 +159,6 @@ public class AuthorDao extends AbstractDao<Author> implements BasicAuthorDao<Aut
             LOG.error("sql error, could not delete author", e);
         } catch (AuthorDaoException e) {
             LOG.error("could not delete new author", e);
-        } catch (InterruptedException e) {
-            LOG.error("method takeConnection from ConnectionPool was interrupted", e);
-            Thread.currentThread().interrupt();
         }
         return author;
     }

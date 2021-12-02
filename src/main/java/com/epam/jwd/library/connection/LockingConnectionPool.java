@@ -1,6 +1,5 @@
 package com.epam.jwd.library.connection;
 
-import com.epam.jwd.library.command.CommandRegistry;
 import com.epam.jwd.library.exception.InitializeConnectionPoolError;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -10,6 +9,9 @@ import java.sql.Driver;
 import java.sql.DriverManager;
 import java.sql.SQLException;
 import java.util.*;
+import java.util.concurrent.BlockingQueue;
+import java.util.concurrent.LinkedBlockingDeque;
+import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.locks.Condition;
 import java.util.concurrent.locks.Lock;
@@ -24,10 +26,11 @@ public class LockingConnectionPool implements ConnectionPool{
     private static final String DB_PASSWORD = "root";
     public static final int DEFAULT_POOL_SIZE = 8;
 
+    private static AtomicBoolean isCreated = new AtomicBoolean();
     private static LockingConnectionPool instance;
 
-    private final Queue<ProxyConnection> availableConnections;
-    private final List<ProxyConnection> givenAwayConnections;
+    private final BlockingQueue<ProxyConnection> availableConnections;
+    private final BlockingQueue<ProxyConnection> givenAwayConnections;
 
     private final AtomicBoolean initialize = new AtomicBoolean();
 
@@ -35,16 +38,17 @@ public class LockingConnectionPool implements ConnectionPool{
     private final Condition condition = locker.newCondition();
 
     public LockingConnectionPool() {
-        this.availableConnections = new ArrayDeque<>();
-        this.givenAwayConnections = new ArrayList<>();
+        this.availableConnections = new LinkedBlockingQueue<>();
+        this.givenAwayConnections = new LinkedBlockingQueue<>();
     }
 
     public static LockingConnectionPool getInstance() {
-        if (instance == null){
+        if (!isCreated.get()){
             locker.lock();
             try {
                 if (instance == null) {
                     instance = new LockingConnectionPool();
+                    isCreated.set(true);
                 }
             } finally {
                 locker.unlock();
@@ -80,57 +84,46 @@ public class LockingConnectionPool implements ConnectionPool{
     }
 
     private void closeConnections() {
-        locker.lock();
-        try {
-            closeCollectionConnections(availableConnections);
-            closeCollectionConnections(givenAwayConnections);
-        } finally {
-            locker.unlock();
-        }
+        closeCollectionConnections(availableConnections);
+        closeCollectionConnections(givenAwayConnections);
     }
 
-    private void closeCollectionConnections(Collection<ProxyConnection> collection) {
-        for (ProxyConnection proxyConnection : collection) {
-            try {
-                proxyConnection.realClose();
-                LOG.info("connection closed: {}", proxyConnection);
-            } catch (SQLException e) {
-                LOG.error("could not close connection", e);
-            }
+    private void closeCollectionConnections(BlockingQueue<ProxyConnection> collection) {
+        try {
+            collection.take().realClose();
+        } catch (SQLException e) {
+            LOG.error("could not close connection", e);
+        } catch (InterruptedException e) {
+            LOG.error("method closeCollectionConnections from LockingConnectionPool was interrupted", e);
         }
     }
 
     @Override
-    public Connection takeConnection() throws InterruptedException {
-        ProxyConnection proxyConnection;
-        locker.lock();
+    public Connection takeConnection(){
+        ProxyConnection proxyConnection = null;
         try {
-            while(availableConnections.isEmpty()) {
-                condition.await();
-            }
-            proxyConnection = availableConnections.poll();
+            proxyConnection = availableConnections.take();
             givenAwayConnections.add(proxyConnection);
-        } finally {
-            locker.unlock();
+        } catch (InterruptedException e) {
+            LOG.error("method takeConnection from LockingConnectionPool was interrupted", e);
+            Thread.currentThread().interrupt();
         }
         return proxyConnection;
     }
 
     @Override
     public void returnConnection(Connection connection) {
-        locker.lock();
-        try {
-            if (connection instanceof ProxyConnection && givenAwayConnections.remove(connection)) {
-                availableConnections.add((ProxyConnection) connection);
-                condition.signalAll();
+        if (connection instanceof ProxyConnection && givenAwayConnections.remove(connection)) {
+            try {
+                availableConnections.put((ProxyConnection) connection);
+            } catch (InterruptedException e) {
+                LOG.error("method takeConnection from LockingConnectionPool was interrupted", e);
+                Thread.currentThread().interrupt();
             }
-        } finally {
-            locker.unlock();
         }
     }
 
     private void initializeConnections(int amount) {
-        locker.lock();
         try {
             for (int i = 0; i < amount; i++) {
                 final Connection connection = DriverManager.getConnection(DB_URL, DB_USER, DB_PASSWORD);
@@ -140,8 +133,6 @@ public class LockingConnectionPool implements ConnectionPool{
         } catch (SQLException e) {
             LOG.fatal("error occurred creating Connection", e);
             throw new InitializeConnectionPoolError("failed creating Connection", e);
-        } finally {
-            locker.unlock();
         }
     }
 

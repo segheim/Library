@@ -70,9 +70,6 @@ public class AccountDao extends AbstractDao<Account> implements BasicAccountDao<
             LOG.error("sql error, could not create account", e);
         } catch (AccountDaoException e) {
             LOG.error("could not create new account", e);
-        } catch (InterruptedException e) {
-            LOG.error("method takeConnection from ConnectionPool was interrupted", e);
-            Thread.currentThread().interrupt();
         }
         return createdAccount;
     }
@@ -93,9 +90,6 @@ public class AccountDao extends AbstractDao<Account> implements BasicAccountDao<
             LOG.error("sql error, could not find account", e);
         } catch (AccountDaoException e) {
             LOG.error("could not find account", e);
-        } catch (InterruptedException e) {
-            LOG.error("method takeConnection from ConnectionPool was interrupted", e);
-            Thread.currentThread().interrupt();
         }
         return readAccount;
     }
@@ -116,9 +110,6 @@ public class AccountDao extends AbstractDao<Account> implements BasicAccountDao<
             LOG.error("sql error, could not found accounts", e);
         } catch (AccountDaoException e) {
             LOG.error("did not found accounts", e);
-        } catch (InterruptedException e) {
-            LOG.error("method takeConnection from ConnectionPool was interrupted", e);
-            Thread.currentThread().interrupt();
         }
         return Collections.emptyList();
     }
@@ -145,9 +136,6 @@ public class AccountDao extends AbstractDao<Account> implements BasicAccountDao<
             LOG.error("sql error, could not delete account", e);
         } catch (AccountDaoException e) {
             LOG.error("could not delete account", e);
-        } catch (InterruptedException e) {
-            LOG.error("method takeConnection from ConnectionPool was interrupted", e);
-            Thread.currentThread().interrupt();
         }
         return deleteAccount;
     }
@@ -169,9 +157,6 @@ public class AccountDao extends AbstractDao<Account> implements BasicAccountDao<
             LOG.error("sql error, could not found a account", e);
         } catch (AccountDaoException e) {
             LOG.error("could not found a account", e);
-        } catch (InterruptedException e) {
-            LOG.error("method takeConnection from ConnectionPool was interrupted", e);
-            Thread.currentThread().interrupt();
         }
         return account;
     }

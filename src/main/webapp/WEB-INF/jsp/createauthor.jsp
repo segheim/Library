@@ -12,8 +12,8 @@
     <br/>Last name:<br/>
     <input type="text" name="last_name" value=""/>
     <br/>
-    <c:if test="${not empty requestScope.errorCreateAuthorPassMessage}">
-        <b style="color: red">${requestScope.errorCreateAuthorPassMessage}</b>
+    <c:if test="${not empty requestScope.errorCreateAuthorMessage}">
+        <b style="color: red">${requestScope.errorCreateAuthorMessage}</b>
         <br>
     </c:if>
     <input type="submit" value="create"/>

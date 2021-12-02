@@ -85,9 +85,6 @@ public class BookDao extends AbstractDao<Book> implements BasicBookDao<Book>{
             LOG.error("sql error, could not create book", e);
         } catch (BookDaoException e) {
             LOG.error("could not create new book", e);
-        } catch (InterruptedException e) {
-            LOG.error("method takeConnection from ConnectionPool was interrupted", e);
-            Thread.currentThread().interrupt();
         }
         return createdBook;
     }
@@ -110,9 +107,6 @@ public class BookDao extends AbstractDao<Book> implements BasicBookDao<Book>{
             LOG.error("sql error, could not found a book", e);
         } catch (BookDaoException e) {
             LOG.error("could not found a book", e);
-        } catch (InterruptedException e) {
-            LOG.error("method takeConnection from ConnectionPool was interrupted", e);
-            Thread.currentThread().interrupt();
         }
         return book;
     }
@@ -134,9 +128,6 @@ public class BookDao extends AbstractDao<Book> implements BasicBookDao<Book>{
             LOG.error("sql error, could not found books", e);
         } catch (BookDaoException e) {
             LOG.error("did not found books", e);
-        } catch (InterruptedException e) {
-            LOG.error("method takeConnection from ConnectionPool was interrupted", e);
-            Thread.currentThread().interrupt();
         }
         return Collections.emptyList();
     }
@@ -160,9 +151,6 @@ public class BookDao extends AbstractDao<Book> implements BasicBookDao<Book>{
             }
         } catch (SQLException e) {
             LOG.error("sql error, could not update book", e);
-        } catch (InterruptedException e) {
-            LOG.error("method takeConnection from ConnectionPool was interrupted", e);
-            Thread.currentThread().interrupt();
         } catch (BookDaoException e) {
             LOG.info("could not update book");
         }
@@ -186,9 +174,6 @@ public class BookDao extends AbstractDao<Book> implements BasicBookDao<Book>{
             LOG.error("sql error, could not delete book", e);
         } catch (BookDaoException e) {
             LOG.error("could not delete book", e);
-        } catch (InterruptedException e) {
-            LOG.error("method takeConnection from ConnectionPool was interrupted", e);
-            Thread.currentThread().interrupt();
         }
         return deleteBook;
     }
@@ -208,9 +193,6 @@ public class BookDao extends AbstractDao<Book> implements BasicBookDao<Book>{
             }
         } catch (SQLException e) {
             LOG.error("sql error, could not create book in author to book", e);
-        } catch (InterruptedException e) {
-            LOG.error("method takeConnection from ConnectionPool was interrupted", e);
-            Thread.currentThread().interrupt();
         } catch (BookDaoException e) {
             LOG.error("could not create in author_to_book");
         }
@@ -244,9 +226,6 @@ public class BookDao extends AbstractDao<Book> implements BasicBookDao<Book>{
             LOG.error("sql error, could not found a book", e);
         } catch (BookDaoException e) {
             LOG.error("could not found a book", e);
-        } catch (InterruptedException e) {
-            LOG.error("method takeConnection from ConnectionPool was interrupted", e);
-            Thread.currentThread().interrupt();
         }
         return Optional.empty();
     }
@@ -277,9 +256,6 @@ public class BookDao extends AbstractDao<Book> implements BasicBookDao<Book>{
             LOG.error("sql error, could not found books", e);
         } catch (BookDaoException e) {
             LOG.error("did not found books", e);
-        } catch (InterruptedException e) {
-            LOG.error("method takeConnection from ConnectionPool was interrupted", e);
-            Thread.currentThread().interrupt();
         }
         return Collections.emptyList();
     }
@@ -299,9 +275,6 @@ public class BookDao extends AbstractDao<Book> implements BasicBookDao<Book>{
             }
         } catch (SQLException e) {
             LOG.error("sql error, could not create book in author to book", e);
-        } catch (InterruptedException e) {
-            LOG.error("method takeConnection from ConnectionPool was interrupted", e);
-            Thread.currentThread().interrupt();
         } catch (BookDaoException e) {
             LOG.error("could not create in author_to_book");
         }
@@ -324,9 +297,6 @@ public class BookDao extends AbstractDao<Book> implements BasicBookDao<Book>{
             LOG.error("sql error, could not found a book", e);
         } catch (BookDaoException e) {
             LOG.error("could not found a book", e);
-        } catch (InterruptedException e) {
-            LOG.error("method takeConnection from ConnectionPool was interrupted", e);
-            Thread.currentThread().interrupt();
         }
         return Optional.empty();
     }
