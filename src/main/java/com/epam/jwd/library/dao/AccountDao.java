@@ -26,12 +26,14 @@ public class AccountDao extends AbstractDao<Account> implements BasicAccountDao<
             "join account_details ad on l_account.a_id = ad.account_id";
 
     private static final String SELECT_BY_LOGIN = "select a_id as id, a_login as login, a_password as password, " +
-            "a_role.role_name as role_name, ad.account_id as account_id, ad.ad_first_name as ad_f_name, ad.ad_last_name as ad_l_name " +
-            "from l_account join a_role  on a_role.role_id = l_account.a_role_id " +
+            "a_role.role_name as role_name, ad.account_id as account_id, ad.ad_first_name as ad_f_name, " +
+            "ad.ad_last_name as ad_l_name from l_account join a_role  on a_role.role_id = l_account.a_role_id " +
             "join account_details ad on l_account.a_id = ad.account_id where a_login=?";
 
     private static final String SELECT_ACCOUNT_BY_ID = "select a_id as id, a_login as login, a_password as password, " +
-            "ar.role_name as role_name from l_account join a_role ar on l_account.a_role_id = ar.role_id where a_id=?";
+            "a_role.role_name as role_name, ad.account_id as account_id, ad.ad_first_name as ad_f_name, " +
+            "ad.ad_last_name as ad_l_name from l_account join a_role  on a_role.role_id = l_account.a_role_id " +
+            "join account_details ad on l_account.a_id = ad.account_id where a_id=?";
 
     private static final String DELETE_ACCOUNT = "delete from l_account where a_id=?";
 
@@ -83,7 +85,7 @@ public class AccountDao extends AbstractDao<Account> implements BasicAccountDao<
             preparedStatement.setLong(1, id);
             final ResultSet resultSet = preparedStatement.executeQuery();
             if (resultSet.next()) {
-                final Account account = executeAccountWithoutDetails(resultSet).orElseThrow(() -> new AccountDaoException("could not extract account"));
+                final Account account = executeAccount(resultSet).orElseThrow(() -> new AccountDaoException("could not extract account"));
                 return Optional.of(account);
             }
         } catch (SQLException e) {
@@ -174,16 +176,16 @@ public class AccountDao extends AbstractDao<Account> implements BasicAccountDao<
         }
     }
 
-    private Optional<Account> executeAccountWithoutDetails(ResultSet resultSet) {
-        try {
-            return Optional.of(new Account(resultSet.getLong(ID_COLUMN_NAME),
-                    resultSet.getString(LOGIN_COLUMN_NAME), resultSet.getString(PASSWORD_COLUMN_NAME),
-                    Role.valueOf(resultSet.getString(ROLE_NAME_COLUMN_NAME).toUpperCase())));
-        } catch (SQLException e) {
-            LOG.error("could not extract account from executeBook", e);
-            return Optional.empty();
-        }
-    }
+//    private Optional<Account> executeAccountWithoutDetails(ResultSet resultSet) {
+//        try {
+//            return Optional.of(new Account(resultSet.getLong(ID_COLUMN_NAME),
+//                    resultSet.getString(LOGIN_COLUMN_NAME), resultSet.getString(PASSWORD_COLUMN_NAME),
+//                    Role.valueOf(resultSet.getString(ROLE_NAME_COLUMN_NAME).toUpperCase())));
+//        } catch (SQLException e) {
+//            LOG.error("could not extract account from executeBook", e);
+//            return Optional.empty();
+//        }
+//    }
 
     public static AccountDao getInstance() {
         return Holder.INSTANCE;

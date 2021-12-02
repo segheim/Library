@@ -25,10 +25,10 @@ public class RoleFilter implements Filter {
         Set<Command> commandsForAdmin = new HashSet<>();
         commandsForAdmin.add(ShowMainPageCommand.getInstance());
         commandsForAdmin.add(ShowErrorPageCommand.getInstance());
-        commandsForAdmin.add(ShowAccountPageCommand.getInstance());
+        commandsForAdmin.add(ShowAccountsPageCommand.getInstance());
         commandsForAdmin.add(ShowAuthorPageCommand.getInstance());
         commandsForAdmin.add(ShowCatalogPageCommand.getInstance());
-        commandsForAdmin.add(ShowAccountPageCommand.getInstance());
+        commandsForAdmin.add(ShowAccountsPageCommand.getInstance());
         commandsForAdmin.add(ShowRegistrationPageCommand.getInstance());
         commandsForAdmin.add(RegistrationCommand.getInstance());
         commandsForAdmin.add(LogoutCommand.getInstance());
@@ -38,7 +38,7 @@ public class RoleFilter implements Filter {
         commandsForLibrarian.add(ShowErrorPageCommand.getInstance());
         commandsForLibrarian.add(ShowAuthorPageCommand.getInstance());
         commandsForLibrarian.add(ShowCatalogPageCommand.getInstance());
-        commandsForLibrarian.add(ShowAccountPageCommand.getInstance());
+        commandsForLibrarian.add(ShowAccountsPageCommand.getInstance());
         commandsForLibrarian.add(DeleteBookOrderCommand.getInstance());
         commandsForLibrarian.add(ShowLibrarianBookOrderPageCommand.getInstance());
         commandsForLibrarian.add(IssueBookCommand.getInstance());
@@ -54,6 +54,7 @@ public class RoleFilter implements Filter {
         commandsForReader.add(ShowCreateBookOrderPageCommand.getInstance());
         commandsForReader.add(ShowReaderBookOrderPageCommand.getInstance());
         commandsForReader.add(ShowErrorPageCommand.getInstance());
+        commandsForReader.add(ShowAccountPageCommand.getInstance());
         commandsForReader.add(DeleteBookOrderCommand.getInstance());
         commandsForReader.add(CreateBookOrderCommand.getInstance());
         commandsForReader.add(LogoutCommand.getInstance());

@@ -5,8 +5,11 @@ import com.epam.jwd.library.connection.ConnectionPool;
 import com.epam.jwd.library.dao.AccountDao;
 import com.epam.jwd.library.dao.AccountDetailsDao;
 import com.epam.jwd.library.exception.AccountDaoException;
+import com.epam.jwd.library.exception.ServiceException;
 import com.epam.jwd.library.model.Account;
 import com.epam.jwd.library.model.AccountDetails;
+import com.epam.jwd.library.validation.AccountValidator;
+import com.epam.jwd.library.validation.FirstLastNameValidator;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -29,27 +32,39 @@ public class AccountService implements BasicAccountService<Account>, Service<Acc
     }
 
     @Override
-    public boolean create(String login, String password, String firstName, String lastName) {
-        boolean createAccountWithDetails = false;
-        final String hashedPassword = BCrypt.withDefaults().hashToString(MIN_COST_FOR_HASHING, password.toCharArray());
-        final Account account = new Account(login, hashedPassword);
-        try (Connection connection = ConnectionPool.lockingPool().takeConnection()) {
+    public Optional<Account> create(String login, String password, String firstName, String lastName) {
+        Optional<Account> createAccountWithDetails = Optional.empty();
+        Connection connection = ConnectionPool.lockingPool().takeConnection();
+        try{
+            checkAccountData(login, password, firstName, lastName);
+            final Account account = createAccountWithHashedPassword(login, password);
             connection.setAutoCommit(false);
             AccountDao accountDao = AccountDao.getInstance();
             AccountDetailsDao accountDetailsDao = AccountDetailsDao.getInstance();
             final Long idAccount = accountDao.create(account)
                     .map(Account::getId)
-                    .orElseThrow(() -> new AccountDaoException("could not create account"));
-            if (accountDetailsDao.create(new AccountDetails(idAccount, firstName, lastName)).isPresent()) {
-                createAccountWithDetails = true;
-            }
+                    .orElseThrow(() -> new ServiceException("could not create account"));
+            accountDetailsDao.create(new AccountDetails(idAccount, firstName, lastName));
             connection.setAutoCommit(true);
+            createAccountWithDetails = accountDao.readByLogin(login);
         } catch (SQLException e) {
             LOG.error("sql error, database access error occurs", e);
-        } catch (AccountDaoException e) {
+        } catch (ServiceException e) {
             LOG.error("could not create new account", e);
         }
         return createAccountWithDetails;
+    }
+
+    private Account createAccountWithHashedPassword(String login, String password) {
+        final String hashedPassword = BCrypt.withDefaults().hashToString(MIN_COST_FOR_HASHING, password.toCharArray());
+        return new Account(login, hashedPassword);
+    }
+
+    private void checkAccountData(String login, String password, String firstName, String lastName) throws ServiceException {
+        if (!AccountValidator.getInstance().validate(login, password)
+                || !FirstLastNameValidator.getInstance().validate(firstName, lastName)) {
+            throw new ServiceException("Account data are not valid");
+        }
     }
 
     @Override
@@ -69,7 +84,7 @@ public class AccountService implements BasicAccountService<Account>, Service<Acc
 
     @Override
     public Optional<Account> authenticate(String login, String password) {
-        if (login == null || password == null) {
+        if (!AccountValidator.getInstance().validate(login, password)) {
             return Optional.empty();
         }
         final Optional<Account> readAccount = accountDao.readByLogin(login);
@@ -85,7 +100,6 @@ public class AccountService implements BasicAccountService<Account>, Service<Acc
     private void protectFromTimingAttack(String password) {
         BCrypt.verifyer().verify(password.toCharArray(), PASSWORD_FOR_FUN);
     }
-
 
     public static AccountService getInstance() {
         return Holder.INSTANCE;

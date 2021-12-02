@@ -7,7 +7,7 @@ import java.util.Optional;
 
 public interface BasicAccountService<T extends Entity> {
 
-    boolean create(String login, String password, String firstName, String LastName);
+    Optional<T> create(String login, String password, String firstName, String LastName);
 
     List<T> findAll();
 

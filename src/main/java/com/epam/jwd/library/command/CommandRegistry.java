@@ -3,6 +3,7 @@ package com.epam.jwd.library.command;
 public enum CommandRegistry {
 
     MAIN_PAGE(ShowMainPageCommand.getInstance(), "main_page"),
+    ACCOUNTS_PAGE(ShowAccountsPageCommand.getInstance(), "accounts_page"),
     ACCOUNT_PAGE(ShowAccountPageCommand.getInstance(), "account_page"),
     AUTHOR_PAGE(ShowAuthorPageCommand.getInstance(), "author_page"),
     BOOK_PAGE(ShowBookPageCommand.getInstance(), "book_page"),

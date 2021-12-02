@@ -30,13 +30,16 @@
 </c:if>
 <c:if test="${not empty sessionScope.account && sessionScope.account.role eq Role.ADMIN}">
     <p>
-        <a href="/controller?command=account_page">accounts</a>
+        <a href="/controller?command=accounts_page">accounts</a>
     </p>
 </c:if>
 <c:choose>
     <c:when test="${not empty sessionScope.account}">
         <p>
             <a href="/controller?command=logout">logout</a>
+        </p>
+        <p>
+            <a href="/controller?command=account_page&id=${sessionScope.account.id}">your account</a>
         </p>
     </c:when>
     <c:otherwise>

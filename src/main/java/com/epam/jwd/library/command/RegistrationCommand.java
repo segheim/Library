@@ -1,10 +1,7 @@
 package com.epam.jwd.library.command;
 
 import com.epam.jwd.library.controller.RequestFactory;
-import com.epam.jwd.library.model.Account;
 import com.epam.jwd.library.service.AccountService;
-
-import java.util.List;
 
 public class RegistrationCommand implements Command {
 
@@ -21,10 +18,8 @@ public class RegistrationCommand implements Command {
         final String password = request.getParameter("password");
         final String firstName = request.getParameter("first_name");
         final String lastName = request.getParameter("last_name");
-        if (accountService.create(login, password, firstName, lastName)) {
-            final List<Account> accounts = accountService.findAll();
-            request.addAttributeToJsp("accounts", accounts);
-            return requestFactory.createRedirectResponse("controller?command=account_page");
+        if (accountService.create(login, password, firstName, lastName).isPresent()) {
+            return requestFactory.createRedirectResponse("index.jsp");
         } else {
             request.addAttributeToJsp("errorRegistrationMessage", "Incorrect dates, please try again");
             return requestFactory.createForwardResponse("/WEB-INF/jsp/registration.jsp");

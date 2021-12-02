@@ -59,10 +59,7 @@ public class BookService implements Service<Book>, BasicBookService<Book>{
         boolean createBookWithAuthor = false;
         Connection connection = ConnectionPool.lockingPool().takeConnection();
         try {
-            if (!BookValidator.getInstance().validate(title, amountOfLeft)
-                    || !FirstLastNameValidator.getInstance().validate(authorFirstName, authorLastName)) {
-                throw new ServiceException("Data are not valid");
-            }
+            checkBookData(title, amountOfLeft, authorFirstName, authorLastName);
             Book book = new Book(title, date, amountOfLeft);
             Author author = new Author(authorFirstName, authorLastName);
             connection.setAutoCommit(false);
@@ -77,11 +74,16 @@ public class BookService implements Service<Book>, BasicBookService<Book>{
             if (bookDao.createBookInAuthorToBook(idBook, idAuthor)) {
                 createBookWithAuthor = true;
             }
-            connection.setAutoCommit(true);
+            connection.commit();
         } catch (SQLException e) {
             LOG.error("sql error, database access error occurs(setAutoCommit)", e);
         } catch (ServiceException e) {
             LOG.error("could not create new book", e);
+            try {
+                connection.rollback();
+            } catch (SQLException ex) {
+                ex.printStackTrace();
+            }
         } finally {
             try {
                 connection.close();
@@ -90,6 +92,13 @@ public class BookService implements Service<Book>, BasicBookService<Book>{
             }
         }
         return createBookWithAuthor;
+    }
+
+    private void checkBookData(String title, int amountOfLeft, String authorFirstName, String authorLastName) throws ServiceException {
+        if (!BookValidator.getInstance().validate(title, amountOfLeft)
+                || !FirstLastNameValidator.getInstance().validate(authorFirstName, authorLastName)) {
+            throw new ServiceException("Data are not valid");
+        }
     }
 
     public static BookService getInstance() {

@@ -23,10 +23,8 @@ public class AuthorService implements Service<Author>, BasicAuthorService<Author
     @Override
     public Optional<Author> create(String firstName, String lastName) {
         try {
-            if (!FirstLastNameValidator.getInstance().validate(firstName, lastName)) {
-                throw new ServiceException("Data are not valid");
-            }
-        Author author = new Author(firstName, lastName);
+            checkAuthorData(firstName, lastName);
+            Author author = new Author(firstName, lastName);
         return authorDao.create(author);
         } catch (ServiceException e) {
             LOG.error("Could not create author");
@@ -48,15 +46,19 @@ public class AuthorService implements Service<Author>, BasicAuthorService<Author
     @Override
     public Optional<Author> update(Long id, String firstName, String lastName) {
         try {
-            if (!FirstLastNameValidator.getInstance().validate(firstName, lastName)) {
-                throw new ServiceException("Data are not valid");
-            }
+            checkAuthorData(firstName, lastName);
             Author author = new Author(id, firstName, lastName);
             return authorDao.update(author);
         } catch (ServiceException e) {
             LOG.error("Could not update author");
         }
         return Optional.empty();
+    }
+
+    private void checkAuthorData(String firstName, String lastName) throws ServiceException {
+        if (!FirstLastNameValidator.getInstance().validate(firstName, lastName)) {
+            throw new ServiceException("Data are not valid");
+        }
     }
 
     @Override

@@ -4,12 +4,12 @@ import com.epam.jwd.library.controller.RequestFactory;
 import com.epam.jwd.library.model.Account;
 import com.epam.jwd.library.service.AccountService;
 
-import java.util.List;
+import java.util.Optional;
 
-public class ShowAccountPageCommand implements Command {
+public class ShowAccountPageCommand implements Command{
 
-    private static final String REQUEST_ATTRIBUTE_NAME = "accounts";
-    private static final String PATH_ACCOUNT_NAME = "/WEB-INF/jsp/accounts.jsp";
+    private static final String REQUEST_ATTRIBUTE_NAME = "account";
+    private static final String PATH_ACCOUNT_NAME = "/WEB-INF/jsp/account.jsp";
 
     private final AccountService accountService;
     private final RequestFactory requestFactory = RequestFactory.getInstance();
@@ -20,10 +20,17 @@ public class ShowAccountPageCommand implements Command {
 
     @Override
     public CommandResponse execute(CommandRequest request) {
-        final List<Account> accounts = accountService.findAll();
-        request.addAttributeToJsp(REQUEST_ATTRIBUTE_NAME, accounts);
-        return requestFactory.createForwardResponse(PATH_ACCOUNT_NAME);
+        final Long id = Long.valueOf(request.getParameter("id"));
+        final Optional<Account> account = accountService.findById(id);
+        if (account.isPresent()) {
+            request.addAttributeToJsp(REQUEST_ATTRIBUTE_NAME, account.get());
+            return requestFactory.createForwardResponse(PATH_ACCOUNT_NAME);
+        } else {
+            request.addAttributeToJsp("errorPassMassage", "Could not find your account!");
+            return requestFactory.createForwardResponse("/WEB-INF/jsp/error.jsp");
+        }
     }
+
 
     public static ShowAccountPageCommand getInstance() {
         return Holder.INSTANCE;
