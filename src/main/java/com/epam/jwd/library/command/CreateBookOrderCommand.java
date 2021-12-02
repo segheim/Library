@@ -10,7 +10,7 @@ import org.apache.logging.log4j.Logger;
 
 import java.util.Optional;
 
-public class CreateBookOrderCommand implements Command{
+public class CreateBookOrderCommand implements Command {
 
     private static final Logger LOG = LogManager.getLogger(CreateBookOrderCommand.class);
 
@@ -26,7 +26,7 @@ public class CreateBookOrderCommand implements Command{
     private final BookService bookService;
     private final RequestFactory requestFactory = RequestFactory.getInstance();
 
-    public CreateBookOrderCommand(BookOrderService bookOrderService, BookService bookService) {
+    private CreateBookOrderCommand(BookOrderService bookOrderService, BookService bookService) {
         this.bookOrderService = bookOrderService;
         this.bookService = bookService;
     }
@@ -41,10 +41,10 @@ public class CreateBookOrderCommand implements Command{
             request.addAttributeToJsp(ERROR_PASS_MASSAGE, ERROR_CREATE_BOOK_ORDER_ATTRIBUTE);
             return requestFactory.createForwardResponse(PATH_ERROR_JSP);
         }
-        final Account account = (Account)accountSession.get();
+        final Account account = (Account) accountSession.get();
         final Book book = readBook.get();
         final String orderType = orderTypes[0];
-        if (bookOrderService.isAccountWithOrderStatusIssue(account.getId()) | bookOrderService.isRepeatedBookInNoEndedBookOrders(account.getId(), book.getId())) {
+        if (bookOrderService.isAccountWithOrderStatusIssue(account.getId()) || bookOrderService.isRepeatedBookInNoEndedBookOrders(account.getId(), book.getId())) {
             request.addAttributeToJsp(ERROR_PASS_MASSAGE, ERROR_CREATE_SECOND_BOOK_ORDER_AND_REPEATED_BOOK_ATTRIBUTE);
             return requestFactory.createForwardResponse(PATH_ERROR_JSP);
         }

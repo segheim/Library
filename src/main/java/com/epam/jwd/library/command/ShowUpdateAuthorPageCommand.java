@@ -11,7 +11,7 @@ public class ShowUpdateAuthorPageCommand implements Command{
     private final AuthorService authorService;
     private final RequestFactory requestFactory = RequestFactory.getInstance();
 
-    public ShowUpdateAuthorPageCommand(AuthorService authorService) {
+    private ShowUpdateAuthorPageCommand(AuthorService authorService) {
         this.authorService = authorService;
     }
 

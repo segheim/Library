@@ -6,7 +6,7 @@ import com.epam.jwd.library.service.AccountService;
 
 import java.util.List;
 
-public class ShowAccountPageCommand implements Command{
+public class ShowAccountPageCommand implements Command {
 
     private static final String REQUEST_ATTRIBUTE_NAME = "accounts";
     private static final String PATH_ACCOUNT_NAME = "/WEB-INF/jsp/accounts.jsp";
@@ -14,7 +14,7 @@ public class ShowAccountPageCommand implements Command{
     private final AccountService accountService;
     private final RequestFactory requestFactory = RequestFactory.getInstance();
 
-    public ShowAccountPageCommand(AccountService accountService) {
+    private ShowAccountPageCommand(AccountService accountService) {
         this.accountService = accountService;
     }
 

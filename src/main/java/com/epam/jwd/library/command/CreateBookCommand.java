@@ -5,7 +5,7 @@ import com.epam.jwd.library.service.BookService;
 
 import java.sql.Date;
 
-public class CreateBookCommand implements Command{
+public class CreateBookCommand implements Command {
 
     private static final String TITLE_PARAMETER_NAME = "title";
     private static final String DATE_PUBLISHED_PARAMETER_NAME = "date_published";
@@ -20,7 +20,7 @@ public class CreateBookCommand implements Command{
     private final BookService bookService;
     private final RequestFactory requestFactory = RequestFactory.getInstance();
 
-    public CreateBookCommand(BookService bookService) {
+    private CreateBookCommand(BookService bookService) {
         this.bookService = bookService;
     }
 

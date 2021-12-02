@@ -6,7 +6,7 @@ import com.epam.jwd.library.service.AuthorService;
 
 import java.util.List;
 
-public class ShowAuthorPageCommand implements Command{
+public class ShowAuthorPageCommand implements Command {
 
     private static final String REQUEST_ATTRIBUTE_NAME = "authors";
     private static final String PATH_AUTHOR_JSP = "/WEB-INF/jsp/authors.jsp";

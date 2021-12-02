@@ -2,6 +2,7 @@ package com.epam.jwd.library.service;
 
 import com.epam.jwd.library.dao.AuthorDao;
 import com.epam.jwd.library.model.Author;
+import com.epam.jwd.library.validation.AuthorValidator;
 
 import java.util.List;
 import java.util.Optional;
@@ -16,6 +17,7 @@ public class AuthorService implements Service<Author>, BasicAuthorService<Author
 
     @Override
     public Optional<Author> create(String firstName, String lastName) {
+
         Author author = new Author(firstName, lastName);
         return authorDao.create(author);
     }

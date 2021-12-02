@@ -17,8 +17,12 @@ public class LoginCommand implements Command {
     private static final String ERROR = "Incorrect login or password, try again";
     private static final String ERROR_LOGIN_PASS_MASSAGE_ATTRIBUTE = "Incorrect login or password, try again";
 
-    private final AccountService accountService = AccountService.getInstance();
+    private final AccountService accountService;
     private final RequestFactory requestFactory = RequestFactory.getInstance();
+
+    private LoginCommand(AccountService accountService) {
+        this.accountService = accountService;
+    }
 
     @Override
     public CommandResponse execute(CommandRequest request) {
@@ -44,6 +48,6 @@ public class LoginCommand implements Command {
     }
 
     private static class Holder {
-        public static final LoginCommand INSTANCE = new LoginCommand();
+        public static final LoginCommand INSTANCE = new LoginCommand(AccountService.getInstance());
     }
 }

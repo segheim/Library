@@ -6,12 +6,12 @@ import com.epam.jwd.library.service.BookService;
 
 import java.util.Optional;
 
-public class ShowBookPageCommand implements Command{
+public class ShowBookPageCommand implements Command {
 
     private final BookService bookService;
     private final RequestFactory requestFactory = RequestFactory.getInstance();
 
-    public ShowBookPageCommand(BookService bookService) {
+    private ShowBookPageCommand(BookService bookService) {
         this.bookService = bookService;
     }
 

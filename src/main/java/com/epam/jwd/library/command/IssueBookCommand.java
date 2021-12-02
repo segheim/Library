@@ -6,12 +6,12 @@ import com.epam.jwd.library.service.BookOrderService;
 
 import java.util.List;
 
-public class IssueBookCommand implements Command{
+public class IssueBookCommand implements Command {
 
     private final BookOrderService bookOrderService;
     private final RequestFactory requestFactory = RequestFactory.getInstance();
 
-    public IssueBookCommand(BookOrderService bookOrderService) {
+    private IssueBookCommand(BookOrderService bookOrderService) {
         this.bookOrderService = bookOrderService;
     }
 

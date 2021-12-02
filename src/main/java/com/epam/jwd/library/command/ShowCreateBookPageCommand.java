@@ -2,9 +2,12 @@ package com.epam.jwd.library.command;
 
 import com.epam.jwd.library.controller.RequestFactory;
 
-public class ShowCreateBookPageCommand implements Command{
+public class ShowCreateBookPageCommand implements Command {
 
     private final RequestFactory requestFactory = RequestFactory.getInstance();
+
+    private ShowCreateBookPageCommand() {
+    }
 
     @Override
     public CommandResponse execute(CommandRequest request) {

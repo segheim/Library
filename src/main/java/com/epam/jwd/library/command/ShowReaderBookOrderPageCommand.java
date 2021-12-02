@@ -3,7 +3,6 @@ package com.epam.jwd.library.command;
 import com.epam.jwd.library.controller.RequestFactory;
 import com.epam.jwd.library.model.Account;
 import com.epam.jwd.library.model.BookOrder;
-import com.epam.jwd.library.model.Role;
 import com.epam.jwd.library.service.BookOrderService;
 
 import java.util.List;
@@ -14,7 +13,7 @@ public class ShowReaderBookOrderPageCommand implements Command{
     private final BookOrderService bookOrderService;
     private final RequestFactory requestFactory = RequestFactory.getInstance();
 
-    public ShowReaderBookOrderPageCommand(BookOrderService bookOrderService) {
+    private ShowReaderBookOrderPageCommand(BookOrderService bookOrderService) {
         this.bookOrderService = bookOrderService;
     }
 

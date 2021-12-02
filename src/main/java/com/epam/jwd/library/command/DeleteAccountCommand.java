@@ -2,17 +2,16 @@ package com.epam.jwd.library.command;
 
 import com.epam.jwd.library.controller.RequestFactory;
 import com.epam.jwd.library.model.Account;
-import com.epam.jwd.library.model.Author;
 import com.epam.jwd.library.service.AccountService;
 
 import java.util.List;
 
-public class DeleteAccountCommand implements Command{
+public class DeleteAccountCommand implements Command {
 
     private final AccountService accountService;
     private final RequestFactory requestFactory = RequestFactory.getInstance();
 
-    public DeleteAccountCommand(AccountService accountService) {
+    private DeleteAccountCommand(AccountService accountService) {
         this.accountService = accountService;
     }
 

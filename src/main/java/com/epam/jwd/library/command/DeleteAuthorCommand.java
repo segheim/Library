@@ -6,12 +6,12 @@ import com.epam.jwd.library.service.AuthorService;
 
 import java.util.List;
 
-public class DeleteAuthorCommand implements Command{
+public class DeleteAuthorCommand implements Command {
 
     private final AuthorService authorService;
     private final RequestFactory requestFactory = RequestFactory.getInstance();
 
-    public DeleteAuthorCommand(AuthorService authorService) {
+    private DeleteAuthorCommand(AuthorService authorService) {
         this.authorService = authorService;
     }
 

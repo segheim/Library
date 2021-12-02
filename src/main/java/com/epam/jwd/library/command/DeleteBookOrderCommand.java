@@ -7,12 +7,12 @@ import com.epam.jwd.library.service.BookOrderService;
 
 import java.util.Optional;
 
-public class DeleteBookOrderCommand implements Command{
+public class DeleteBookOrderCommand implements Command {
 
     private final BookOrderService bookOrderService;
     private final RequestFactory requestFactory = RequestFactory.getInstance();
 
-    public DeleteBookOrderCommand(BookOrderService bookOrderService) {
+    private DeleteBookOrderCommand(BookOrderService bookOrderService) {
         this.bookOrderService = bookOrderService;
     }
 
@@ -20,7 +20,7 @@ public class DeleteBookOrderCommand implements Command{
     public CommandResponse execute(CommandRequest request) {
         final Long idBookOrder = Long.valueOf(request.getParameter("id"));
         final Optional<Object> accountSession = request.takeFromSession("account");
-        final Account account = (Account)accountSession.get();
+        final Account account = (Account) accountSession.get();
         final Role role = account.getRole();
         if (bookOrderService.delete(idBookOrder)) {
             if (Role.READER.equals(role)) {

@@ -8,6 +8,8 @@ public class ShowLoginPageCommand implements Command{
 
     private final RequestFactory requestFactory = RequestFactory.getInstance();
 
+    private ShowLoginPageCommand() {}
+
     @Override
     public CommandResponse execute(CommandRequest request) {
         return requestFactory.createForwardResponse(PATH_LOGIN_JSP);

@@ -2,10 +2,13 @@ package com.epam.jwd.library.command;
 
 import com.epam.jwd.library.controller.RequestFactory;
 
-public class ShowCreateAuthorPageCommand implements Command{
+public class ShowCreateAuthorPageCommand implements Command {
 
     private static final String PATH_CREATE_AUTHOR_JSP = "/WEB-INF/jsp/createauthor.jsp";
     private final RequestFactory requestFactory = RequestFactory.getInstance();
+
+    private ShowCreateAuthorPageCommand() {
+    }
 
     @Override
     public CommandResponse execute(CommandRequest request) {

@@ -13,7 +13,7 @@ public class UpdateBookCommand implements Command {
     private final BookService bookService;
     private final RequestFactory requestFactory = RequestFactory.getInstance();
 
-    public UpdateBookCommand(BookService bookService) {
+    private UpdateBookCommand(BookService bookService) {
         this.bookService = bookService;
     }
 

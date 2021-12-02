@@ -12,7 +12,7 @@ public class UpdateAuthorCommand implements Command {
     private final AuthorService authorService;
     private final RequestFactory requestFactory = RequestFactory.getInstance();
 
-    public UpdateAuthorCommand(AuthorService authorService) {
+    private UpdateAuthorCommand(AuthorService authorService) {
         this.authorService = authorService;
     }
 

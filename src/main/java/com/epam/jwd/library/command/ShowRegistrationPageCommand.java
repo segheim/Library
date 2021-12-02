@@ -6,6 +6,8 @@ public class ShowRegistrationPageCommand implements Command{
 
     private final RequestFactory requestFactory = RequestFactory.getInstance();
 
+    private ShowRegistrationPageCommand() {}
+
     @Override
     public CommandResponse execute(CommandRequest request) {
         return requestFactory.createForwardResponse("/WEB-INF/jsp/registration.jsp");

@@ -11,7 +11,7 @@ public class ShowLibrarianBookOrderPageCommand implements Command{
     private final BookOrderService bookOrderService;
     private final RequestFactory requestFactory = RequestFactory.getInstance();
 
-    public ShowLibrarianBookOrderPageCommand(BookOrderService bookOrderService) {
+    private ShowLibrarianBookOrderPageCommand(BookOrderService bookOrderService) {
         this.bookOrderService = bookOrderService;
     }
 

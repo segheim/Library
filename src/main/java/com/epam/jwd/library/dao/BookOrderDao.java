@@ -86,7 +86,7 @@ public class BookOrderDao extends AbstractDao<BookOrder> implements BasicBookOrd
             "on ot.o_t_id = bo.order_type_id join order_status os on bo.status_id = os.o_s_id " +
             "where os.o_s_name='claimed' or os.o_s_name='issued'";
 
-    protected BookOrderDao(ConnectionPool pool) {
+    private BookOrderDao(ConnectionPool pool) {
         super(pool, LOG);
     }
 

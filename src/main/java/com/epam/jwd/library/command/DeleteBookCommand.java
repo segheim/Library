@@ -1,12 +1,9 @@
 package com.epam.jwd.library.command;
 
 import com.epam.jwd.library.controller.RequestFactory;
-import com.epam.jwd.library.model.Book;
 import com.epam.jwd.library.service.BookService;
 
-import java.util.List;
-
-public class DeleteBookCommand implements Command{
+public class DeleteBookCommand implements Command {
 
     private static final String URL_CATALOG_PAGE = "controller?command=catalog_page";
     private static final String ID_PARAMETER_NAME = "id";
@@ -14,7 +11,7 @@ public class DeleteBookCommand implements Command{
     private final BookService bookService;
     private final RequestFactory requestFactory = RequestFactory.getInstance();
 
-    public DeleteBookCommand(BookService bookService) {
+    private DeleteBookCommand(BookService bookService) {
         this.bookService = bookService;
     }
 

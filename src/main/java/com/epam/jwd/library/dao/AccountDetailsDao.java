@@ -22,7 +22,7 @@ public class AccountDetailsDao extends AbstractDao<AccountDetails>{
     private static final String AD_F_NAME_COLUMN_NAME = "ad_f_name";
     private static final String AD_L_NAME_COLUMN_NAME = "ad_l_name";
 
-    protected AccountDetailsDao(ConnectionPool pool) {
+    private AccountDetailsDao(ConnectionPool pool) {
         super(pool, LOG);
     }
 

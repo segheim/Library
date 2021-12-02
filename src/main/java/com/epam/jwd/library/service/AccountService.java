@@ -24,7 +24,7 @@ public class AccountService implements BasicAccountService<Account>, Service<Acc
 
     private final AccountDao accountDao;
 
-    public AccountService(AccountDao accountDao) {
+    private AccountService(AccountDao accountDao) {
         this.accountDao = accountDao;
     }
 

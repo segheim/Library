@@ -43,7 +43,7 @@ public class AccountDao extends AbstractDao<Account> implements BasicAccountDao<
     private static final String ACCOUNT_DETAILS_LAST_NAME_COLUMN_NAME = "ad_l_name";
     private static final String ACCOUNT_ID_COLUMN_NAME = "account_id";
 
-    protected AccountDao(ConnectionPool pool) {
+    private AccountDao(ConnectionPool pool) {
         super(pool, LOG);
     }
 

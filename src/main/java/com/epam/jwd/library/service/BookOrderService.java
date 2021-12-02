@@ -21,7 +21,7 @@ public class BookOrderService implements Service<BookOrder>, BasicBookOrderServi
 
     private final BookOrderDao bookOrderDao;
 
-    public BookOrderService(BookOrderDao bookOrderDao) {
+    private BookOrderService(BookOrderDao bookOrderDao) {
         this.bookOrderDao = bookOrderDao;
     }
 
@@ -88,11 +88,13 @@ public class BookOrderService implements Service<BookOrder>, BasicBookOrderServi
             final Book book = bookOrder.getBook();
             final Long id = book.getId();
             final Integer amountOfLeft = book.getAmountOfLeft();
-            final boolean isDecreasedAmountOfLeftInBook = bookDao.decreaseAmountOfLeft(id,  amountOfLeft - 1);
-            if (!isChangedStatusOnIssue || !isRegisteredDateIssue || !isDecreasedAmountOfLeftInBook) {
-                throw new ServiceException("could not changed status, date issue, amount of left in book");
+            if (amountOfLeft > 0) {
+                final boolean isDecreasedAmountOfLeftInBook = bookDao.decreaseAmountOfLeft(id,  amountOfLeft - 1);
+                if (!isChangedStatusOnIssue || !isRegisteredDateIssue || !isDecreasedAmountOfLeftInBook) {
+                    throw new ServiceException("could not changed status, date issue, amount of left in book");
+                }
+                changedStatusBookOrder = true;
             }
-            changedStatusBookOrder = true;
             connection.setAutoCommit(true);
         } catch (InterruptedException e) {
             LOG.error("method takeConnection from ConnectionPool was interrupted", e);

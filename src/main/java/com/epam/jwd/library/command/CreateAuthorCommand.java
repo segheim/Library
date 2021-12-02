@@ -7,12 +7,12 @@ import com.epam.jwd.library.service.AuthorService;
 import java.util.List;
 import java.util.Optional;
 
-public class CreateAuthorCommand implements Command{
+public class CreateAuthorCommand implements Command {
 
     private final AuthorService authorService;
     private final RequestFactory requestFactory = RequestFactory.getInstance();
 
-    public CreateAuthorCommand(AuthorService authorService) {
+    private CreateAuthorCommand(AuthorService authorService) {
         this.authorService = authorService;
     }
 
@@ -34,6 +34,7 @@ public class CreateAuthorCommand implements Command{
     public static CreateAuthorCommand getInstance() {
         return Holder.INSTANCE;
     }
+
     private static class Holder {
         public static final CreateAuthorCommand INSTANCE = new CreateAuthorCommand(AuthorService.getInstance());
     }

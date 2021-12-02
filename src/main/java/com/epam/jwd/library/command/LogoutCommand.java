@@ -2,11 +2,14 @@ package com.epam.jwd.library.command;
 
 import com.epam.jwd.library.controller.RequestFactory;
 
-public class LogoutCommand implements Command{
+public class LogoutCommand implements Command {
 
     private static final String PATH_INDEX_JSP = "index.jsp";
 
     private final RequestFactory requestFactory = RequestFactory.getInstance();
+
+    private LogoutCommand() {
+    }
 
     @Override
     public CommandResponse execute(CommandRequest request) {

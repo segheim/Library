@@ -6,7 +6,7 @@ import com.epam.jwd.library.service.BookService;
 
 import java.util.List;
 
-public class ShowCatalogPageCommand implements Command{
+public class ShowCatalogPageCommand implements Command {
 
     private static final String REQUEST_ATTRIBUTE_NAME = "books";
     private static final String PATH_CATALOG_JSP = "/WEB-INF/jsp/catalog.jsp";

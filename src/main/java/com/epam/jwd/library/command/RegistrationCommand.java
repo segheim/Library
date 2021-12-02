@@ -6,12 +6,12 @@ import com.epam.jwd.library.service.AccountService;
 
 import java.util.List;
 
-public class RegistrationCommand implements Command{
+public class RegistrationCommand implements Command {
 
     private final AccountService accountService;
     private final RequestFactory requestFactory = RequestFactory.getInstance();
 
-    public RegistrationCommand(AccountService accountService) {
+    private RegistrationCommand(AccountService accountService) {
         this.accountService = accountService;
     }
 
