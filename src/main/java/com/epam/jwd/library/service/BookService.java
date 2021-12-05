@@ -82,13 +82,14 @@ public class BookService implements Service<Book>, BasicBookService<Book>{
             try {
                 connection.rollback();
             } catch (SQLException ex) {
-                ex.printStackTrace();
+                ex.printStackTrace();LOG.error("Database access error occurs connection rollback", ex);
             }
         } finally {
             try {
+                connection.setAutoCommit(true);
                 connection.close();
             } catch (SQLException e) {
-                LOG.error("Database access error occurs from createBookWithAuthor", e);
+                LOG.error("Database access error occurs connection close", e);
             }
         }
         return createBookWithAuthor;

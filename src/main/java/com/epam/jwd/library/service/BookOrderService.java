@@ -76,38 +76,57 @@ public class BookOrderService implements Service<BookOrder>, BasicBookOrderServi
     @Override
     public boolean changeStatusBookOrderOnIssued(Long idBookOrder) {
         boolean changedStatusBookOrder = false;
-        try (Connection connection = ConnectionPool.lockingPool().takeConnection()) {
+        Connection connection = ConnectionPool.lockingPool().takeConnection();
+        try {
             connection.setAutoCommit(false);
             BookOrderDao bookOrderDao = BookOrderDao.getInstance();
             BookDao bookDao = BookDao.getInstance();
-            final boolean isChangedStatusOnIssue = bookOrderDao.updateStatusOnIssuedById(idBookOrder);
-            final LocalDate date = LocalDate.now();
-            Date sqlDateIssue = Date.valueOf(date);
-            final boolean isRegisteredDateIssue = bookOrderDao.registerDateOfIssueById(idBookOrder, sqlDateIssue);
-            final BookOrder bookOrder = bookOrderDao.read(idBookOrder).orElseThrow(() -> new ServiceException("could not get BookOrder"));
-            final Book book = bookOrder.getBook();
+            final boolean ChangedStatusOnIssue = bookOrderDao.updateStatusOnIssuedById(idBookOrder);
+            final boolean RegisteredDateIssue = isRegisteredDateIssue(idBookOrder, bookOrderDao);
+            final Book book = bookOrderDao.read(idBookOrder).orElseThrow(() -> new ServiceException("could not get BookOrder"))
+                    .getBook();
             final Long id = book.getId();
             final Integer amountOfLeft = book.getAmountOfLeft();
-            if (amountOfLeft > 0) {
-                final boolean isDecreasedAmountOfLeftInBook = bookDao.decreaseAmountOfLeft(id,  amountOfLeft - 1);
-                if (!isChangedStatusOnIssue || !isRegisteredDateIssue || !isDecreasedAmountOfLeftInBook) {
-                    throw new ServiceException("could not changed status, date issue, amount of left in book");
-                }
-                changedStatusBookOrder = true;
+            if (amountOfLeft < 1) {
+                throw new ServiceException("Amount of left < 1 ");
             }
-            connection.setAutoCommit(true);
+            final boolean DecreasedAmountOfLeftInBook = bookDao.decreaseAmountOfLeft(id,  amountOfLeft - 1);
+            if (!ChangedStatusOnIssue || !RegisteredDateIssue || !DecreasedAmountOfLeftInBook) {
+                throw new ServiceException("could not changed status, date issue, amount of left in book");
+            }
+            changedStatusBookOrder = true;
+            connection.commit();
         } catch (ServiceException e) {
             LOG.error("could not change status book order on issue", e);
-        } catch (SQLException e) {
-            e.printStackTrace();
+            try {
+                connection.rollback();
+            } catch (SQLException ex) {
+                LOG.error("Database access error occurs connection rollback", ex);
+            }
+        }catch (SQLException e) {
+            LOG.error("Database access error connection commit", e);
+        } finally {
+            try {
+                connection.setAutoCommit(true);
+                connection.close();
+            } catch (SQLException e) {
+                LOG.error("Database access error occurs connection close", e);
+            }
         }
         return changedStatusBookOrder;
+    }
+
+    private boolean isRegisteredDateIssue(Long idBookOrder, BookOrderDao bookOrderDao) {
+        final LocalDate date = LocalDate.now();
+        Date sqlDateIssue = Date.valueOf(date);
+        return bookOrderDao.registerDateOfIssueById(idBookOrder, sqlDateIssue);
     }
 
     @Override
     public boolean changeStatusBookOrderOnEnded(Long idBookOrder) {
         boolean changedStatusBookOrder = false;
-        try (Connection connection = ConnectionPool.lockingPool().takeConnection()) {
+        Connection connection = ConnectionPool.lockingPool().takeConnection();
+        try {
             connection.setAutoCommit(false);
             BookOrderDao bookOrderDao = BookOrderDao.getInstance();
             BookDao bookDao = BookDao.getInstance();
@@ -124,11 +143,23 @@ public class BookOrderService implements Service<BookOrder>, BasicBookOrderServi
                 throw new ServiceException("could not changed status, date ended, amount of left in book");
             }
             changedStatusBookOrder = true;
-            connection.setAutoCommit(true);
-        } catch (ServiceException e) {
-            LOG.error("could not change status book order on issue", e);
-        } catch (SQLException e) {
-            e.printStackTrace();
+            connection.commit();
+        }  catch (ServiceException e) {
+            LOG.error("could not change status book order on ended", e);
+            try {
+                connection.rollback();
+            } catch (SQLException ex) {
+                LOG.error("Database access error occurs connection rollback", ex);
+            }
+        }catch (SQLException e) {
+            LOG.error("Database access error connection commit", e);
+        } finally {
+            try {
+                connection.setAutoCommit(true);
+                connection.close();
+            } catch (SQLException e) {
+                LOG.error("Database access error occurs connection close", e);
+            }
         }
         return changedStatusBookOrder;
     }

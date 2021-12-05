@@ -25,12 +25,24 @@ public class RoleFilter implements Filter {
         Set<Command> commandsForAdmin = new HashSet<>();
         commandsForAdmin.add(ShowMainPageCommand.getInstance());
         commandsForAdmin.add(ShowErrorPageCommand.getInstance());
-        commandsForAdmin.add(ShowAccountsPageCommand.getInstance());
         commandsForAdmin.add(ShowAuthorPageCommand.getInstance());
         commandsForAdmin.add(ShowCatalogPageCommand.getInstance());
-        commandsForAdmin.add(ShowAccountsPageCommand.getInstance());
         commandsForAdmin.add(ShowRegistrationPageCommand.getInstance());
-        commandsForAdmin.add(RegistrationCommand.getInstance());
+        commandsForAdmin.add(CreateAuthorCommand.getInstance());
+        commandsForAdmin.add(CreateBookCommand.getInstance());
+        commandsForAdmin.add(DeleteAccountCommand.getInstance());
+        commandsForAdmin.add(DeleteAuthorCommand.getInstance());
+        commandsForAdmin.add(DeleteBookCommand.getInstance());
+        commandsForAdmin.add(ShowAccountPageCommand.getInstance());
+        commandsForAdmin.add(ShowAccountsPageCommand.getInstance());
+        commandsForAdmin.add(ShowBookPageCommand.getInstance());
+        commandsForAdmin.add(ShowCreateAuthorPageCommand.getInstance());
+        commandsForAdmin.add(ShowCreateBookPageCommand.getInstance());
+        commandsForAdmin.add(ShowUpdateAuthorPageCommand.getInstance());
+        commandsForAdmin.add(ShowUpdateBookPageCommand.getInstance());
+        commandsForAdmin.add(UpdateAuthorCommand.getInstance());
+        commandsForAdmin.add(UpdateBookCommand.getInstance());
+        commandsForAdmin.add(LoginCommand.getInstance());
         commandsForAdmin.add(LogoutCommand.getInstance());
 
         Set<Command> commandsForLibrarian = new HashSet<>();
@@ -38,7 +50,6 @@ public class RoleFilter implements Filter {
         commandsForLibrarian.add(ShowErrorPageCommand.getInstance());
         commandsForLibrarian.add(ShowAuthorPageCommand.getInstance());
         commandsForLibrarian.add(ShowCatalogPageCommand.getInstance());
-        commandsForLibrarian.add(ShowAccountsPageCommand.getInstance());
         commandsForLibrarian.add(DeleteBookOrderCommand.getInstance());
         commandsForLibrarian.add(ShowLibrarianBookOrderPageCommand.getInstance());
         commandsForLibrarian.add(IssueBookCommand.getInstance());
@@ -64,21 +75,9 @@ public class RoleFilter implements Filter {
         commandsForGuest.add(ShowLoginPageCommand.getInstance());
         commandsForGuest.add(ShowErrorPageCommand.getInstance());
         commandsForGuest.add(ShowCatalogPageCommand.getInstance());
-        commandsForGuest.add(ShowCreateBookPageCommand.getInstance());
-        commandsForGuest.add(ShowCreateAuthorPageCommand.getInstance());
-        commandsForGuest.add(ShowUpdateBookPageCommand.getInstance());
-        commandsForGuest.add(ShowUpdateAuthorPageCommand.getInstance());
-        commandsForGuest.add(ShowBookPageCommand.getInstance());
         commandsForGuest.add(ShowAuthorPageCommand.getInstance());
         commandsForGuest.add(ShowRegistrationPageCommand.getInstance());
         commandsForGuest.add(RegistrationCommand.getInstance());
-        commandsForGuest.add(DeleteAccountCommand.getInstance());
-        commandsForGuest.add(CreateBookCommand.getInstance());
-        commandsForGuest.add(CreateAuthorCommand.getInstance());
-        commandsForGuest.add(DeleteBookCommand.getInstance());
-        commandsForGuest.add(DeleteAuthorCommand.getInstance());
-        commandsForGuest.add(UpdateBookCommand.getInstance());
-        commandsForGuest.add(UpdateAuthorCommand.getInstance());
         commandsForGuest.add(LoginCommand.getInstance());
 
         commandsWithRole.put(Role.ADMIN, commandsForAdmin);

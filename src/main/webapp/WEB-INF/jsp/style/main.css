@@ -1,0 +1,37 @@
+body{
+    padding: 0px;
+    margin: 0px;
+    display: flex;
+    background-image: url('https://images.idgesg.net/images/article/2020/07/stack_of_books_one_open_scattering_flying_letters_language_reading_education_dictionary_by_domin_domin_gettyimages-157719194_abstract_binary_by_aleksei_derin_gettyimages-914850254_cso_2400x1600-100853104-large.jpg?auto=webp&quality=85,70');
+}
+
+.container{
+    display: flex;
+}
+
+.container-main{
+    width: 100%;
+}
+
+.container-context{
+    width: 1280px;
+    flex-direction: column;
+}
+
+header{
+    justify-content: space-between;
+}
+
+.nav-context{
+    flex-direction: row;
+}
+
+.header-rightside-inner{
+    align-items: center;
+    justify-content: end;
+}
+
+.container-body{
+    justify-content: center;
+
+}
