@@ -1,0 +1,13 @@
+.container{
+    display: flex;
+    justify-content: center;
+}
+
+.container-main{
+    width: 100%;
+}
+
+.container-context{
+    width: 1280px;
+    flex-direction: column;
+}

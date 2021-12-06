@@ -42,7 +42,7 @@
                             </c:when>
                             <c:otherwise>
                                 <a class="btn btn-primary" href="/controller?command=login_page" role="button">Sing in</a>
-                                <a class="btn btn-primary" href="/controller?command=registration_page" role="button">Registration</a>
+                                <a class="btn btn-primary" href="/controller?command=registration_page" role="button">Register</a>
                             </c:otherwise>
                         </c:choose>
 

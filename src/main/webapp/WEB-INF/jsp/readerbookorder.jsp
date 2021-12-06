@@ -3,40 +3,60 @@
 <html>
 <head>
     <title>Book order for reader</title>
-    <style><%@include file="/WEB-INF/jsp/style/main.css"%></style>
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-EVSTQN3/azprG1Anm3QDgpJLIm9Nao0Yz1ztcQTwFspd3yD65VohhpuuCOmLASjC" crossorigin="anonymous">
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.bundle.min.js" integrity="sha384-MrcW6ZMFYlzcLA8Nl+NtUVF0sA7MsXsP1UyJoMp4YLEuNSfAP+JcXn/tWtIaxVXM" crossorigin="anonymous"></script>
+    <style><%@include file="/WEB-INF/jsp/style/readerBookOrder.css"%></style>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css" rel="stylesheet"
+          integrity="sha384-EVSTQN3/azprG1Anm3QDgpJLIm9Nao0Yz1ztcQTwFspd3yD65VohhpuuCOmLASjC" crossorigin="anonymous">
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.bundle.min.js"
+            integrity="sha384-MrcW6ZMFYlzcLA8Nl+NtUVF0sA7MsXsP1UyJoMp4YLEuNSfAP+JcXn/tWtIaxVXM" crossorigin="anonymous"></script>
 </head>
 <body>
-<c:choose>
-    <c:when test="${not empty requestScope.bookOrders}">
-        <h1>
-            Order:
-        </h1>
-        <p>
-        <c:forEach var="bookOrder" items="${bookOrders}">
-            <br>${bookOrder.details.firstName}
-            ${bookOrder.details.lastName}
-            <br>Book: &#34;${bookOrder.book.title}&#34;
-            <c:forEach var="author" items="${requestScope.bookOrder.book.authors}">
-                <br>${author.firstName}
-                <br>${author.lastName}
-            </c:forEach>
-            <br>Type of order: ${bookOrder.type.name()}
-            <br>Date create order: ${bookOrder.dateCreate}
-            <br>Date issue a book: ${bookOrder.dateIssue}
-            <br>Date return a book: ${bookOrder.dateReturn}
-            <br>Order status: ${bookOrder.status.name()}
-            <p>
-                <a href="/controller?command=delete_book_order&id=${bookOrder.id}">Delete order</a>
-            </p>
-            <br>
-        </c:forEach>
-        </p>
-    </c:when>
-    <c:otherwise>
-        List of orders is empty!
-    </c:otherwise>
-</c:choose>
+    <div class="container-main">
+        <div class="container-context">
+            <div class="container">
+                <h3>${sessionScope.account.details.firstName} ${sessionScope.account.details.lastName}</h3>
+            </div>
+            <c:choose>
+                <c:when test="${not empty requestScope.bookOrders}">
+                    <c:forEach var="bookOrder" items="${bookOrders}">
+                        <div class="container">
+                            Book: &#34;${bookOrder.book.title}&#34;
+                        </div>
+                        <div class="container">
+                            Author: <c:forEach var="author" items="${requestScope.bookOrder.book.authors}">
+                                    ${author.firstName}
+                                <br>${author.lastName}
+                            </c:forEach>
+                        </div>
+                        <div class="container">
+                            Type of order: ${bookOrder.type.name()}
+                        </div>
+                        <div class="container">
+                            Date create order: ${bookOrder.dateCreate}
+                        </div>
+                        <div class="container">
+                            Date issue a book: ${bookOrder.dateIssue}
+                        </div>
+                        <div class="container">
+                            Date return a book: ${bookOrder.dateReturn}
+                        </div>
+                        <div class="container">
+                            Order status: ${bookOrder.status.name()}
+                        </div>
+                        <div class="container">
+                            <a class="btn btn-primary" href="/controller?command=delete_book_order&id=${bookOrder.id}" role="button">Delete order</a>
+                        </div>
+                        <br>
+                    </c:forEach>
+                </c:when>
+                <c:otherwise>
+                    <div class="container-center">
+                        <div class="alert alert-danger" role="alert">
+                            <h3 class="alert-heading">List of orders is empty! &#9785</h3>
+                        </div>
+                    </div>
+                </c:otherwise>
+            </c:choose>
+        </div>
+    </div>
 </body>
 </html>

@@ -1,0 +1,10 @@
+.container-main{
+    display: flex;
+    height: 700px;
+    flex-direction: row;
+    justify-content: center;
+}
+
+.container-center{
+    justify-content: center;
+}
