@@ -1,5 +1,6 @@
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <%@ page contentType="text/html;charset=UTF-8" language="java" %>
+<%@ page import="com.epam.jwd.library.model.Role" %>
 <html>
 <head>
     <title>Book</title>

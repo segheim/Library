@@ -11,7 +11,7 @@
 <body>
     <div class="container-login">
         <div class="col-sm-4">
-            <h1 class="header-login">Register</h1>
+            <h1 class="header-register">Register</h1>
             <form name = "registration_form" method="post" action="/controller?command=registration">
                 <div class="mb-3">
                     <label for="exampleInputLogin" class="form-label">Login</label>

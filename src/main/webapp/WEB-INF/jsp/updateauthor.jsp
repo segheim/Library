@@ -3,51 +3,33 @@
 <html>
 <head>
     <title>Update author</title>
-    <style><%@include file="/WEB-INF/jsp/style/main.css"%></style>
+    <style><%@include file="/WEB-INF/jsp/style/updateAuthor.css"%></style>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css" rel="stylesheet"
           integrity="sha384-EVSTQN3/azprG1Anm3QDgpJLIm9Nao0Yz1ztcQTwFspd3yD65VohhpuuCOmLASjC" crossorigin="anonymous">
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.bundle.min.js"
             integrity="sha384-MrcW6ZMFYlzcLA8Nl+NtUVF0sA7MsXsP1UyJoMp4YLEuNSfAP+JcXn/tWtIaxVXM" crossorigin="anonymous"></script>
 </head>
 <body>
-    <div class="container-login">
-        <div class="col-sm-4">
-            <h1 class="header-login">Update author</h1>
-            <form>
-                <div class="mb-3">
-                    <label for="exampleInputLogin" class="form-label">Login</label>
-                    <input type="text" class="form-control" id="exampleInputLogin">
-                </div>
-                <div class="mb-3">
-                    <label for="exampleInputPassword" class="form-label">Password</label>
-                    <input type="password" class="form-control" id="exampleInputPassword">
-                </div>
-                <div class="mb-3">
-                    <label for="exampleInputFirstName" class="form-label">First name</label>
-                    <input type="text" class="form-control" id="exampleInputFirstName">
-                </div>
-                <div class="mb-3">
-                    <label for="exampleInputLastName" class="form-label">Last name</label>
-                    <input type="text" class="form-control" id="exampleInputLastName">
-                </div>
-                <button type="submit" class="btn btn-primary">Register</button>
-            </form>
+    <div class="container-context">
+        <div class="container-login">
+            <div class="col-sm-4">
+                <h1 class="header-update">Update author</h1>
+                <h2 class="header-form">${author.firstName} ${author.lastName}</h2>
+                <form name = "update_author_form" method="post" action="/controller?command=update_author">
+                    <input type="hidden" name="id" value="${author.id}">
+                    <div class="mb-3">
+                        <label for="exampleInputFirstName" class="form-label">First name</label>
+                        <input type="text" name="first_name" class="form-control" id="exampleInputFirstName">
+                    </div>
+                    <div class="mb-3">
+                        <label for="exampleInputLastName" class="form-label">Last name</label>
+                        <input type="text" name="last_name" class="form-control" id="exampleInputLastName">
+                    </div>
+                    <button type="submit" class="btn btn-primary">Update</button>
+                </form>
+            </div>
         </div>
     </div>
-<h1>${author.firstName} ${author.lastName}</h1>
-<h3>Please enter changes into Author:</h3>
-<form name = "update_author_form" method="post" action="/controller?command=update_author">
-    <input type="hidden" name="id" value="${author.id}">
-    First name:<br/>
-    <input type="text" name="first_name" value=""/>
-    <br/>Last name:<br/>
-    <input type="text" name="last_name" value=""/>
-    <br/>
-    <c:if test="${not empty requestScope.errorUpdateAuthorPassMessage}">
-        <b style="color: red">${requestScope.errorUpdateAuthorPassMessage}</b>
-        <br>
-    </c:if>
-    <input type="submit" value="update"/>
 </form>
 </body>
 </html>
