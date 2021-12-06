@@ -32,7 +32,7 @@
                         <c:forEach var="book" items="${requestScope.books}">
                             <tr>
                                 <c:if test="${book.amountOfLeft > 0}">
-                                    <td>${book.title}</td>
+                                    <td><a href="/controller?command=book_page&id=${book.id}">${book.title}</a></td>
                                     <td>
                                         <c:forEach var="author" items="${book.authors}">
                                             ${author.firstName} ${author.lastName}<br>

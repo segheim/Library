@@ -51,7 +51,11 @@
             </div>
         </header>
         <main class="container-body">
-            <div class="btn-group-vertical">
+            <div class="container">
+                <div class="container-img">
+                    <img src="https://mipt.ru/upload/medialibrary/907/111.jpg">
+                    <span class="some-text">
+              <div class="btn-group-vertical">
                 <c:if test="${not empty sessionScope.account and (sessionScope.account.role eq Role.LIBRARIAN)}">
                     <a class="btn btn-primary" href="/controller?command=librarian_book_order_page" role="button">check orders</a>
                 </c:if>
@@ -62,6 +66,9 @@
                 <c:if test="${not empty sessionScope.account && sessionScope.account.role eq Role.ADMIN}">
                     <a class="btn btn-primary" href="/controller?command=accounts_page" role="button">accounts</a>
                 </c:if>
+            </div>
+            </span>
+                </div>
             </div>
         </main>
         <footer>

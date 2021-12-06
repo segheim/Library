@@ -3,22 +3,29 @@
 <html>
 <head>
     <title>Account</title>
+    <style><%@include file="/WEB-INF/jsp/style/account.css"%></style>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-EVSTQN3/azprG1Anm3QDgpJLIm9Nao0Yz1ztcQTwFspd3yD65VohhpuuCOmLASjC" crossorigin="anonymous">
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.bundle.min.js" integrity="sha384-MrcW6ZMFYlzcLA8Nl+NtUVF0sA7MsXsP1UyJoMp4YLEuNSfAP+JcXn/tWtIaxVXM" crossorigin="anonymous"></script>
 </head>
 <body>
-<h1>
-    Your personal data, dear ${requestScope.account.role.name()}!
-</h1>
-<h3>
-    Personal number: ${requestScope.account.id}
-</h3>
-<h3>
-    Login: ${requestScope.account.login}
-</h3>
-<h3>
-    First Name: ${requestScope.account.details.firstName}
-</h3>
-<h3>
-    Last Name: ${requestScope.account.details.lastName}
-</h3>
+    <div class="container-main">
+        <div class="container-context">
+            <div class="container">
+                <h2>Your personal data, dear ${requestScope.account.role.name()}!</h2>
+            </div>
+            <div class="container">
+                <h3>Personal number: ${requestScope.account.id}</h3>
+            </div>
+            <div class="container">
+                <h3>Login: ${requestScope.account.login}</h3>
+            </div>
+            <div class="container">
+                <h3>First Name: ${requestScope.account.details.firstName}</h3>
+            </div>
+            <div class="container">
+               <h3>Last Name: ${requestScope.account.details.lastName}</h3>
+            </div>
+        </div>
+    </div>
 </body>
 </html>

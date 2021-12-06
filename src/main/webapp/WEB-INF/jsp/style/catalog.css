@@ -12,7 +12,7 @@ body{
     width: 100%;
 }
 
-.container-contex{
+.container-context{
     width: 1280px;
     flex-direction: column;
 }
