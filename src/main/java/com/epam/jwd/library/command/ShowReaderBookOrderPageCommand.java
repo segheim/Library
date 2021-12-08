@@ -24,7 +24,7 @@ public class ShowReaderBookOrderPageCommand implements Command{
         final List<BookOrder> bookOrders = bookOrderService.findOrdersByIdAccount(account.getId());
         if (!bookOrders.isEmpty()) {
             request.addAttributeToJsp("bookOrders", bookOrders);
-            return requestFactory.createForwardResponse("/WEB-INF/jsp/readerbookorder.jsp");
+            return requestFactory.createForwardResponse("/WEB-INF/jsp/readerBookOrder.jsp");
         } else {
             request.addAttributeToJsp("errorPassMassage", "You have not order!");
             return requestFactory.createForwardResponse("/WEB-INF/jsp/error.jsp");

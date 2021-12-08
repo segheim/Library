@@ -76,7 +76,7 @@ public class BookDao extends AbstractDao<Book> implements BasicBookDao<Book>{
                 if (generatedKeys.next()) {
                     long key = generatedKeys.getLong(1);
                     LOG.info("key = {}", key);
-                    createdBook = read(key);
+                    createdBook = Optional.of(new Book(key, book.getTitle(), book.getDatePublished(), book.getAmountOfLeft()));
                 }
                 return createdBook;
             } else

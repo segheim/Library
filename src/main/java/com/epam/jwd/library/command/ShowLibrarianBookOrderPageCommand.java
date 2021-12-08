@@ -20,7 +20,7 @@ public class ShowLibrarianBookOrderPageCommand implements Command{
         final List<BookOrder> bookOrders = bookOrderService.findAllUncompleted();
         if (!bookOrders.isEmpty()) {
             request.addAttributeToJsp("bookOrders", bookOrders);
-            return requestFactory.createForwardResponse("/WEB-INF/jsp/librarianbookorder.jsp");
+            return requestFactory.createForwardResponse("/WEB-INF/jsp/librarianBookOrder.jsp");
         } else {
             request.addAttributeToJsp("errorPassMassage", "There is no uncompleted orders!");
             return requestFactory.createForwardResponse("/WEB-INF/jsp/error.jsp");

@@ -38,8 +38,7 @@ public class AccountDetailsDao extends AbstractDao<AccountDetails>{
             preparedStatement.setString(3, accountDetails.getLastName());
             final int numberChangedLines = preparedStatement.executeUpdate();
             if (numberChangedLines != 0) {
-                createdAccountDetails = read(accountDetails.getId());
-                return createdAccountDetails;
+                createdAccountDetails = Optional.of(accountDetails);
             } else
                 throw new AccountDetailsDaoException("could not change lines for create account details");
         } catch (SQLException e) {

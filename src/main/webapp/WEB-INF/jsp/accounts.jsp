@@ -8,38 +8,38 @@
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.bundle.min.js" integrity="sha384-MrcW6ZMFYlzcLA8Nl+NtUVF0sA7MsXsP1UyJoMp4YLEuNSfAP+JcXn/tWtIaxVXM" crossorigin="anonymous"></script>
 </head>
 <body>
-<div class="container-main">
-    <div class="container-context">
-        <div class="container">
-            <table class="table table-striped table-hover">
-                <thead class="table-primary">
-                <tr>
-                    <th>Id</th>
-                    <th>Login</th>
-                    <th>Role</th>
-                    <th>First name</th>
-                    <th>Last name</th>
-                    <th>Action</th>
-                </tr>
-                </thead>
-                <tbody>
-                <c:forEach var="account" items="${requestScope.accounts}">
+    <div class="container-main">
+        <div class="container-context">
+            <div class="container">
+                <table class="table table-striped table-hover">
+                    <thead class="table-primary">
                     <tr>
-                        <td>${account.id}</td>
-                        <td>${account.login}</td>
-                        <td>${account.role}</td>
-                        <td>${account.details.firstName}</td>
-                        <td>${account.details.lastName}</td>
-                        <td>
-                            <a href="/controller?command=change_role&id=${account.id}">change role</a>
-                            <a href="/controller?command=delete_account&id=${account.id}">delete</a>
-                        </td>
+                        <th>Id</th>
+                        <th>Login</th>
+                        <th>Role</th>
+                        <th>First name</th>
+                        <th>Last name</th>
+                        <th>Action</th>
                     </tr>
-                </c:forEach>
-                </tbody>
-            </table>
+                    </thead>
+                    <tbody>
+                    <c:forEach var="account" items="${requestScope.accounts}">
+                        <tr>
+                            <td>${account.id}</td>
+                            <td>${account.login}</td>
+                            <td>${account.role}</td>
+                            <td>${account.details.firstName}</td>
+                            <td>${account.details.lastName}</td>
+                            <td>
+                                <a href="/controller?command=change_role&id=${account.id}">change role</a>
+                                <a href="/controller?command=delete_account&id=${account.id}">delete</a>
+                            </td>
+                        </tr>
+                    </c:forEach>
+                    </tbody>
+                </table>
+            </div>
         </div>
     </div>
-</div>
 </body>
 </html>

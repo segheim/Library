@@ -21,7 +21,7 @@ public class ShowUpdateAuthorPageCommand implements Command{
         final Optional<Author> author = authorService.findById(idAuthor);
         if (author.isPresent()) {
             request.addAttributeToJsp("author", author.get());
-            return requestFactory.createForwardResponse("/WEB-INF/jsp/updateauthor.jsp");
+            return requestFactory.createForwardResponse("/WEB-INF/jsp/updateAuthor.jsp");
         } else {
             request.addAttributeToJsp("errorPassMassage", "Could not find author");
             return requestFactory.createForwardResponse("/WEB-INF/jsp/error.jsp");

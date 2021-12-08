@@ -1,5 +1,6 @@
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <%@ page contentType="text/html;charset=UTF-8" language="java" %>
+<%@ page import="com.epam.jwd.library.model.Role" %>
 <html>
 <head>
     <title>Catalog</title>
@@ -12,7 +13,7 @@
         <div class="container-context">
             <c:if test="${not empty sessionScope.account and (sessionScope.account.role eq Role.ADMIN)}">
                 <div class="d-grid gap-2">
-                    <a class="btn btn-primary" href="/controller?command=create_author_page" role="button">create author</a>
+                    <a class="btn btn-primary" href="/controller?command=create_book_page" role="button">create book</a>
                 </div>
             </c:if>
             <div class="container">
@@ -54,6 +55,5 @@
             </div>
         </div>
     </div>
-</table>
 </body>
 </html>

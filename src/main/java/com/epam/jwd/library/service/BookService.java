@@ -71,9 +71,10 @@ public class BookService implements Service<Book>, BasicBookService<Book>{
             final Long idAuthor = authorDao.create(author)
                     .map(Author::getId)
                     .orElseThrow(() -> new ServiceException("could not create author"));
-            if (bookDao.createBookInAuthorToBook(idBook, idAuthor)) {
-                createBookWithAuthor = true;
+            if (!bookDao.createBookInAuthorToBook(idBook, idAuthor)) {
+                connection.rollback();
             }
+            createBookWithAuthor = true;
             connection.commit();
         } catch (SQLException e) {
             LOG.error("sql error, database access error occurs(setAutoCommit)", e);

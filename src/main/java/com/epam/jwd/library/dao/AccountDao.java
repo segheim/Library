@@ -18,7 +18,7 @@ public class AccountDao extends AbstractDao<Account> implements BasicAccountDao<
 
     private static final Logger LOG = LogManager.getLogger(AccountDao.class);
 
-    private static final String INSERT_NEW_ACCOUNT = "insert into l_account (a_login, a_password, a_role_id) values (?,?,?)";
+    private static final String INSERT_NEW_ACCOUNT = "insert into l_account (a_login, a_password) values (?,?)";
 
     private static final String SELECT_ALL_ACCOUNTS = "select a_id as id, a_login as login, a_password as password, " +
             "a_role.role_name as role_name, ad.account_id as account_id, ad.ad_first_name as ad_f_name, ad.ad_last_name as ad_l_name " +
@@ -57,14 +57,12 @@ public class AccountDao extends AbstractDao<Account> implements BasicAccountDao<
              final PreparedStatement preparedStatement = connection.prepareStatement(INSERT_NEW_ACCOUNT, Statement.RETURN_GENERATED_KEYS)) {
             preparedStatement.setString(1, account.getLogin());
             preparedStatement.setString(2, account.getPassword());
-            preparedStatement.setInt(3, account.getRole().ordinal());
             final int numberChangedLines = preparedStatement.executeUpdate();
             if (numberChangedLines != 0) {
                 final ResultSet generatedKeys = preparedStatement.getGeneratedKeys();
                 if (generatedKeys.next()) {
                     long key = generatedKeys.getLong(1);
-                    createdAccount = read(key);
-                    return createdAccount;
+                    createdAccount = Optional.of(new Account(key, account.getLogin(), account.getPassword(), Role.READER));
                 }
             } else
                 throw new AccountDaoException("could not create account");
@@ -153,7 +151,6 @@ public class AccountDao extends AbstractDao<Account> implements BasicAccountDao<
                 final Account executedAccount = executeAccount(resultSet).orElseThrow(()
                         -> new AccountDaoException("could not extract account"));
                 account = Optional.of(executedAccount);
-                return account;
             }
         } catch (SQLException e) {
             LOG.error("sql error, could not found a account", e);

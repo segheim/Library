@@ -4,9 +4,9 @@ import java.util.Objects;
 
 public class Author implements Entity{
 
-    private Long id;
-    private String firstName;
-    private String lastName;
+    private final Long id;
+    private final String firstName;
+    private final String lastName;
 
     public Author(Long id, String firstName, String lastName ) {
         this.id = id;
@@ -29,14 +29,6 @@ public class Author implements Entity{
 
     public String getLastName() {
         return lastName;
-    }
-
-    public void setFirst_name(String first_name) {
-        this.firstName = first_name;
-    }
-
-    public void setLast_name(String last_name) {
-        this.lastName = last_name;
     }
 
     @Override

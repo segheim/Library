@@ -15,12 +15,12 @@ public class AuthorDao extends AbstractDao<Author> implements BasicAuthorDao<Aut
     private static final Logger LOG = LogManager.getLogger(AuthorDao.class);
 
     private static final String INSERT_NEW_AUTHOR = "insert into author (first_name, last_name) values (?,?)";
-    private static final String SELECT_AUTHOR_BY_ID = "select id as id, first_name as f_name, last_name as l_name" +
-            " from author where id=?";
-    private static final String SELECT_ALL_AUTHORS = "select id as id, first_name as f_name, last_name as l_name\n" +
+    private static final String SELECT_AUTHOR_BY_ID = "select id as id, first_name as f_name, last_name as l_name " +
+            "from author where id=?";
+    private static final String SELECT_ALL_AUTHORS = "select id as id, first_name as f_name, last_name as l_name " +
             "from author";
-    private static final String SELECT_AUTHOR_BY_LAST_NAME ="select id, first_name, last_name from author" +
-            " where first_name='?'";
+    private static final String SELECT_AUTHOR_BY_LAST_NAME ="select id as id, first_name as f_name, last_name as " +
+            "l_name from author where last_name=?";
     private static final String UPDATE_AUTHOR = "update author set first_name=?, last_name=? where id=?";
     private static final String DELETE_AUTHOR_BY_ID = "delete from author where id=?";
 
@@ -45,8 +45,7 @@ public class AuthorDao extends AbstractDao<Author> implements BasicAuthorDao<Aut
                 final ResultSet generatedKeys = preparedStatement.getGeneratedKeys();
                 if (generatedKeys.next()) {
                     long key = generatedKeys.getLong(1);
-                     createdAuthor = read(key);
-                    return createdAuthor;
+                     createdAuthor = Optional.of(new Author(key, author.getFirstName(), author.getLastName()));
                 }
             } else
                 throw new AuthorDaoException("could not create author");
@@ -154,7 +153,6 @@ public class AuthorDao extends AbstractDao<Author> implements BasicAuthorDao<Aut
                         -> new AuthorDaoException("could not extract author"));
                 author = Optional.of(executedAuthor);
             }
-            return author;
         } catch (SQLException e) {
             LOG.error("sql error, could not delete author", e);
         } catch (AuthorDaoException e) {

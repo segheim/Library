@@ -41,16 +41,31 @@ public class AccountService implements BasicAccountService<Account>, Service<Acc
             connection.setAutoCommit(false);
             AccountDao accountDao = AccountDao.getInstance();
             AccountDetailsDao accountDetailsDao = AccountDetailsDao.getInstance();
-            final Long idAccount = accountDao.create(account)
-                    .map(Account::getId)
-                    .orElseThrow(() -> new ServiceException("could not create account"));
+            final Account createdAccount = accountDao.create(account).orElseThrow(() -> new ServiceException("could not create account"));
+            final Long idAccount = createdAccount.getId();
             accountDetailsDao.create(new AccountDetails(idAccount, firstName, lastName));
-            connection.setAutoCommit(true);
             createAccountWithDetails = accountDao.readByLogin(login);
+            if (createAccountWithDetails.isPresent()) {
+                connection.commit();
+            } else {
+                connection.rollback();
+            }
         } catch (SQLException e) {
-            LOG.error("sql error, database access error occurs", e);
+            LOG.error("sql error, Database access error connection commit", e);
         } catch (ServiceException e) {
             LOG.error("could not create new account", e);
+            try {
+                connection.rollback();
+            } catch (SQLException ex) {
+                LOG.error("Database access error occurs connection rollback", ex);
+            }
+        } finally {
+            try {
+                connection.setAutoCommit(true);
+                connection.close();
+            } catch (SQLException e) {
+                LOG.error("Database access error occurs connection close", e);
+            }
         }
         return createAccountWithDetails;
     }

@@ -8,7 +8,7 @@ import java.util.Optional;
 
 public class ShowUpdateBookPageCommand implements Command{
 
-    private static final String PATH_UPDATE_BOOK_JSP = "/WEB-INF/jsp/updatebook.jsp";
+    private static final String PATH_UPDATE_BOOK_JSP = "/WEB-INF/jsp/updateBook.jsp";
 
     private final BookService bookService;
     private final RequestFactory requestFactory = RequestFactory.getInstance();
@@ -23,7 +23,7 @@ public class ShowUpdateBookPageCommand implements Command{
         final Optional<Book> book = bookService.findById(idBook);
         if (book.isPresent()) {
             request.addAttributeToJsp("book", book.get());
-            return requestFactory.createForwardResponse("/WEB-INF/jsp/updatebook.jsp");
+            return requestFactory.createForwardResponse("/WEB-INF/jsp/updateBook.jsp");
         } else {
             request.addAttributeToJsp("errorPassMassage", "Could not find book");
             return requestFactory.createForwardResponse("/WEB-INF/jsp/error.jsp");

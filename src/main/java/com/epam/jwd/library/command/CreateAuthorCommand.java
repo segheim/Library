@@ -22,12 +22,10 @@ public class CreateAuthorCommand implements Command {
         final String lastName = request.getParameter("last_name");
         final Optional<Author> author = authorService.create(firstName, lastName);
         if (author.isPresent()) {
-            final List<Author> authors = authorService.findAll();
-            request.addAttributeToJsp("authors", authors);
             return requestFactory.createRedirectResponse("controller?command=author_page");
         } else {
             request.addAttributeToJsp("errorCreateAuthorMessage", "Incorrect dates, please try again");
-            return requestFactory.createForwardResponse("/WEB-INF/jsp/createauthor.jsp");
+            return requestFactory.createForwardResponse("/WEB-INF/jsp/createAuthor.jsp");
         }
     }
 

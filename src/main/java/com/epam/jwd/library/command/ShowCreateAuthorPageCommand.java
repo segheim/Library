@@ -4,7 +4,7 @@ import com.epam.jwd.library.controller.RequestFactory;
 
 public class ShowCreateAuthorPageCommand implements Command {
 
-    private static final String PATH_CREATE_AUTHOR_JSP = "/WEB-INF/jsp/createauthor.jsp";
+    private static final String PATH_CREATE_AUTHOR_JSP = "/WEB-INF/jsp/createAuthor.jsp";
     private final RequestFactory requestFactory = RequestFactory.getInstance();
 
     private ShowCreateAuthorPageCommand() {

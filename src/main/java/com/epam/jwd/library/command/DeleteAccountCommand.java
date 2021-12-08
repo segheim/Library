@@ -19,9 +19,7 @@ public class DeleteAccountCommand implements Command {
     public CommandResponse execute(CommandRequest request) {
         final Long idAccount = Long.valueOf(request.getParameter("id"));
         if (accountService.delete(idAccount)) {
-            final List<Account> accounts = accountService.findAll();
-            request.addAttributeToJsp("accounts", accounts);
-            return requestFactory.createRedirectResponse("controller?command=account_page");
+            return requestFactory.createRedirectResponse("controller?command=accounts_page");
         } else {
             request.addAttributeToJsp("errorPassMassage", "Could not delete account");
             return requestFactory.createForwardResponse("/WEB-INF/jsp/error.jsp");

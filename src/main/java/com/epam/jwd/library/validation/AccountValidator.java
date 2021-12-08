@@ -17,7 +17,7 @@ public class AccountValidator {
     }
 
     public boolean validate(String login, String password) {
-        if (login == null || password == null) {
+        if (login == null || password == null || login.equals(password)) {
             return false;
         }
         Pattern patternLogin = Pattern.compile(".{3,30}");

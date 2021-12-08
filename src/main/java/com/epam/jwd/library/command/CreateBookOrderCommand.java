@@ -52,7 +52,7 @@ public class CreateBookOrderCommand implements Command {
             return requestFactory.createRedirectResponse("controller?command=reader_book_order_page");
         } else {
             request.addAttributeToJsp(ERROR_CREATE_BOOK_ORDER_MASSAGE, ERROR_CREATE_BOOK_ORDER_WITHOUT_ORDER_TYPE_ATTRIBUTE);
-            return requestFactory.createForwardResponse("/WEB-INF/jsp/createbookorder.jsp");
+            return requestFactory.createForwardResponse("/WEB-INF/jsp/createBookOrder.jsp");
         }
     }
 

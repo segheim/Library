@@ -20,7 +20,7 @@ public class ShowCreateBookOrderPageCommand implements Command {
         final Long idBook = Long.valueOf(request.getParameter("id"));
         final Optional<Book> book = bookService.findById(idBook);
         request.addAttributeToJsp("book", book.get());
-        return requestFactory.createForwardResponse("/WEB-INF/jsp/createbookorder.jsp");
+        return requestFactory.createForwardResponse("/WEB-INF/jsp/createBookOrder.jsp");
     }
 
     public static ShowCreateBookOrderPageCommand getInstance() {

@@ -30,6 +30,5 @@
             </div>
         </div>
     </div>
-</form>
 </body>
 </html>
