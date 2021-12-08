@@ -13,4 +13,6 @@ public interface BasicAccountService<T extends Entity> {
 
     Optional<T> authenticate(String login, String password);
 
+    boolean changeRole(Long id, String name);
+
 }

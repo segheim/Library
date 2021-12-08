@@ -109,8 +109,7 @@ public class AuthorDao extends AbstractDao<Author> implements BasicAuthorDao<Aut
             preparedStatement.setLong(3, author.getId());
             final int numberChangedLines = preparedStatement.executeUpdate();
             if (numberChangedLines > 0) {
-                updatedAuthor = read(author.getId());
-                return updatedAuthor;
+                updatedAuthor = Optional.of(author);
             } else {
                 throw new AuthorDaoException("could not changed lines for update author");
             }

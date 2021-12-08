@@ -2,8 +2,10 @@ package com.epam.jwd.library.dao;
 
 import com.epam.jwd.library.connection.ConnectionPool;
 import com.epam.jwd.library.exception.AccountDaoException;
+import com.epam.jwd.library.exception.AuthorDaoException;
 import com.epam.jwd.library.model.Account;
 import com.epam.jwd.library.model.AccountDetails;
+import com.epam.jwd.library.model.Author;
 import com.epam.jwd.library.model.Role;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -19,6 +21,8 @@ public class AccountDao extends AbstractDao<Account> implements BasicAccountDao<
     private static final Logger LOG = LogManager.getLogger(AccountDao.class);
 
     private static final String INSERT_NEW_ACCOUNT = "insert into l_account (a_login, a_password) values (?,?)";
+
+    private static final String UPDATE_ACCOUNT_ROLE = "update l_account set a_role_id=? where a_id=?";
 
     private static final String SELECT_ALL_ACCOUNTS = "select a_id as id, a_login as login, a_password as password, " +
             "a_role.role_name as role_name, ad.account_id as account_id, ad.ad_first_name as ad_f_name, ad.ad_last_name as ad_l_name " +
@@ -158,6 +162,28 @@ public class AccountDao extends AbstractDao<Account> implements BasicAccountDao<
             LOG.error("could not found a account", e);
         }
         return account;
+    }
+
+    @Override
+    public boolean updateRole(Long id, Integer idRole) {
+        LOG.trace("start update role");
+        boolean updatedAccount = false;
+        try (final Connection connection = pool.takeConnection();
+             final PreparedStatement preparedStatement = connection.prepareStatement(UPDATE_ACCOUNT_ROLE)) {
+            preparedStatement.setInt(1, idRole);
+            preparedStatement.setLong(2, id);
+            final int numberChangedLines = preparedStatement.executeUpdate();
+            if (numberChangedLines > 0) {
+                updatedAccount = true;
+            } else {
+                throw new AuthorDaoException("could not changed lines for update author");
+            }
+        } catch (SQLException e) {
+            LOG.error("sql error, could not update author", e);
+        } catch (AuthorDaoException e) {
+            LOG.error("could not update author");
+        }
+        return updatedAccount;
     }
 
     private Optional<Account> executeAccount(ResultSet resultSet) {

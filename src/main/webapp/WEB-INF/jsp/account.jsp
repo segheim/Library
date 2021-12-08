@@ -1,5 +1,6 @@
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <%@ page contentType="text/html;charset=UTF-8" language="java" %>
+<%@ page import="com.epam.jwd.library.model.Role" %>
 <html>
 <head>
     <title>Account</title>
@@ -11,7 +12,7 @@
     <div class="container-main">
         <div class="container-context">
             <div class="container">
-                <h2>Your personal data, dear ${requestScope.account.role.name()}!</h2>
+                <h2>Personal data</h2>
             </div>
             <div class="container">
                 <h3>Personal number: ${requestScope.account.id}</h3>
@@ -24,6 +25,28 @@
             </div>
             <div class="container">
                <h3>Last Name: ${requestScope.account.details.lastName}</h3>
+            </div>
+            <div class="container">
+                <h3>Role: ${requestScope.account.role.name()}</h3>
+            </div>
+            <div class="container">
+                <c:if test="${not empty sessionScope.account and (sessionScope.account.role eq Role.ADMIN)}">
+                    <form name="change_role_form" method="post" action="/controller?command=change_account_role">
+                        <input type="hidden" name="id" value="${requestScope.account.id}">
+                        <div class="container">
+                            <div class="mb-3">
+                                <select name="role" class="form-select mb-3" aria-label=".form-select-lg example">
+                                    <option selected>select role</option>
+                                    <option value="ADMIN">ADMIN</option>
+                                    <option value="LIBRARIAN">LIBRARIAN</option>
+                                    <option value="READER">READER</option>
+                                    <option value="GUEST">GUEST</option>
+                                </select>
+                            </div>
+                        </div>
+                        <button type="submit" class="btn btn-primary">Change role</button>
+                    </form>
+                </c:if>
             </div>
         </div>
     </div>

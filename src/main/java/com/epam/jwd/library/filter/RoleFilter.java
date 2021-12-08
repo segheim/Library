@@ -42,6 +42,7 @@ public class RoleFilter implements Filter {
         commandsForAdmin.add(ShowUpdateBookPageCommand.getInstance());
         commandsForAdmin.add(UpdateAuthorCommand.getInstance());
         commandsForAdmin.add(UpdateBookCommand.getInstance());
+        commandsForAdmin.add(ChangeAccountRoleCommand.getInstance());
         commandsForAdmin.add(LoginCommand.getInstance());
         commandsForAdmin.add(LogoutCommand.getInstance());
 

@@ -20,8 +20,8 @@ public class ShowAccountPageCommand implements Command{
 
     @Override
     public CommandResponse execute(CommandRequest request) {
-        final Long id = Long.valueOf(request.getParameter("id"));
-        final Optional<Account> account = accountService.findById(id);
+        final Long accountId = Long.valueOf(request.getParameter("id"));
+        final Optional<Account> account = accountService.findById(accountId);
         if (account.isPresent()) {
             request.addAttributeToJsp(REQUEST_ATTRIBUTE_NAME, account.get());
             return requestFactory.createForwardResponse(PATH_ACCOUNT_NAME);
@@ -30,7 +30,6 @@ public class ShowAccountPageCommand implements Command{
             return requestFactory.createForwardResponse("/WEB-INF/jsp/error.jsp");
         }
     }
-
 
     public static ShowAccountPageCommand getInstance() {
         return Holder.INSTANCE;

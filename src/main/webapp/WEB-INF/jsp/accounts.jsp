@@ -31,7 +31,7 @@
                             <td>${account.details.firstName}</td>
                             <td>${account.details.lastName}</td>
                             <td>
-                                <a href="/controller?command=change_role&id=${account.id}">change role</a>
+                                <a href="/controller?command=account_page&id=${account.id}">change role</a>
                                 <a href="/controller?command=delete_account&id=${account.id}">delete</a>
                             </td>
                         </tr>

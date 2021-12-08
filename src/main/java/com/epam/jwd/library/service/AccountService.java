@@ -4,10 +4,10 @@ import at.favre.lib.crypto.bcrypt.BCrypt;
 import com.epam.jwd.library.connection.ConnectionPool;
 import com.epam.jwd.library.dao.AccountDao;
 import com.epam.jwd.library.dao.AccountDetailsDao;
-import com.epam.jwd.library.exception.AccountDaoException;
 import com.epam.jwd.library.exception.ServiceException;
 import com.epam.jwd.library.model.Account;
 import com.epam.jwd.library.model.AccountDetails;
+import com.epam.jwd.library.model.Role;
 import com.epam.jwd.library.validation.AccountValidator;
 import com.epam.jwd.library.validation.FirstLastNameValidator;
 import org.apache.logging.log4j.LogManager;
@@ -110,6 +110,17 @@ public class AccountService implements BasicAccountService<Account>, Service<Acc
             protectFromTimingAttack(password);
             return Optional.empty();
         }
+    }
+
+    @Override
+    public boolean changeRole(Long id, String name) {
+        if (accountDao.read(id).isPresent()) {
+            final Integer idRole = Role.valueOf(name).ordinal();
+            if (accountDao.updateRole(id, idRole + 1)) {
+                return true;
+            }
+        }
+        return false;
     }
 
     private void protectFromTimingAttack(String password) {
