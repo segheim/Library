@@ -12,6 +12,7 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 import java.sql.Connection;
+import java.sql.Date;
 import java.sql.SQLException;
 import java.util.List;
 import java.util.Optional;
@@ -41,12 +42,13 @@ public class BookService implements Service<Book>, BasicBookService<Book>{
     }
 
     @Override
-    public Optional<Book> update(Long id, String title, java.sql.Date date, Integer amountOfLeft) {
+    public Optional<Book> update(Long id, String title, String date, Integer amountOfLeft) {
         try {
-            if (!BookValidator.getInstance().validate(title, amountOfLeft)) {
+            if (!BookValidator.getInstance().validate(title, date, amountOfLeft)) {
                 throw new ServiceException("Data are not valid");
             }
-            Book book = new Book(id, title, date, amountOfLeft);
+            final Date datePublished = Date.valueOf(date);
+            Book book = new Book(id, title, datePublished, amountOfLeft);
             return bookDao.update(book);
         } catch (ServiceException e) {
             LOG.error("Could not update book");
@@ -55,12 +57,13 @@ public class BookService implements Service<Book>, BasicBookService<Book>{
     }
 
     @Override
-    public boolean createBookWithAuthor(String title, java.sql.Date date, int amountOfLeft, String authorFirstName, String authorLastName) {
+    public boolean createBookWithAuthor(String title, String date, int amountOfLeft, String authorFirstName, String authorLastName) {
         boolean createBookWithAuthor = false;
         Connection connection = ConnectionPool.lockingPool().takeConnection();
         try {
-            checkBookData(title, amountOfLeft, authorFirstName, authorLastName);
-            Book book = new Book(title, date, amountOfLeft);
+            checkBookData(title, date, amountOfLeft, authorFirstName, authorLastName);
+            final Date datePublished = Date.valueOf(date);
+            Book book = new Book(title, datePublished, amountOfLeft);
             Author author = new Author(authorFirstName, authorLastName);
             connection.setAutoCommit(false);
             BookDao bookDao = BookDao.getInstance();
@@ -68,9 +71,7 @@ public class BookService implements Service<Book>, BasicBookService<Book>{
             final Long idBook = bookDao.create(book)
                     .map(Book::getId)
                     .orElseThrow(() -> new ServiceException("could not create book"));
-            final Long idAuthor = authorDao.create(author)
-                    .map(Author::getId)
-                    .orElseThrow(() -> new ServiceException("could not create author"));
+            Long idAuthor = fetchIdAuthor(author, authorDao);
             if (!bookDao.createBookInAuthorToBook(idBook, idAuthor)) {
                 connection.rollback();
             }
@@ -83,7 +84,7 @@ public class BookService implements Service<Book>, BasicBookService<Book>{
             try {
                 connection.rollback();
             } catch (SQLException ex) {
-                ex.printStackTrace();LOG.error("Database access error occurs connection rollback", ex);
+                LOG.error("Database access error occurs connection rollback", ex);
             }
         } finally {
             try {
@@ -96,8 +97,21 @@ public class BookService implements Service<Book>, BasicBookService<Book>{
         return createBookWithAuthor;
     }
 
-    private void checkBookData(String title, int amountOfLeft, String authorFirstName, String authorLastName) throws ServiceException {
-        if (!BookValidator.getInstance().validate(title, amountOfLeft)
+    private Long fetchIdAuthor(Author author, AuthorDao authorDao) throws ServiceException {
+        Long idAuthor;
+        final Optional<Author> readAuthor = authorDao.readAuthorByFirstLastName(author);
+        if (readAuthor.isPresent()) {
+            idAuthor = readAuthor.get().getId();
+        } else {
+            idAuthor = authorDao.create(author)
+                    .map(Author::getId)
+                    .orElseThrow(() -> new ServiceException("could not create author"));
+        }
+        return idAuthor;
+    }
+
+    private void checkBookData(String title, String date, int amountOfLeft, String authorFirstName, String authorLastName) throws ServiceException {
+        if (!BookValidator.getInstance().validate(title, date, amountOfLeft)
                 || !FirstLastNameValidator.getInstance().validate(authorFirstName, authorLastName)) {
             throw new ServiceException("Data are not valid");
         }

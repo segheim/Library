@@ -21,7 +21,7 @@ public class UpdateBookCommand implements Command {
     public CommandResponse execute(CommandRequest request) {
         final Long idBook = Long.valueOf(request.getParameter("id"));
         final String title = request.getParameter("title");
-        final Date datePublished = Date.valueOf(request.getParameter("date_published"));
+        final String datePublished = request.getParameter("date_published");
         final Integer amountOfLeft = Integer.valueOf(request.getParameter("amount_of_left"));
         final Optional<Book> updateBook = bookService.update(idBook, title, datePublished, amountOfLeft);
         if (updateBook.isPresent()) {

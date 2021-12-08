@@ -4,6 +4,6 @@ import java.util.Optional;
 
 public interface BasicAuthorDao<T> {
 
-    Optional<T> readAuthorByLastName(String lastName);
+    Optional<T> readAuthorByFirstLastName(T t);
 
 }

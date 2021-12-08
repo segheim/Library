@@ -20,9 +20,14 @@ public class ShowCatalogPageCommand implements Command {
 
     @Override
     public CommandResponse execute(CommandRequest request) {
-        final List<Book> books = bookService.findAll();
-        request.addAttributeToJsp(REQUEST_ATTRIBUTE_NAME, books);
-        return requestFactory.createForwardResponse(PATH_CATALOG_JSP);
+        if (!bookService.findAll().isEmpty()) {
+            final List<Book> books = bookService.findAll();
+            request.addAttributeToJsp(REQUEST_ATTRIBUTE_NAME, books);
+            return requestFactory.createForwardResponse(PATH_CATALOG_JSP);
+        } else {
+            request.addAttributeToJsp("errorPassMassage", "Could not find books");
+            return requestFactory.createForwardResponse("/WEB-INF/jsp/error.jsp");
+        }
     }
 
     public static ShowCatalogPageCommand getInstance() {

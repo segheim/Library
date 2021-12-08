@@ -20,7 +20,7 @@ public class AuthorDao extends AbstractDao<Author> implements BasicAuthorDao<Aut
     private static final String SELECT_ALL_AUTHORS = "select id as id, first_name as f_name, last_name as l_name " +
             "from author";
     private static final String SELECT_AUTHOR_BY_LAST_NAME ="select id as id, first_name as f_name, last_name as " +
-            "l_name from author where last_name=?";
+            "l_name from author where first_name=? and last_name=?";
     private static final String UPDATE_AUTHOR = "update author set first_name=?, last_name=? where id=?";
     private static final String DELETE_AUTHOR_BY_ID = "delete from author where id=?";
 
@@ -141,23 +141,24 @@ public class AuthorDao extends AbstractDao<Author> implements BasicAuthorDao<Aut
         return deleteAuthor;
     }
 
-    public Optional<Author> readAuthorByLastName(String lastName) {
-        Optional<Author> author = Optional.empty();
+    public Optional<Author> readAuthorByFirstLastName(Author author) {
+        Optional<Author> readAuthor = Optional.empty();
         try (final Connection connection = pool.takeConnection();
              final PreparedStatement preparedStatement = connection.prepareStatement(SELECT_AUTHOR_BY_LAST_NAME)) {
-            preparedStatement.setString(1, lastName);
+            preparedStatement.setString(1, author.getFirstName());
+            preparedStatement.setString(2, author.getLastName());
             final ResultSet resultSet = preparedStatement.executeQuery();
             if (resultSet.next()) {
                 final Author executedAuthor = executeAuthor(resultSet).orElseThrow(()
                         -> new AuthorDaoException("could not extract author"));
-                author = Optional.of(executedAuthor);
+                readAuthor = Optional.of(executedAuthor);
             }
         } catch (SQLException e) {
             LOG.error("sql error, could not delete author", e);
         } catch (AuthorDaoException e) {
             LOG.error("could not delete new author", e);
         }
-        return author;
+        return readAuthor;
     }
 
     private Optional<Author> executeAuthor(ResultSet resultSet) {

@@ -1,6 +1,5 @@
 package com.epam.jwd.library.validation;
 
-import java.sql.Date;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -17,17 +16,21 @@ public class BookValidator {
         public static final BookValidator INSTANCE = new BookValidator();
     }
 
-    public boolean validate(String title, Integer amountOfLeft) {
-        if (title == null || amountOfLeft == null) {
+    public boolean validate(String title, String date, Integer amountOfLeft) {
+        if (title == null || date == null || amountOfLeft == null || amountOfLeft.equals(0)) {
             return false;
         }
 
         Pattern patternTitle = Pattern.compile(".{0,100}");
         Matcher matcherTitle = patternTitle.matcher(title);
 
-        Pattern patternNumber = Pattern.compile("^\\d*$");
+        Pattern patternDate = Pattern.compile("^\\d{4}[-]?((((0[13578])|(1[02]))[-]?(([0-2][0-9])|(3[01])))|(((0[469])|(11))[-]?(([0-2][0-9])|(30)))|(02[-]?[0-2][0-9]))$");
+        Matcher matcherDate = patternDate.matcher(date);
+
+
+        Pattern patternNumber = Pattern.compile("^\\d{1,4}");
         Matcher matcherAmountOfLeft = patternNumber.matcher(amountOfLeft.toString());
 
-        return matcherTitle.matches() && matcherAmountOfLeft.matches();
+        return matcherTitle.matches() && matcherDate.matches() && matcherAmountOfLeft.matches();
     }
 }

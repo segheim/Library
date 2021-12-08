@@ -25,7 +25,7 @@ public class AuthorService implements Service<Author>, BasicAuthorService<Author
         try {
             checkAuthorData(firstName, lastName);
             Author author = new Author(firstName, lastName);
-            checkDuplication(firstName, lastName);
+            checkDuplication(author);
             return authorDao.create(author);
         } catch (ServiceException e) {
             LOG.error("Could not create author");
@@ -33,12 +33,9 @@ public class AuthorService implements Service<Author>, BasicAuthorService<Author
         return Optional.empty();
     }
 
-    private void checkDuplication(String firstName, String lastName) throws ServiceException {
-        final Optional<Author> author = authorDao.readAuthorByLastName(lastName);
-        if (author.isPresent()) {
-            if (firstName.equals(author.get().getFirstName())) {
-                throw new ServiceException("Author already exists");
-            }
+    private void checkDuplication(Author author) throws ServiceException {
+        if (authorDao.readAuthorByFirstLastName(author).isPresent()) {
+            throw new ServiceException("Author already exists");
         }
     }
 

@@ -7,7 +7,6 @@ public class DeleteBookCommand implements Command {
 
     private static final String URL_CATALOG_PAGE = "controller?command=catalog_page";
     private static final String ID_PARAMETER_NAME = "id";
-    private static final String REQUEST_ATTRIBUTE_NAME = "books";
     private final BookService bookService;
     private final RequestFactory requestFactory = RequestFactory.getInstance();
 

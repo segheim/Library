@@ -18,9 +18,14 @@ public class ShowBookPageCommand implements Command {
     @Override
     public CommandResponse execute(CommandRequest request) {
         final Long id = Long.valueOf(request.getParameter("id"));
-        final Optional<Book> book = bookService.findById(id);
-        request.addAttributeToJsp("book", book.get());
-        return requestFactory.createForwardResponse("/WEB-INF/jsp/book.jsp");
+        if (bookService.findById(id).isPresent()) {
+            final Optional<Book> book = bookService.findById(id);
+            request.addAttributeToJsp("book", book.get());
+            return requestFactory.createForwardResponse("/WEB-INF/jsp/book.jsp");
+        } else {
+            request.addAttributeToJsp("errorPassMassage", "Could not find a book");
+            return requestFactory.createForwardResponse("/WEB-INF/jsp/error.jsp");
+        }
     }
 
     public static ShowBookPageCommand getInstance() {
