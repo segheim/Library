@@ -28,6 +28,8 @@ public class BookOrderDao extends AbstractDao<BookOrder> implements BasicBookOrd
 
     private static final String DELETE_BOOK_ORDER_BY_ID = "delete from book_order where book_order_id=?";
 
+    private static final String DELETE_BOOK_ORDER_WITH_STATUS_CLAIMED = "delete from book_order where account_details_id=? and status_id=1";
+
     private static final String REGISTER_DATE_ISSUE_BY_ID = "update book_order set date_issue=? where book_order_id=?";
 
     private static final String REGISTER_DATE_RETURN_BY_ID = "update book_order set date_return=? where book_order_id=?";
@@ -84,14 +86,14 @@ public class BookOrderDao extends AbstractDao<BookOrder> implements BasicBookOrd
             "as date_return, os.o_s_id as o_s_id, os.o_s_name as o_s_name from book_order bo join account_details ad " +
             "on ad.account_id = bo.account_details_id join book b on bo.book_id = b.b_id join order_type ot " +
             "on ot.o_t_id = bo.order_type_id join order_status os on bo.status_id = os.o_s_id " +
-            "where os.o_s_name='claimed' or os.o_s_name='issued'";
+            "where os.o_s_name='claimed' or os.o_s_name='issued' order by o_s_name";
 
     private BookOrderDao(ConnectionPool pool) {
         super(pool, LOG);
     }
 
     @Override
-    public Optional<BookOrder> create(BookOrder order) {
+    public Optional<BookOrder> create(BookOrder order) throws BookOrderDaoException {
         LOG.trace("start create book order");
         Optional<BookOrder> createdOrder = Optional.empty();
         try (final Connection connection = pool.takeConnection();
@@ -112,18 +114,16 @@ public class BookOrderDao extends AbstractDao<BookOrder> implements BasicBookOrd
                         .dateCreate(order.getDateCreate())
                         .status(OrderStatus.CLAIMED)
                         .create());
-            } else
-                throw new BookOrderDaoException("could not change lines for create book order");
+            }
         } catch (SQLException e) {
             LOG.error("sql error, could not create book order", e);
-        } catch (BookOrderDaoException e) {
-            LOG.error("could not create new book order", e);
+            throw new BookOrderDaoException("sql error, could not create book order");
         }
         return createdOrder;
     }
 
     @Override
-    public Optional<BookOrder> read(Long id) {
+    public Optional<BookOrder> read(Long id) throws BookOrderDaoException {
         LOG.trace("start read order");
         Optional<BookOrder> bookOrder = Optional.empty();
         try (final Connection connection = pool.takeConnection();
@@ -137,14 +137,13 @@ public class BookOrderDao extends AbstractDao<BookOrder> implements BasicBookOrd
             }
         } catch (SQLException e) {
             LOG.error("sql error, could not read book order", e);
-        } catch (BookOrderDaoException e) {
-            LOG.error("could not read book order", e);
+            throw new BookOrderDaoException("sql error, could not read book order");
         }
         return bookOrder;
     }
 
     @Override
-    public List<BookOrder> readAll() {
+    public List<BookOrder> readAll() throws BookOrderDaoException {
         LOG.trace("start readAll orders");
         List<BookOrder> bookOrders = new ArrayList<>();
         try (final Connection connection = pool.takeConnection();
@@ -155,13 +154,11 @@ public class BookOrderDao extends AbstractDao<BookOrder> implements BasicBookOrd
                         new BookOrderDaoException("could not extract book order"));
                 bookOrders.add(bookOrder);
             }
-            return bookOrders;
         } catch (SQLException e) {
             LOG.error("sql error, could not read book order", e);
-        } catch (BookOrderDaoException e) {
-            LOG.error("could not read book order", e);
+            throw new BookOrderDaoException("sql error, could not read book order");
         }
-        return Collections.emptyList();
+        return bookOrders;
     }
 
     @Override
@@ -170,7 +167,7 @@ public class BookOrderDao extends AbstractDao<BookOrder> implements BasicBookOrd
     }
 
     @Override
-    public boolean delete(Long id) {
+    public boolean delete(Long id) throws BookOrderDaoException {
         LOG.trace("start delete order");
         boolean deleteBookOrder = false;
         try (final Connection connection = pool.takeConnection();
@@ -179,17 +176,15 @@ public class BookOrderDao extends AbstractDao<BookOrder> implements BasicBookOrd
             final int numberChangedLines = preparedStatement.executeUpdate();
             if (numberChangedLines != 0) {
                 deleteBookOrder = true;
-            } else
-                throw new BookOrderDaoException("could not change lines delete book order");
+            }
         } catch (SQLException e) {
             LOG.error("sql error, could not delete book order", e);
-        } catch (BookOrderDaoException e) {
-            LOG.error("could not delete book order", e);
+            throw new BookOrderDaoException("sql error, could not delete book order");
         }
         return deleteBookOrder;
     }
 
-    public List<BookOrder> readAllUncompleted() {
+    public List<BookOrder> readAllUncompleted() throws BookOrderDaoException {
         LOG.trace("start readAll uncompleted orders");
         List<BookOrder> bookOrders = new ArrayList<>();
         try (final Connection connection = pool.takeConnection();
@@ -200,16 +195,14 @@ public class BookOrderDao extends AbstractDao<BookOrder> implements BasicBookOrd
                         new BookOrderDaoException("could not extract book order"));
                 bookOrders.add(bookOrder);
             }
-            return bookOrders;
         } catch (SQLException e) {
             LOG.error("sql error, could not read book order", e);
-        } catch (BookOrderDaoException e) {
-            LOG.error("could not read book order", e);
+            throw new BookOrderDaoException("sql error, could not read book order");
         }
-        return Collections.emptyList();
+        return bookOrders;
     }
 
-    public Optional<BookOrder> readRepeatedBook(Long idAccount, Long idBook){
+    public Optional<BookOrder> readRepeatedBook(Long idAccount, Long idBook) throws BookOrderDaoException {
         Optional<BookOrder> bookOrder = Optional.empty();
         try (final Connection connection = pool.takeConnection();
              final PreparedStatement preparedStatement = connection.prepareStatement(SELECT_REPEATED_BOOK_IN_NO_ENDED_BOOK_ORDERS)) {
@@ -223,13 +216,12 @@ public class BookOrderDao extends AbstractDao<BookOrder> implements BasicBookOrd
             }
         } catch (SQLException e) {
             LOG.error("sql error, could not read repeated book order", e);
-        } catch (BookOrderDaoException e) {
-            LOG.error("could not  repeated book order", e);
+            throw new BookOrderDaoException("sql error, could not read repeated book order");
         }
         return bookOrder;
     }
 
-    public List<BookOrder> readByIdAccount(Long idAccount) {
+    public List<BookOrder> readByIdAccount(Long idAccount) throws BookOrderDaoException {
         LOG.trace("start read order by id account");
         List<BookOrder> bookOrders = new ArrayList<>();
         try (final Connection connection = pool.takeConnection();
@@ -243,13 +235,12 @@ public class BookOrderDao extends AbstractDao<BookOrder> implements BasicBookOrd
             }
         } catch (SQLException e) {
             LOG.error("sql error, could not read book order", e);
-        } catch (BookOrderDaoException e) {
-            LOG.error("could not read book order", e);
+            throw new BookOrderDaoException("sql error, could not read book order");
         }
         return bookOrders;
     }
 
-    public Optional<BookOrder> readByAccountWithOrderStatusIssue(Long idAccount) {
+    public Optional<BookOrder> readByAccountWithOrderStatusIssue(Long idAccount) throws BookOrderDaoException {
         Optional<BookOrder> bookOrder = Optional.empty();
         try (final Connection connection = pool.takeConnection();
              final PreparedStatement preparedStatement = connection.prepareStatement(SELECT_BY_ACCOUNT_WITH_ORDER_STATUS_ISSUED)) {
@@ -262,13 +253,12 @@ public class BookOrderDao extends AbstractDao<BookOrder> implements BasicBookOrd
             }
         } catch (SQLException e) {
             LOG.error("sql error, could not read book order", e);
-        } catch (BookOrderDaoException e) {
-            LOG.error("could not read book order", e);
+            throw new BookOrderDaoException("sql error, could not read book order");
         }
         return bookOrder;
     }
 
-    public boolean updateStatusOnIssuedById(Long idBookOrder) {
+    public boolean updateStatusOnIssuedById(Long idBookOrder) throws BookOrderDaoException {
         boolean updatedStatusBookOrder = false;
         try (final Connection connection = pool.takeConnection();
              final PreparedStatement preparedStatement = connection.prepareStatement(UPDATE_STATUS_ON_ISSUED_BY_ID_ACCOUNT)) {
@@ -279,11 +269,12 @@ public class BookOrderDao extends AbstractDao<BookOrder> implements BasicBookOrd
             }
         } catch (SQLException e) {
             LOG.error("sql error, could not update status on issued book order", e);
+            throw new BookOrderDaoException("sql error, could not update status on issued book order");
         }
         return updatedStatusBookOrder;
     }
 
-    public boolean updateStatusOnEndedById(Long idBookOrder) {
+    public boolean updateStatusOnEndedById(Long idBookOrder) throws BookOrderDaoException {
         boolean updatedStatusBookOrder = false;
         try (final Connection connection = pool.takeConnection();
              final PreparedStatement preparedStatement = connection.prepareStatement(UPDATE_STATUS_ON_ENDED_BY_ID_ACCOUNT)) {
@@ -294,11 +285,12 @@ public class BookOrderDao extends AbstractDao<BookOrder> implements BasicBookOrd
             }
         } catch (SQLException e) {
             LOG.error("sql error, could not update status on ended book order", e);
+            throw new BookOrderDaoException("sql error, could not update status on ended book order");
         }
         return updatedStatusBookOrder;
     }
 
-    public boolean registerDateOfIssueById(Long idBookOrder, Date dateIssue) {
+    public boolean registerDateOfIssueById(Long idBookOrder, Date dateIssue) throws BookOrderDaoException {
         boolean updatedStatusBookOrder = false;
         try (final Connection connection = pool.takeConnection();
              final PreparedStatement preparedStatement = connection.prepareStatement(REGISTER_DATE_ISSUE_BY_ID)) {
@@ -310,11 +302,12 @@ public class BookOrderDao extends AbstractDao<BookOrder> implements BasicBookOrd
             }
         } catch (SQLException e) {
             LOG.error("sql error, could not registered date issue book order", e);
+            throw new BookOrderDaoException("sql error, could not update status on ended book order");
         }
         return updatedStatusBookOrder;
     }
 
-    public boolean registerDateOfEndedById(Long idBookOrder, Date dateReturn) {
+    public boolean registerDateOfEndedById(Long idBookOrder, Date dateReturn) throws BookOrderDaoException {
         boolean updatedStatusBookOrder = false;
         try (final Connection connection = pool.takeConnection();
              final PreparedStatement preparedStatement = connection.prepareStatement(REGISTER_DATE_RETURN_BY_ID)) {
@@ -326,8 +319,26 @@ public class BookOrderDao extends AbstractDao<BookOrder> implements BasicBookOrd
             }
         } catch (SQLException e) {
             LOG.error("sql error, could not registered date return book order", e);
+            throw new BookOrderDaoException("sql error, could not update status on ended book order");
         }
         return updatedStatusBookOrder;
+    }
+
+    @Override
+    public boolean deleteClaimedFromAccount(Long idAccount) throws BookOrderDaoException {
+        boolean deleteBookOrders = false;
+        try (final Connection connection = pool.takeConnection();
+             final PreparedStatement preparedStatement = connection.prepareStatement(DELETE_BOOK_ORDER_WITH_STATUS_CLAIMED)) {
+            preparedStatement.setLong(1, idAccount);
+            final int NumberChangedLines = preparedStatement.executeUpdate();
+            if (NumberChangedLines != 0) {
+                deleteBookOrders = true;
+            }
+        } catch (SQLException e) {
+            LOG.error("sql error, could not registered date return book order", e);
+            throw new BookOrderDaoException("sql error, could not registered date return book order");
+        }
+        return deleteBookOrders;
     }
 
     private Optional<BookOrder> executeBookOrder(ResultSet resultSet) {
@@ -344,7 +355,7 @@ public class BookOrderDao extends AbstractDao<BookOrder> implements BasicBookOrd
                     .status(OrderStatus.valueOf(resultSet.getString("o_s_name").toUpperCase()))
                     .create());
         } catch (SQLException e) {
-            e.printStackTrace();
+            LOG.error("could not extract book order", e);
         }
         return Optional.empty();
     }

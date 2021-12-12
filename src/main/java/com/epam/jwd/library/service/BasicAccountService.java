@@ -1,18 +1,25 @@
 package com.epam.jwd.library.service;
 
-import com.epam.jwd.library.model.Entity;
+import com.epam.jwd.library.exception.ServiceException;
+import com.epam.jwd.library.model.Account;
 
 import java.util.List;
 import java.util.Optional;
 
-public interface BasicAccountService<T extends Entity> {
+public interface BasicAccountService extends Service<Account>{
 
-    Optional<T> create(String login, String password, String firstName, String LastName);
+    Optional<Account> create(String login, String password, String firstName, String LastName) throws ServiceException;
 
-    List<T> findAll();
+    List<Account> findAll() throws ServiceException;
 
-    Optional<T> authenticate(String login, String password);
+    Optional<Account> authenticate(String login, String password) throws ServiceException;
 
-    boolean changeRole(Long id, String name);
+    boolean delete(Long id) throws ServiceException;
+
+    boolean changeRole(Long id, String name) throws ServiceException;
+
+    static BasicAccountService getInstance() {
+        return AccountService.getInstance();
+    }
 
 }

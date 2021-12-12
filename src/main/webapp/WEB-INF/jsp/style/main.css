@@ -17,19 +17,6 @@ body{
     flex-direction: column;
 }
 
-header{
-    justify-content: space-between;
-}
-
-.nav-context{
-    flex-direction: row;
-}
-
-.header-rightside-inner{
-    align-items: center;
-    justify-content: end;
-}
-
 .container-body{
     justify-content: center;
 }
@@ -41,7 +28,6 @@ header{
 span.some-text {
     position: absolute;
     top: 30%;
-
     bottom: 0;
     left: 30px;
 }

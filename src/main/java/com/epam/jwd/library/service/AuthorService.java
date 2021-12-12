@@ -1,6 +1,7 @@
 package com.epam.jwd.library.service;
 
 import com.epam.jwd.library.dao.AuthorDao;
+import com.epam.jwd.library.exception.AuthorDaoException;
 import com.epam.jwd.library.exception.ServiceException;
 import com.epam.jwd.library.model.Author;
 import com.epam.jwd.library.validation.FirstLastNameValidator;
@@ -10,7 +11,7 @@ import org.apache.logging.log4j.Logger;
 import java.util.List;
 import java.util.Optional;
 
-public class AuthorService implements Service<Author>, BasicAuthorService<Author> {
+public class AuthorService implements BasicAuthorService{
 
     private static final Logger LOG = LogManager.getLogger(AuthorService.class);
 
@@ -21,59 +22,76 @@ public class AuthorService implements Service<Author>, BasicAuthorService<Author
     }
 
     @Override
-    public Optional<Author> create(String firstName, String lastName) {
+    public Optional<Author> create(String firstName, String lastName) throws ServiceException {
         try {
-            checkAuthorData(firstName, lastName);
             Author author = new Author(firstName, lastName);
-            checkDuplication(author);
-            return authorDao.create(author);
-        } catch (ServiceException e) {
-            LOG.error("Could not create author");
+            if (!checkDuplication(author) && checkAuthorData(firstName, lastName)) {
+                return authorDao.create(author);
+            }
+        } catch (AuthorDaoException e) {
+            LOG.error("dao error, could not create author", e);
+            throw new ServiceException("Could not create author");
         }
         return Optional.empty();
     }
 
-    private void checkDuplication(Author author) throws ServiceException {
-        if (authorDao.readAuthorByFirstLastName(author).isPresent()) {
-            throw new ServiceException("Author already exists");
+    @Override
+    public Optional<Author> findById(Long id) throws ServiceException {
+        try {
+            return authorDao.read(id);
+        } catch (AuthorDaoException e) {
+            LOG.error("dao error, could not read author", e);
+            throw new ServiceException("Could not find author");
         }
     }
 
     @Override
-    public Optional<Author> findById(Long id) {
-        return authorDao.read(id);
+    public List<Author> findAll() throws ServiceException {
+        try {
+            return authorDao.readAll();
+        } catch (AuthorDaoException e) {
+            LOG.error("dao error, could not read all authors", e);
+            throw new ServiceException("Could not find all authors");
+        }
     }
 
     @Override
-    public List<Author> findAll() {
-        final List<Author> authors = authorDao.readAll();
-        return authors;
-    }
-
-    @Override
-    public Optional<Author> update(Long id, String firstName, String lastName) {
+    public Optional<Author> update(Long id, String firstName, String lastName) throws ServiceException {
         try {
             checkAuthorData(firstName, lastName);
             Author author = new Author(id, firstName, lastName);
             return authorDao.update(author);
-        } catch (ServiceException e) {
-            LOG.error("Could not update author");
-        }
-        return Optional.empty();
-    }
-
-    private void checkAuthorData(String firstName, String lastName) throws ServiceException {
-        if (!FirstLastNameValidator.getInstance().validate(firstName, lastName)) {
-            throw new ServiceException("Data are not valid");
+        } catch (AuthorDaoException e) {
+            LOG.error("Dao error, could not update author", e);
+            throw new ServiceException("Could not update author");
         }
     }
 
     @Override
-    public boolean delete(Long id) {
-        return authorDao.delete(id);
+    public boolean delete(Long id) throws ServiceException {
+        try {
+            return authorDao.delete(id);
+        } catch (AuthorDaoException e) {
+            LOG.error("dao error, could not delete author", e);
+            throw new ServiceException("Could not delete author");
+        }
     }
 
-    public static AuthorService getInstance() {
+    private boolean checkAuthorData(String firstName, String lastName) {
+        if (FirstLastNameValidator.getInstance().validate(firstName, lastName)) {
+            return true;
+        }
+        return false;
+    }
+
+    private boolean checkDuplication(Author author) throws AuthorDaoException {
+        if (authorDao.readAuthorByFirstLastName(author).isPresent()) {
+            return true;
+        }
+        return false;
+    }
+
+    static AuthorService getInstance() {
         return Holder.INSTANCE;
     }
 

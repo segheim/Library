@@ -1,6 +1,7 @@
 package com.epam.jwd.library.command;
 
 import com.epam.jwd.library.controller.RequestFactory;
+import com.epam.jwd.library.util.ConfigurationManager;
 
 public class ShowCreateBookPageCommand implements Command {
 
@@ -11,7 +12,7 @@ public class ShowCreateBookPageCommand implements Command {
 
     @Override
     public CommandResponse execute(CommandRequest request) {
-        return requestFactory.createForwardResponse("/WEB-INF/jsp/createBook.jsp");
+        return requestFactory.createForwardResponse(ConfigurationManager.getProperty("path.page.create.book"));
     }
 
     public static ShowCreateBookPageCommand getInstance() {

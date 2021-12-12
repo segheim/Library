@@ -1,33 +1,38 @@
 package com.epam.jwd.library.command;
 
 import com.epam.jwd.library.controller.RequestFactory;
-import com.epam.jwd.library.model.Account;
+import com.epam.jwd.library.exception.ServiceException;
 import com.epam.jwd.library.model.BookOrder;
-import com.epam.jwd.library.service.BookOrderService;
+import com.epam.jwd.library.service.BasicBookOrderService;
+import com.epam.jwd.library.util.ConfigurationManager;
+import com.epam.jwd.library.util.Constant;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import java.util.List;
-import java.util.Optional;
 
 public class ShowReaderBookOrderPageCommand implements Command{
 
-    private final BookOrderService bookOrderService;
+    private static final Logger LOG = LogManager.getLogger(ShowReaderBookOrderPageCommand.class);
+
+    private static final String ERROR_PASS_MASSAGE_ATTRIBUTE = "You have not order!";
     private final RequestFactory requestFactory = RequestFactory.getInstance();
 
-    private ShowReaderBookOrderPageCommand(BookOrderService bookOrderService) {
-        this.bookOrderService = bookOrderService;
+    private ShowReaderBookOrderPageCommand() {
     }
 
     @Override
     public CommandResponse execute(CommandRequest request) {
-        final Optional<Object> accountSession = request.takeFromSession("account");
-        final Account account = (Account)accountSession.get();
-        final List<BookOrder> bookOrders = bookOrderService.findOrdersByIdAccount(account.getId());
-        if (!bookOrders.isEmpty()) {
+        final Long id = Long.valueOf(request.getParameter("id"));
+        final List<BookOrder> bookOrders;
+        try {
+            bookOrders = BasicBookOrderService.getInstance().findOrdersByIdAccount(id);
             request.addAttributeToJsp("bookOrders", bookOrders);
-            return requestFactory.createForwardResponse("/WEB-INF/jsp/readerBookOrder.jsp");
-        } else {
-            request.addAttributeToJsp("errorPassMassage", "You have not order!");
-            return requestFactory.createForwardResponse("/WEB-INF/jsp/error.jsp");
+            return requestFactory.createForwardResponse(ConfigurationManager.getProperty("path.page.reader.order"));
+        } catch (ServiceException e) {
+            LOG.error("Service error, could not find reader by id", e);
+            request.addAttributeToJsp(Constant.ERROR_PASS_MESSAGE_ATTRIBUTE_NAME, ERROR_PASS_MASSAGE_ATTRIBUTE);
+            return requestFactory.createForwardResponse(ConfigurationManager.getProperty("path.page.error"));
         }
     }
 
@@ -36,6 +41,6 @@ public class ShowReaderBookOrderPageCommand implements Command{
     }
 
     private static class Holder {
-        public static final ShowReaderBookOrderPageCommand INSTANCE = new ShowReaderBookOrderPageCommand(BookOrderService.getInstance());
+        public static final ShowReaderBookOrderPageCommand INSTANCE = new ShowReaderBookOrderPageCommand();
     }
 }

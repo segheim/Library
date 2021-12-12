@@ -11,6 +11,13 @@
 <body>
     <div class="container-main">
         <div class="container-context">
+            <jsp:include page="header.jsp"></jsp:include>
+            <div class="container col-ms-6">
+                <form class="d-flex" name="search" role="search" method="post" action="/controller?command=search_book">
+                    <input name="title" class="form-control me-4" type="search" placeholder="Search by book title" aria-label="Search">
+                    <button class="btn btn-primary" type="submit">Search</button>
+                </form>
+            </div>
             <c:if test="${not empty sessionScope.account and (sessionScope.account.role eq Role.ADMIN)}">
                 <div class="d-grid gap-2">
                     <a class="btn btn-primary" href="/controller?command=create_book_page" role="button">create book</a>
@@ -43,8 +50,8 @@
                                     <td>${book.amountOfLeft}</td>
                                     <c:if test="${not empty sessionScope.account and (sessionScope.account.role eq Role.ADMIN)}">
                                         <td>
-                                            <a href="/controller?command=update_author_page&id=${author.id}">update</a>
-                                            <a href="/controller?command=delete_author&id=${author.id}">delete</a>
+                                            <a href="/controller?command=update_book_page&id=${book.id}">update</a>
+                                            <a href="/controller?command=delete_book&id=${book.id}">delete</a>
                                         </td>
                                     </c:if>
                                 </c:if>

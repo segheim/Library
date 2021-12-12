@@ -1,28 +1,37 @@
 package com.epam.jwd.library.command;
 
 import com.epam.jwd.library.controller.RequestFactory;
-import com.epam.jwd.library.model.Account;
-import com.epam.jwd.library.service.AccountService;
-
-import java.util.List;
+import com.epam.jwd.library.exception.ServiceException;
+import com.epam.jwd.library.service.BasicAccountService;
+import com.epam.jwd.library.util.ConfigurationManager;
+import com.epam.jwd.library.util.Constant;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 public class DeleteAccountCommand implements Command {
 
-    private final AccountService accountService;
+    private static final Logger LOG = LogManager.getLogger(DeleteAccountCommand.class);
+
+    private static final String ERROR_PASS_MESSAGE_ATTRIBUTE = "Could not delete account";
     private final RequestFactory requestFactory = RequestFactory.getInstance();
 
-    private DeleteAccountCommand(AccountService accountService) {
-        this.accountService = accountService;
+    private DeleteAccountCommand() {
     }
 
     @Override
     public CommandResponse execute(CommandRequest request) {
-        final Long idAccount = Long.valueOf(request.getParameter("id"));
-        if (accountService.delete(idAccount)) {
-            return requestFactory.createRedirectResponse("controller?command=accounts_page");
-        } else {
-            request.addAttributeToJsp("errorPassMassage", "Could not delete account");
-            return requestFactory.createForwardResponse("/WEB-INF/jsp/error.jsp");
+        final Long idAccount = Long.valueOf(request.getParameter(Constant.ID_PARAMETER_NAME));
+        try {
+            if (BasicAccountService.getInstance().delete(idAccount)) {
+                return requestFactory.createRedirectResponse(ConfigurationManager.getProperty("url.account"));
+            } else {
+                request.addAttributeToJsp(Constant.ERROR_PASS_MESSAGE_ATTRIBUTE_NAME, ERROR_PASS_MESSAGE_ATTRIBUTE);
+                return requestFactory.createForwardResponse(ConfigurationManager.getProperty("path.page.error"));
+            }
+        } catch (ServiceException e) {
+            LOG.error("Service error, could not account", e);
+            request.addAttributeToJsp(Constant.ERROR_PASS_MESSAGE_ATTRIBUTE_NAME, ERROR_PASS_MESSAGE_ATTRIBUTE);
+            return requestFactory.createForwardResponse(ConfigurationManager.getProperty("path.page.error"));
         }
     }
 
@@ -31,6 +40,6 @@ public class DeleteAccountCommand implements Command {
     }
 
     private static class Holder {
-        public static final DeleteAccountCommand INSTANCE = new DeleteAccountCommand(AccountService.getInstance());
+        public static final DeleteAccountCommand INSTANCE = new DeleteAccountCommand();
     }
 }

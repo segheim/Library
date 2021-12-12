@@ -11,6 +11,7 @@
 <body>
     <div class="container-main">
         <div class="container-context">
+            <jsp:include page="header.jsp"></jsp:include>
             <c:if test="${not empty sessionScope.account and (sessionScope.account.role eq Role.ADMIN)}">
                 <div class="d-grid gap-2">
                     <a class="btn btn-primary" href="/controller?command=create_author_page" role="button">create author</a>

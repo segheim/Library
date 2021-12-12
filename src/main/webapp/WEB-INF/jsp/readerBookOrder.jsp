@@ -12,17 +12,21 @@
 <body>
     <div class="container-main">
         <div class="container-context">
-            <div class="container">
-                <h3>${sessionScope.account.details.firstName} ${sessionScope.account.details.lastName}</h3>
-            </div>
+            <jsp:include page="header.jsp"></jsp:include>
             <c:choose>
                 <c:when test="${not empty requestScope.bookOrders}">
+                    <div class="container">
+                        <h3>List orders</h3>
+                    </div>
                     <c:forEach var="bookOrder" items="${bookOrders}">
+                        <div class="container">
+                                ${bookOrder.details.firstName} ${bookOrder.details.lastName}
+                        </div>
                         <div class="container">
                             Book: &#34;${bookOrder.book.title}&#34;
                         </div>
                         <div class="container">
-                            Author: <c:forEach var="author" items="${requestScope.bookOrder.book.authors}">
+                            Author: <c:forEach var="author" items="${bookOrder.book.authors}">
                                     ${author.firstName}
                                 <br>${author.lastName}
                             </c:forEach>

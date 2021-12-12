@@ -10,6 +10,7 @@
 <body>
     <div class="container-main">
         <div class="container-context">
+            <jsp:include page="header.jsp"></jsp:include>
             <div class="container">
                 <table class="table table-striped table-hover">
                     <thead class="table-primary">

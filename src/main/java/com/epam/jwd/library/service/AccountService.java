@@ -4,6 +4,7 @@ import at.favre.lib.crypto.bcrypt.BCrypt;
 import com.epam.jwd.library.connection.ConnectionPool;
 import com.epam.jwd.library.dao.AccountDao;
 import com.epam.jwd.library.dao.AccountDetailsDao;
+import com.epam.jwd.library.exception.AccountDaoException;
 import com.epam.jwd.library.exception.ServiceException;
 import com.epam.jwd.library.model.Account;
 import com.epam.jwd.library.model.AccountDetails;
@@ -18,12 +19,13 @@ import java.sql.SQLException;
 import java.util.List;
 import java.util.Optional;
 
-public class AccountService implements BasicAccountService<Account>, Service<Account> {
+public class AccountService implements BasicAccountService {
 
     private static final Logger LOG = LogManager.getLogger(AccountService.class);
 
     private static final char[] PASSWORD_FOR_FUN = "bcrypt".toCharArray();
     private static final int MIN_COST_FOR_HASHING = 4;
+    private static final int NUMBER_CORRECT_CHANGE_ROLE = 1;
 
     private final AccountDao accountDao;
 
@@ -32,8 +34,8 @@ public class AccountService implements BasicAccountService<Account>, Service<Acc
     }
 
     @Override
-    public Optional<Account> create(String login, String password, String firstName, String lastName) {
-        Optional<Account> createAccountWithDetails = Optional.empty();
+    public Optional<Account> create(String login, String password, String firstName, String lastName) throws ServiceException {
+        Optional<Account> createAccountWithDetails;
         Connection connection = ConnectionPool.lockingPool().takeConnection();
         try{
             checkAccountData(login, password, firstName, lastName);
@@ -41,24 +43,28 @@ public class AccountService implements BasicAccountService<Account>, Service<Acc
             connection.setAutoCommit(false);
             AccountDao accountDao = AccountDao.getInstance();
             AccountDetailsDao accountDetailsDao = AccountDetailsDao.getInstance();
-            final Account createdAccount = accountDao.create(account).orElseThrow(() -> new ServiceException("could not create account"));
+            final Account createdAccount = accountDao.create(account).orElseThrow(() -> new AccountDaoException("could not create account"));
             final Long idAccount = createdAccount.getId();
             accountDetailsDao.create(new AccountDetails(idAccount, firstName, lastName));
             createAccountWithDetails = accountDao.readByLogin(login);
             if (createAccountWithDetails.isPresent()) {
                 connection.commit();
+                return createAccountWithDetails;
             } else {
                 connection.rollback();
+                return Optional.empty();
             }
         } catch (SQLException e) {
             LOG.error("sql error, Database access error connection commit", e);
-        } catch (ServiceException e) {
-            LOG.error("could not create new account", e);
+            throw new ServiceException("could not create new account");
+        } catch (AccountDaoException e) {
+            LOG.error("Account dao error, could not create new account", e);
             try {
                 connection.rollback();
             } catch (SQLException ex) {
                 LOG.error("Database access error occurs connection rollback", ex);
             }
+            throw new ServiceException("could not create new account");
         } finally {
             try {
                 connection.setAutoCommit(true);
@@ -67,7 +73,6 @@ public class AccountService implements BasicAccountService<Account>, Service<Acc
                 LOG.error("Database access error occurs connection close", e);
             }
         }
-        return createAccountWithDetails;
     }
 
     private Account createAccountWithHashedPassword(String login, String password) {
@@ -83,42 +88,71 @@ public class AccountService implements BasicAccountService<Account>, Service<Acc
     }
 
     @Override
-    public Optional<Account> findById(Long id) {
-        return accountDao.read(id);
+    public Optional<Account> findById(Long id) throws ServiceException {
+        try {
+            return accountDao.read(id);
+        } catch (AccountDaoException e) {
+            LOG.error("Dao error, could not read account", e);
+            throw new ServiceException("could not find account");
+        }
     }
 
     @Override
-    public List<Account> findAll() {
-        return accountDao.readAll();
+    public List<Account> findAll() throws ServiceException {
+        try {
+            return accountDao.readAll();
+        } catch (AccountDaoException e) {
+            LOG.error("Dao error, could not read all accounts", e);
+            throw new ServiceException("could not read all accounts");
+        }
     }
 
     @Override
-    public boolean delete(Long id) {
-        return accountDao.delete(id);
+    public boolean delete(Long id) throws ServiceException {
+        try {
+            return accountDao.delete(id);
+        } catch (AccountDaoException e) {
+            LOG.error("Dao error, could not delete account", e);
+            throw new ServiceException("could not delete account");
+        }
     }
 
     @Override
-    public Optional<Account> authenticate(String login, String password) {
+    public Optional<Account> authenticate(String login, String password) throws ServiceException {
         if (!AccountValidator.getInstance().validate(login, password)) {
             return Optional.empty();
         }
-        final Optional<Account> readAccount = accountDao.readByLogin(login);
-        if (readAccount.isPresent()) {
-            return readAccount.filter(account -> BCrypt.verifyer().verify(password.toCharArray(),
-                    account.getPassword().toCharArray()).verified);
-        } else {
-            protectFromTimingAttack(password);
-            return Optional.empty();
+        final Optional<Account> readAccount;
+        try {
+            readAccount = accountDao.readByLogin(login);
+            if (readAccount.isPresent()) {
+                return readAccount.filter(
+                        account -> BCrypt.verifyer()
+                                .verify(password.toCharArray(), account.getPassword()
+                                        .toCharArray()).verified
+                );
+            } else {
+                protectFromTimingAttack(password);
+                return Optional.empty();
+            }
+        } catch (AccountDaoException e) {
+            LOG.error("Dao error, could not read by login");
+            throw new ServiceException("could not read by login]");
         }
     }
 
     @Override
-    public boolean changeRole(Long id, String name) {
-        if (accountDao.read(id).isPresent()) {
-            final Integer idRole = Role.valueOf(name).ordinal();
-            if (accountDao.updateRole(id, idRole + 1)) {
-                return true;
+    public boolean changeRole(Long id, String name) throws ServiceException {
+        try {
+            if (accountDao.read(id).isPresent()) {
+                final Integer idRole = Role.valueOf(name).ordinal();
+                if (accountDao.updateRole(id, idRole + NUMBER_CORRECT_CHANGE_ROLE)) {
+                    return true;
+                }
             }
+        }catch (AccountDaoException e) {
+            LOG.error("Dao error, could not change role");
+            throw new ServiceException("could not change role");
         }
         return false;
     }
@@ -127,7 +161,7 @@ public class AccountService implements BasicAccountService<Account>, Service<Acc
         BCrypt.verifyer().verify(password.toCharArray(), PASSWORD_FOR_FUN);
     }
 
-    public static AccountService getInstance() {
+    static AccountService getInstance() {
         return Holder.INSTANCE;
     }
 

@@ -1,7 +1,6 @@
 package com.epam.jwd.library.dao;
 
 import com.epam.jwd.library.connection.ConnectionPool;
-import com.epam.jwd.library.exception.BookDaoException;
 import com.epam.jwd.library.model.Author;
 import com.epam.jwd.library.exception.AuthorDaoException;
 import org.apache.logging.log4j.LogManager;
@@ -33,7 +32,7 @@ public class AuthorDao extends AbstractDao<Author> implements BasicAuthorDao<Aut
     }
 
     @Override
-    public Optional<Author> create(Author author) {
+    public Optional<Author> create(Author author) throws AuthorDaoException {
         LOG.trace("start create author");
         Optional<Author> createdAuthor = Optional.empty();
         try (final Connection connection = pool.takeConnection();
@@ -47,18 +46,16 @@ public class AuthorDao extends AbstractDao<Author> implements BasicAuthorDao<Aut
                     long key = generatedKeys.getLong(1);
                      createdAuthor = Optional.of(new Author(key, author.getFirstName(), author.getLastName()));
                 }
-            } else
-                throw new AuthorDaoException("could not create author");
+            }
         } catch (SQLException e) {
             LOG.error("sql error, could not create author", e);
-        } catch (AuthorDaoException e) {
-            LOG.error("could not create new author", e);
+            throw new AuthorDaoException("could not create new author");
         }
         return createdAuthor;
     }
 
     @Override
-    public Optional<Author> read(Long id) {
+    public Optional<Author> read(Long id) throws AuthorDaoException {
         LOG.trace("start read author (read by id)");
         Optional<Author> author = Optional.empty();
         try (final Connection connection = pool.takeConnection();
@@ -72,14 +69,13 @@ public class AuthorDao extends AbstractDao<Author> implements BasicAuthorDao<Aut
             }
         } catch (SQLException e) {
             LOG.error("sql error, could not find a author", e);
-        } catch (AuthorDaoException e) {
-            LOG.error("could not find a author", e);
+            throw new AuthorDaoException("could not find a author");
         }
         return author;
     }
 
     @Override
-    public List<Author> readAll() {
+    public List<Author> readAll() throws AuthorDaoException {
         LOG.trace("start readAll");
         List<Author> authors = new ArrayList<>();
         try (final Connection connection = pool.takeConnection();
@@ -92,14 +88,12 @@ public class AuthorDao extends AbstractDao<Author> implements BasicAuthorDao<Aut
             return authors;
         } catch (SQLException e) {
             LOG.error("sql error, could not found authors", e);
-        } catch (AuthorDaoException e) {
-            LOG.error("did not found authors", e);
+            throw new AuthorDaoException("could not found authors");
         }
-        return Collections.emptyList();
     }
 
     @Override
-    public Optional<Author> update(Author author) {
+    public Optional<Author> update(Author author) throws AuthorDaoException {
         LOG.trace("start update author");
         Optional<Author> updatedAuthor = Optional.empty();
         try (final Connection connection = pool.takeConnection();
@@ -110,19 +104,16 @@ public class AuthorDao extends AbstractDao<Author> implements BasicAuthorDao<Aut
             final int numberChangedLines = preparedStatement.executeUpdate();
             if (numberChangedLines > 0) {
                 updatedAuthor = Optional.of(author);
-            } else {
-                throw new AuthorDaoException("could not changed lines for update author");
             }
         } catch (SQLException e) {
             LOG.error("sql error, could not update author", e);
-        } catch (AuthorDaoException e) {
-            LOG.error("could not update author");
+            throw new AuthorDaoException("could not update author");
         }
         return updatedAuthor;
     }
 
     @Override
-    public boolean delete(Long idAuthor) {
+    public boolean delete(Long idAuthor) throws AuthorDaoException {
         LOG.trace("start delete author");
         boolean deleteAuthor = false;
         try (final Connection connection = pool.takeConnection();
@@ -131,17 +122,15 @@ public class AuthorDao extends AbstractDao<Author> implements BasicAuthorDao<Aut
             final int numberChangedLines = preparedStatement.executeUpdate();
             if (numberChangedLines != 0) {
                 deleteAuthor = true;
-            } else
-                throw new BookDaoException("could not change lines delete author");
+            }
         } catch (SQLException e) {
             LOG.error("sql error, could not delete author", e);
-        } catch (BookDaoException e) {
-            LOG.error("could not delete new author", e);
+            throw new AuthorDaoException("could not delete new author");
         }
         return deleteAuthor;
     }
 
-    public Optional<Author> readAuthorByFirstLastName(Author author) {
+    public Optional<Author> readAuthorByFirstLastName(Author author) throws AuthorDaoException {
         Optional<Author> readAuthor = Optional.empty();
         try (final Connection connection = pool.takeConnection();
              final PreparedStatement preparedStatement = connection.prepareStatement(SELECT_AUTHOR_BY_LAST_NAME)) {
@@ -155,8 +144,7 @@ public class AuthorDao extends AbstractDao<Author> implements BasicAuthorDao<Aut
             }
         } catch (SQLException e) {
             LOG.error("sql error, could not delete author", e);
-        } catch (AuthorDaoException e) {
-            LOG.error("could not delete new author", e);
+            throw new AuthorDaoException("could not delete new author");
         }
         return readAuthor;
     }
@@ -168,8 +156,8 @@ public class AuthorDao extends AbstractDao<Author> implements BasicAuthorDao<Aut
             return Optional.of(author);
         } catch (SQLException e) {
             LOG.error("could not extract author from executeAuthor", e);
-            return Optional.empty();
         }
+        return Optional.empty();
     }
 
     private static class Holder {

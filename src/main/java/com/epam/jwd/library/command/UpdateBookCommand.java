@@ -1,36 +1,46 @@
 package com.epam.jwd.library.command;
 
 import com.epam.jwd.library.controller.RequestFactory;
+import com.epam.jwd.library.exception.ServiceException;
 import com.epam.jwd.library.model.Book;
-import com.epam.jwd.library.service.BookService;
+import com.epam.jwd.library.service.BasicBookService;
+import com.epam.jwd.library.util.ConfigurationManager;
+import com.epam.jwd.library.util.Constant;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
-import java.sql.Date;
-import java.util.List;
 import java.util.Optional;
 
 public class UpdateBookCommand implements Command {
 
-    private final BookService bookService;
+    private static final Logger LOG = LogManager.getLogger(UpdateBookCommand.class);
+
+    private static final String ERROR_PASS_MESSAGE_ATTRIBUTE = "Could not update book";
+
     private final RequestFactory requestFactory = RequestFactory.getInstance();
 
-    private UpdateBookCommand(BookService bookService) {
-        this.bookService = bookService;
+    private UpdateBookCommand() {
     }
 
     @Override
     public CommandResponse execute(CommandRequest request) {
-        final Long idBook = Long.valueOf(request.getParameter("id"));
-        final String title = request.getParameter("title");
-        final String datePublished = request.getParameter("date_published");
-        final Integer amountOfLeft = Integer.valueOf(request.getParameter("amount_of_left"));
-        final Optional<Book> updateBook = bookService.update(idBook, title, datePublished, amountOfLeft);
-        if (updateBook.isPresent()) {
-            final List<Book> books = bookService.findAll();
-            request.addAttributeToJsp("books", books);
-            return requestFactory.createRedirectResponse("controller?command=catalog_page");
-        }else {
-            request.addAttributeToJsp("errorPassMassage", "Could not update book");
-            return requestFactory.createForwardResponse("/WEB-INF/jsp/error.jsp");
+        final Long idBook = Long.valueOf(request.getParameter(Constant.ID_PARAMETER_NAME));
+        final String title = request.getParameter(Constant.TITLE_PARAMETER_NAME);
+        final String datePublished = request.getParameter(Constant.DATE_PUBLISHED_PARAMETER_NAME);
+        final Integer amountOfLeft = Integer.valueOf(request.getParameter(Constant.AMOUNT_OF_LEFT_PARAMETER_NAME));
+        final Optional<Book> updateBook;
+        try {
+            updateBook = BasicBookService.getInstance().update(idBook, title, datePublished, amountOfLeft);
+            if (updateBook.isPresent()) {
+                return requestFactory.createRedirectResponse(ConfigurationManager.getProperty("url.catalog"));
+            }else {
+                request.addAttributeToJsp(Constant.ERROR_PASS_MESSAGE_ATTRIBUTE_NAME, ERROR_PASS_MESSAGE_ATTRIBUTE);
+                return requestFactory.createForwardResponse(ConfigurationManager.getProperty("path.page.error"));
+            }
+        } catch (ServiceException e) {
+            LOG.error("Service error, could not update book", e);
+            request.addAttributeToJsp(Constant.ERROR_PASS_MESSAGE_ATTRIBUTE_NAME, ERROR_PASS_MESSAGE_ATTRIBUTE);
+            return requestFactory.createForwardResponse(ConfigurationManager.getProperty("path.page.error"));
         }
     }
 
@@ -39,6 +49,6 @@ public class UpdateBookCommand implements Command {
     }
 
     private static class Holder {
-        public static final UpdateBookCommand INSTANCE = new UpdateBookCommand(BookService.getInstance());
+        public static final UpdateBookCommand INSTANCE = new UpdateBookCommand();
     }
 }

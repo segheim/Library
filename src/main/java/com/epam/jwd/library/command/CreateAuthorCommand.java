@@ -1,31 +1,45 @@
 package com.epam.jwd.library.command;
 
 import com.epam.jwd.library.controller.RequestFactory;
+import com.epam.jwd.library.exception.ServiceException;
 import com.epam.jwd.library.model.Author;
-import com.epam.jwd.library.service.AuthorService;
+import com.epam.jwd.library.service.BasicAuthorService;
+import com.epam.jwd.library.util.ConfigurationManager;
+import com.epam.jwd.library.util.Constant;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
-import java.util.List;
 import java.util.Optional;
 
 public class CreateAuthorCommand implements Command {
 
-    private final AuthorService authorService;
+    private static final Logger LOG = LogManager.getLogger(CreateAuthorCommand.class);
+
+    private static final String ERROR_PASS_MESSAGE_ATTRIBUTE_NAME = "errorCreateAuthorMessage";
+    private static final String ERROR_INCORRECT_PASS_MESSAGE_ATTRIBUTE = "Author is present or Incorrect dates, please try again";
+    private static final String ERROR_PASS_MESSAGE_ATTRIBUTE = "Create author failed";
     private final RequestFactory requestFactory = RequestFactory.getInstance();
 
-    private CreateAuthorCommand(AuthorService authorService) {
-        this.authorService = authorService;
+    private CreateAuthorCommand() {
     }
 
     @Override
     public CommandResponse execute(CommandRequest request) {
-        final String firstName = request.getParameter("first_name");
-        final String lastName = request.getParameter("last_name");
-        final Optional<Author> author = authorService.create(firstName, lastName);
-        if (author.isPresent()) {
-            return requestFactory.createRedirectResponse("controller?command=author_page");
-        } else {
-            request.addAttributeToJsp("errorCreateAuthorMessage", "Incorrect dates, please try again");
-            return requestFactory.createForwardResponse("/WEB-INF/jsp/createAuthor.jsp");
+        final String firstName = request.getParameter(Constant.FIRST_NAME_PARAMETER_NAME);
+        final String lastName = request.getParameter(Constant.LAST_NAME_PARAMETER_NAME);
+        final Optional<Author> author;
+        try {
+            author = BasicAuthorService.getInstance().create(firstName, lastName);
+            if (author.isPresent()) {
+                return requestFactory.createRedirectResponse(ConfigurationManager.getProperty("url.author"));
+            } else {
+                request.addAttributeToJsp(ERROR_PASS_MESSAGE_ATTRIBUTE_NAME, ERROR_INCORRECT_PASS_MESSAGE_ATTRIBUTE);
+                return requestFactory.createForwardResponse(ConfigurationManager.getProperty("path.page.create.author"));
+            }
+        } catch (ServiceException e) {
+            LOG.error("Service error, could not create author", e);
+            request.addAttributeToJsp(Constant.ERROR_PASS_MESSAGE_ATTRIBUTE_NAME, ERROR_PASS_MESSAGE_ATTRIBUTE);
+            return requestFactory.createForwardResponse(ConfigurationManager.getProperty("path.page.error"));
         }
     }
 
@@ -34,6 +48,6 @@ public class CreateAuthorCommand implements Command {
     }
 
     private static class Holder {
-        public static final CreateAuthorCommand INSTANCE = new CreateAuthorCommand(AuthorService.getInstance());
+        public static final CreateAuthorCommand INSTANCE = new CreateAuthorCommand();
     }
 }

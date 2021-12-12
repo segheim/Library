@@ -1,29 +1,40 @@
 package com.epam.jwd.library.command;
 
 import com.epam.jwd.library.controller.RequestFactory;
+import com.epam.jwd.library.exception.ServiceException;
 import com.epam.jwd.library.model.Author;
-import com.epam.jwd.library.service.AuthorService;
+import com.epam.jwd.library.service.BasicAuthorService;
+import com.epam.jwd.library.util.ConfigurationManager;
+import com.epam.jwd.library.util.Constant;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import java.util.List;
 
 public class ShowAuthorPageCommand implements Command {
 
-    private static final String REQUEST_ATTRIBUTE_NAME = "authors";
-    private static final String PATH_AUTHOR_JSP = "/WEB-INF/jsp/authors.jsp";
+    private static final Logger LOG = LogManager.getLogger(ShowAuthorPageCommand.class);
 
-    private final AuthorService authorService;
+    private static final String ERROR_CREATE_BOOK_ORDER_ATTRIBUTE = "could not find all authors";
+
     private final RequestFactory requestFactory = RequestFactory.getInstance();
 
 
-    private ShowAuthorPageCommand(AuthorService authorService) {
-        this.authorService = authorService;
+    private ShowAuthorPageCommand() {
     }
 
     @Override
     public CommandResponse execute(CommandRequest request) {
-        final List<Author> authors = authorService.findAll();
-        request.addAttributeToJsp(REQUEST_ATTRIBUTE_NAME, authors);
-        return requestFactory.createForwardResponse(PATH_AUTHOR_JSP);
+        final List<Author> authors;
+        try {
+            authors = BasicAuthorService.getInstance().findAll();
+            request.addAttributeToJsp(Constant.AUTHORS_ATTRIBUTE_NAME, authors);
+            return requestFactory.createForwardResponse(ConfigurationManager.getProperty("path.page.authors"));
+        } catch (ServiceException e) {
+            LOG.error("Service error, could not find all authors", e);
+            request.addAttributeToJsp(Constant.ERROR_PASS_MESSAGE_ATTRIBUTE_NAME, ERROR_CREATE_BOOK_ORDER_ATTRIBUTE);
+            return requestFactory.createForwardResponse(ConfigurationManager.getProperty("path.page.error"));
+        }
     }
 
     public static ShowAuthorPageCommand getInstance() {
@@ -31,6 +42,6 @@ public class ShowAuthorPageCommand implements Command {
     }
 
     private static class Holder {
-        public static final ShowAuthorPageCommand INSTANCE = new ShowAuthorPageCommand(AuthorService.getInstance());
+        public static final ShowAuthorPageCommand INSTANCE = new ShowAuthorPageCommand();
     }
 }

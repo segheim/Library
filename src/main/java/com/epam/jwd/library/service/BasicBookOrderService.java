@@ -1,26 +1,26 @@
 package com.epam.jwd.library.service;
 
-import com.epam.jwd.library.model.Account;
-import com.epam.jwd.library.model.Book;
-import com.epam.jwd.library.model.Entity;
-import com.epam.jwd.library.model.OrderType;
+import com.epam.jwd.library.exception.ServiceException;
+import com.epam.jwd.library.model.*;
 
 import java.util.List;
 import java.util.Optional;
 
-public interface BasicBookOrderService<T extends Entity> {
+public interface BasicBookOrderService extends Service<BookOrder> {
 
-    Optional<T> createBookOrder(Account account, Book book, String orderType);
+    Optional<BookOrder> createBookOrder(Account account, Long idBook, String orderType) throws ServiceException;
 
-    List<T> findOrdersByIdAccount(Long idAccount);
+    List<BookOrder> findOrdersByIdAccount(Long idAccount) throws ServiceException;
 
-    List<T> findAllUncompleted();
+    List<BookOrder> findAllUncompleted() throws ServiceException;
 
-    boolean isAccountWithOrderStatusIssue(Long id);
+    boolean changeStatusBookOrderOnIssued(Long id) throws ServiceException;
 
-    boolean changeStatusBookOrderOnIssued(Long id);
+    boolean changeStatusBookOrderOnEnded(Long id) throws ServiceException;
 
-    boolean changeStatusBookOrderOnEnded(Long id);
+    boolean deleteClaimedBookOrders(Long id) throws ServiceException;
 
-    boolean isRepeatedBookInNoEndedBookOrders(Long idAccount, Long idBook);
+    static BasicBookOrderService getInstance() {
+        return BookOrderService.getInstance();
+    }
 }

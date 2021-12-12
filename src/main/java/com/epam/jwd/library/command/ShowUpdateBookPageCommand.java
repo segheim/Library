@@ -1,32 +1,39 @@
 package com.epam.jwd.library.command;
 
 import com.epam.jwd.library.controller.RequestFactory;
+import com.epam.jwd.library.exception.ServiceException;
 import com.epam.jwd.library.model.Book;
-import com.epam.jwd.library.service.BookService;
+import com.epam.jwd.library.service.BasicBookService;
+import com.epam.jwd.library.util.ConfigurationManager;
+import com.epam.jwd.library.util.Constant;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import java.util.Optional;
 
 public class ShowUpdateBookPageCommand implements Command{
 
-    private static final String PATH_UPDATE_BOOK_JSP = "/WEB-INF/jsp/updateBook.jsp";
+    private static final Logger LOG = LogManager.getLogger(ShowUpdateBookPageCommand.class);
 
-    private final BookService bookService;
+    private static final String ERROR_PASS_MASSAGE_ATTRIBUTE = "Could not find book";
+
     private final RequestFactory requestFactory = RequestFactory.getInstance();
 
-    private ShowUpdateBookPageCommand(BookService bookService) {
-        this.bookService = bookService;
+    private ShowUpdateBookPageCommand() {
     }
 
     @Override
     public CommandResponse execute(CommandRequest request) {
-        final Long idBook = Long.valueOf(request.getParameter("id"));
-        final Optional<Book> book = bookService.findById(idBook);
-        if (book.isPresent()) {
-            request.addAttributeToJsp("book", book.get());
-            return requestFactory.createForwardResponse("/WEB-INF/jsp/updateBook.jsp");
-        } else {
-            request.addAttributeToJsp("errorPassMassage", "Could not find book");
-            return requestFactory.createForwardResponse("/WEB-INF/jsp/error.jsp");
+        final Long idBook = Long.valueOf(request.getParameter(Constant.ID_PARAMETER_NAME));
+        final Optional<Book> book;
+        try {
+            book = BasicBookService.getInstance().findById(idBook);
+            request.addAttributeToJsp(Constant.BOOK_PARAMETER_NAME, book.get());
+            return requestFactory.createForwardResponse(ConfigurationManager.getProperty("path.page.update.book"));
+        } catch (ServiceException e) {
+            LOG.error("Service error, could not find  update book", e);
+            request.addAttributeToJsp(Constant.ERROR_PASS_MESSAGE_ATTRIBUTE_NAME, ERROR_PASS_MASSAGE_ATTRIBUTE);
+            return requestFactory.createForwardResponse(ConfigurationManager.getProperty("path.page.error"));
         }
     }
 
@@ -35,6 +42,6 @@ public class ShowUpdateBookPageCommand implements Command{
     }
 
     private static class Holder {
-        public static final ShowUpdateBookPageCommand INSTANCE = new ShowUpdateBookPageCommand(BookService.getInstance());
+        public static final ShowUpdateBookPageCommand INSTANCE = new ShowUpdateBookPageCommand();
     }
 }

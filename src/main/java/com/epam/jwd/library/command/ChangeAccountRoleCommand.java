@@ -1,28 +1,40 @@
 package com.epam.jwd.library.command;
 
 import com.epam.jwd.library.controller.RequestFactory;
-import com.epam.jwd.library.service.AccountService;
+import com.epam.jwd.library.exception.ServiceException;
+import com.epam.jwd.library.service.BasicAccountService;
+import com.epam.jwd.library.util.ConfigurationManager;
+import com.epam.jwd.library.util.Constant;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import static java.lang.String.format;
 
 public class ChangeAccountRoleCommand implements Command{
 
-    private final AccountService accountService;
+    private static final Logger LOG = LogManager.getLogger(ChangeAccountRoleCommand.class);
+
+    private static final String ERROR_PASS_MESSAGE_ATTRIBUTE = "Could not change role in account";
     private final RequestFactory requestFactory = RequestFactory.getInstance();
 
-    public ChangeAccountRoleCommand(AccountService accountService) {
-        this.accountService = accountService;
+    public ChangeAccountRoleCommand() {
     }
 
     @Override
     public CommandResponse execute(CommandRequest request) {
-        final Long accountId = Long.valueOf(request.getParameter("id"));
-        final String roleName = request.getParameter("role");
-        if (accountService.changeRole(accountId, roleName)) {
-            return requestFactory.createRedirectResponse(format("controller?command=account_page&id=%s", accountId));
-        } else {
-            request.addAttributeToJsp("errorPassMassage", "Could not change role in account");
-            return requestFactory.createForwardResponse("/WEB-INF/jsp/error.jsp");
+        final Long accountId = Long.valueOf(request.getParameter(Constant.ID_PARAMETER_NAME));
+        final String roleName = request.getParameter(Constant.ROLE_PARAMETER_NAME);
+        try {
+            if (BasicAccountService.getInstance().changeRole(accountId, roleName)) {
+                return requestFactory.createRedirectResponse(format(ConfigurationManager.getProperty("url.account") + "&id=%s", accountId));
+            } else {
+                request.addAttributeToJsp(Constant.ERROR_PASS_MESSAGE_ATTRIBUTE_NAME, ERROR_PASS_MESSAGE_ATTRIBUTE);
+                return requestFactory.createForwardResponse(ConfigurationManager.getProperty("path.page.error"));
+            }
+        } catch (ServiceException e) {
+            LOG.error("Service error, could not change role from account", e);
+            request.addAttributeToJsp(Constant.ERROR_PASS_MESSAGE_ATTRIBUTE_NAME, ERROR_PASS_MESSAGE_ATTRIBUTE);
+            return requestFactory.createForwardResponse(ConfigurationManager.getProperty("path.page.error"));
         }
     }
 
@@ -31,6 +43,6 @@ public class ChangeAccountRoleCommand implements Command{
     }
 
     private static class Holder {
-        public static final ChangeAccountRoleCommand INSTANCE = new ChangeAccountRoleCommand(AccountService.getInstance());
+        public static final ChangeAccountRoleCommand INSTANCE = new ChangeAccountRoleCommand();
     }
 }

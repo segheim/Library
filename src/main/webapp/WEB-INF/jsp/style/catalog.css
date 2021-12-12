@@ -2,10 +2,12 @@ body{
     padding: 0px;
     margin: 0px;
     display: flex;
+
 }
 
 .container{
     display: flex;
+    width: 1280px;
 }
 
 .container-main{

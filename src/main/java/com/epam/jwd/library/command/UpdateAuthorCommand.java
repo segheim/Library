@@ -1,34 +1,48 @@
 package com.epam.jwd.library.command;
 
 import com.epam.jwd.library.controller.RequestFactory;
+import com.epam.jwd.library.exception.ServiceException;
 import com.epam.jwd.library.model.Author;
-import com.epam.jwd.library.service.AuthorService;
+import com.epam.jwd.library.service.BasicAuthorService;
+import com.epam.jwd.library.util.ConfigurationManager;
+import com.epam.jwd.library.util.Constant;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import java.util.List;
 import java.util.Optional;
 
 public class UpdateAuthorCommand implements Command {
 
-    private final AuthorService authorService;
+    private static final Logger LOG = LogManager.getLogger(UpdateAuthorCommand.class);
+
+    private static final String ERROR_PASS_MASSAGE_ATTRIBUTE = "Could not update author";
+
     private final RequestFactory requestFactory = RequestFactory.getInstance();
 
-    private UpdateAuthorCommand(AuthorService authorService) {
-        this.authorService = authorService;
+    private UpdateAuthorCommand() {
     }
 
     @Override
     public CommandResponse execute(CommandRequest request) {
-        final Long idAuthor = Long.valueOf(request.getParameter("id"));
-        final String firstName = request.getParameter("first_name");
-        final String lastName = request.getParameter("last_name");
-        final Optional<Author> updatedAuthor = authorService.update(idAuthor, firstName, lastName);
-        if (updatedAuthor.isPresent()) {
-            final List<Author> authors = authorService.findAll();
-            request.addAttributeToJsp("authors", authors);
-            return requestFactory.createRedirectResponse("controller?command=author_page");
-        } else {
-            request.addAttributeToJsp("errorPassMassage", "Could not update author");
-            return requestFactory.createForwardResponse("/WEB-INF/jsp/error.jsp");
+        final Long idAuthor = Long.valueOf(request.getParameter(Constant.ID_PARAMETER_NAME));
+        final String firstName = request.getParameter(Constant.FIRST_NAME_PARAMETER_NAME);
+        final String lastName = request.getParameter(Constant.LAST_NAME_PARAMETER_NAME);
+        try {
+            final Optional<Author> updatedAuthor = BasicAuthorService.getInstance().update(idAuthor, firstName, lastName);
+            if (updatedAuthor.isPresent()) {
+                final List<Author> authors;
+                authors = BasicAuthorService.getInstance().findAll();
+                request.addAttributeToJsp(Constant.AUTHORS_ATTRIBUTE_NAME, authors);
+                return requestFactory.createRedirectResponse(ConfigurationManager.getProperty("url.author"));
+            } else {
+                request.addAttributeToJsp(Constant.ERROR_PASS_MESSAGE_ATTRIBUTE_NAME, ERROR_PASS_MASSAGE_ATTRIBUTE);
+                return requestFactory.createForwardResponse(ConfigurationManager.getProperty("path.page.error"));
+            }
+        } catch (ServiceException e) {
+            LOG.error("Service error, could not update author", e);
+            request.addAttributeToJsp(Constant.ERROR_PASS_MESSAGE_ATTRIBUTE_NAME, ERROR_PASS_MASSAGE_ATTRIBUTE);
+            return requestFactory.createForwardResponse(ConfigurationManager.getProperty("path.page.error"));
         }
     }
 
@@ -37,6 +51,6 @@ public class UpdateAuthorCommand implements Command {
     }
 
     private static class Holder {
-        public static final UpdateAuthorCommand INSTANCE = new UpdateAuthorCommand(AuthorService.getInstance());
+        public static final UpdateAuthorCommand INSTANCE = new UpdateAuthorCommand();
     }
 }

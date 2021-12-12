@@ -11,6 +11,7 @@
 <body>
     <div class="container-main">
         <div class="container-context">
+            <jsp:include page="header.jsp"></jsp:include>
             <div class="container">
                 <h2>Personal data</h2>
             </div>

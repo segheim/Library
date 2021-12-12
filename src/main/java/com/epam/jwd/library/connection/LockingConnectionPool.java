@@ -1,6 +1,7 @@
 package com.epam.jwd.library.connection;
 
 import com.epam.jwd.library.exception.InitializeConnectionPoolError;
+import com.epam.jwd.library.util.ConfigurationManager;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -21,10 +22,11 @@ public class LockingConnectionPool implements ConnectionPool{
 
     private static final Logger LOG = LogManager.getLogger(LockingConnectionPool.class);
 
-    private static final String DB_URL = "jdbc:mysql://localhost:3306/library";
-    private static final String DB_USER = "root";
-    private static final String DB_PASSWORD = "root";
-    public static final int DEFAULT_POOL_SIZE = 8;
+    private static final String DB_URL = ConfigurationManager.getProperty("db.url");
+    private static final String DB_USER = ConfigurationManager.getProperty("db.user");
+    private static final String DB_PASSWORD = ConfigurationManager.getProperty("db.password");
+    public static final int DEFAULT_POOL_SIZE = Integer.parseInt(ConfigurationManager.getProperty("db.poolsize"));
+    private static final String PATH_DATABASE_DRIVER = ConfigurationManager.getProperty("db.driver");
 
     private static AtomicBoolean isCreated = new AtomicBoolean();
     private static LockingConnectionPool instance;
@@ -35,7 +37,6 @@ public class LockingConnectionPool implements ConnectionPool{
     private final AtomicBoolean initialize = new AtomicBoolean();
 
     private final static Lock locker = new ReentrantLock();
-    private final Condition condition = locker.newCondition();
 
     public LockingConnectionPool() {
         this.availableConnections = new LinkedBlockingQueue<>();
@@ -62,7 +63,7 @@ public class LockingConnectionPool implements ConnectionPool{
     public boolean init() {
         if (initialize.compareAndSet(false, true)) {
             try {
-                Class.forName("com.mysql.cj.jdbc.Driver");
+                Class.forName(PATH_DATABASE_DRIVER);
             } catch (ClassNotFoundException e) {
                 e.printStackTrace();
             }
@@ -78,7 +79,7 @@ public class LockingConnectionPool implements ConnectionPool{
         if (initialize.compareAndSet(true, false)) {
             closeConnections();
             deregisterDrivers();
-            return false;
+            return true;
         }
         return false;
     }
@@ -103,10 +104,15 @@ public class LockingConnectionPool implements ConnectionPool{
         ProxyConnection proxyConnection = null;
         try {
             proxyConnection = availableConnections.take();
+            if (proxyConnection.isClosed()) {
+                proxyConnection = new ProxyConnection(DriverManager.getConnection(DB_URL, DB_USER, DB_PASSWORD));
+            }
             givenAwayConnections.add(proxyConnection);
         } catch (InterruptedException e) {
             LOG.error("method takeConnection from LockingConnectionPool was interrupted", e);
             Thread.currentThread().interrupt();
+        } catch (SQLException e) {
+            LOG.error("could not close connection", e);
         }
         return proxyConnection;
     }

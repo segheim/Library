@@ -10,6 +10,7 @@
 </head>
 <body>
     <div class="container-main">
+        <jsp:include page="header.jsp"></jsp:include>
         <div class="container-center">
             <div class="alert alert-danger" role="alert">
                 <h3 class="alert-heading">Oops! Something unpleasant happened... &#9785</h3>

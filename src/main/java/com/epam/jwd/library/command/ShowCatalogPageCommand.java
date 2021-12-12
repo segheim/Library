@@ -1,32 +1,42 @@
 package com.epam.jwd.library.command;
 
 import com.epam.jwd.library.controller.RequestFactory;
+import com.epam.jwd.library.exception.ServiceException;
 import com.epam.jwd.library.model.Book;
-import com.epam.jwd.library.service.BookService;
+import com.epam.jwd.library.service.BasicBookService;
+import com.epam.jwd.library.util.ConfigurationManager;
+import com.epam.jwd.library.util.Constant;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import java.util.List;
 
 public class ShowCatalogPageCommand implements Command {
 
-    private static final String REQUEST_ATTRIBUTE_NAME = "books";
-    private static final String PATH_CATALOG_JSP = "/WEB-INF/jsp/catalog.jsp";
+    private static final Logger LOG = LogManager.getLogger(ShowCatalogPageCommand.class);
 
-    private final BookService bookService;
+    private static final String ERROR_PASS_MESSAGE_ATTRIBUTE = "Could not find books";
+
     private final RequestFactory requestFactory = RequestFactory.getInstance();
 
-    private ShowCatalogPageCommand(BookService bookService) {
-        this.bookService = bookService;
+    private ShowCatalogPageCommand() {
     }
 
     @Override
     public CommandResponse execute(CommandRequest request) {
-        if (!bookService.findAll().isEmpty()) {
-            final List<Book> books = bookService.findAll();
-            request.addAttributeToJsp(REQUEST_ATTRIBUTE_NAME, books);
-            return requestFactory.createForwardResponse(PATH_CATALOG_JSP);
-        } else {
-            request.addAttributeToJsp("errorPassMassage", "Could not find books");
-            return requestFactory.createForwardResponse("/WEB-INF/jsp/error.jsp");
+        try {
+            if (!BasicBookService.getInstance().findAll().isEmpty()) {
+                final List<Book> books = BasicBookService.getInstance().findAll();
+                request.addAttributeToJsp(Constant.BOOKS_ATTRIBUTE_NAME, books);
+                return requestFactory.createForwardResponse(ConfigurationManager.getProperty("path.page.catalog"));
+            } else {
+                request.addAttributeToJsp(Constant.ERROR_PASS_MESSAGE_ATTRIBUTE_NAME, ERROR_PASS_MESSAGE_ATTRIBUTE);
+                return requestFactory.createForwardResponse(ConfigurationManager.getProperty("path.page.error"));
+            }
+        } catch (ServiceException e) {
+            LOG.error("Service error, could not create book order", e);
+            request.addAttributeToJsp(Constant.ERROR_PASS_MESSAGE_ATTRIBUTE_NAME, ERROR_PASS_MESSAGE_ATTRIBUTE);
+            return requestFactory.createForwardResponse(ConfigurationManager.getProperty("path.page.error"));
         }
     }
 
@@ -35,6 +45,6 @@ public class ShowCatalogPageCommand implements Command {
     }
 
     private static class Holder {
-        public static final ShowCatalogPageCommand INSTANCE = new ShowCatalogPageCommand(BookService.getInstance());
+        public static final ShowCatalogPageCommand INSTANCE = new ShowCatalogPageCommand();
     }
 }

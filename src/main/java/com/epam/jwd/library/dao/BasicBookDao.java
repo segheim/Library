@@ -1,18 +1,20 @@
 package com.epam.jwd.library.dao;
 
+import com.epam.jwd.library.exception.BookDaoException;
+
 import java.util.List;
 import java.util.Optional;
 
 public interface BasicBookDao<T> {
 
-    Optional<T> readByTitle(String title);
+    Optional<T> readByTitle(String title) throws BookDaoException;
 
-    boolean createBookInAuthorToBook(Long idBook, Long idAuthor);
+    boolean createBookInAuthorToBook(Long idBook, Long idAuthor) throws BookDaoException;
 
-    Optional<T> readWithAuthors(Long id);
+    Optional<T> readWithAuthors(Long id) throws BookDaoException;
 
-    List<T> readAllWithAuthors();
+    List<T> readAllWithAuthors() throws BookDaoException;
 
-    boolean decreaseAmountOfLeft(Long idBook, Integer amountOfLeft);
+    boolean decreaseAmountOfLeft(Long idBook, Integer amountOfLeft) throws BookDaoException;
 
 }

@@ -1,4 +1,5 @@
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
+<%@ page import="com.epam.jwd.library.model.OrderStatus" %>
 <%@ page contentType="text/html;charset=UTF-8" language="java" %>
 <html>
 <head>
@@ -13,15 +14,14 @@
     <table>
         <div class="container-main">
             <div class="container-context">
+                <jsp:include page="header.jsp"></jsp:include>
                 <div class="container">
                     <table class="table table-striped table-hover">
                         <thead class="table-primary">
                         <tr>
                             <th>Id</th>
-                            <th>First name</th>
-                            <th>Last name</th>
+                            <th>First Last name</th>
                             <th>Book title</th>
-                            <th>Amount of left books</th>
                             <th>Date create order</th>
                             <th>Date issue order</th>
                             <th>Date return order</th>
@@ -33,18 +33,26 @@
                         <c:forEach var="bookOrder" items="${requestScope.bookOrders}">
                             <tr>
                                 <td>${bookOrder.id}</td>
-                                <td>${bookOrder.details.firstName}</td>
-                                <td>${bookOrder.details.lastName}</td>
+                                <td> <a href="/controller?command=reader_book_order_page&id=${bookOrder.details.id}">
+                                        ${bookOrder.details.firstName} ${bookOrder.details.lastName}
+                                    </a>
+                                </td>
                                 <td>${bookOrder.book.title}</td>
-                                <td>${bookOrder.book.amountOfLeft}</td>
                                 <td>${bookOrder.dateCreate}</td>
                                 <td>${bookOrder.dateIssue}</td>
                                 <td>${bookOrder.dateReturn}</td>
                                 <td>${bookOrder.status}</td>
                                 <td>
-                                    <a href="/controller?command=issue_book&id=${bookOrder.id}">issued</a>
-                                    <a href="/controller?command=end_book_order&id=${bookOrder.id}">ended</a>
-                                    <a href="/controller?command=delete_book_order&id=${bookOrder.id}">delete order</a>
+                                    <c:if test="${bookOrder.status eq OrderStatus.CLAIMED}">
+                                        <a href="/controller?command=issue_book&id=${bookOrder.id}">issued</a>
+                                        <a href="/controller?command=delete_book_order&id=${bookOrder.id}">delete order</a>
+                                    </c:if>
+                                    <c:if test="${not empty bookOrder.status and (bookOrder.status eq OrderStatus.ISSUED)}">
+                                        <a href="/controller?command=end_book_order&id=${bookOrder.id}">ended</a>
+                                    </c:if>
+                                    <c:if test="${not empty bookOrder.status and (bookOrder.status eq OrderStatus.ENDED)}">
+                                        <a href="/controller?command=delete_book_order&id=${bookOrder.id}">delete order</a>
+                                    </c:if>
                                 </td>
                             </tr>
                         </c:forEach>

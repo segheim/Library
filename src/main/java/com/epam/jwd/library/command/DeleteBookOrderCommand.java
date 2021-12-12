@@ -1,36 +1,52 @@
 package com.epam.jwd.library.command;
 
 import com.epam.jwd.library.controller.RequestFactory;
+import com.epam.jwd.library.exception.ServiceException;
 import com.epam.jwd.library.model.Account;
 import com.epam.jwd.library.model.Role;
-import com.epam.jwd.library.service.BookOrderService;
+import com.epam.jwd.library.service.BasicBookOrderService;
+import com.epam.jwd.library.util.ConfigurationManager;
+import com.epam.jwd.library.util.Constant;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import java.util.Optional;
 
+import static java.lang.String.format;
+
 public class DeleteBookOrderCommand implements Command {
 
-    private final BookOrderService bookOrderService;
+    private static final Logger LOG = LogManager.getLogger(DeleteBookOrderCommand.class);
+
+    private static final String URL_READER_BOOK_ORDER_PAGE = "controller?command=reader_book_order_page&id=%s";
+    private static final String ERROR_PASS_MESSAGE_ATTRIBUTE = "Could not delete book order";
+
     private final RequestFactory requestFactory = RequestFactory.getInstance();
 
-    private DeleteBookOrderCommand(BookOrderService bookOrderService) {
-        this.bookOrderService = bookOrderService;
+    private DeleteBookOrderCommand() {
+
     }
 
     @Override
     public CommandResponse execute(CommandRequest request) {
-        final Long idBookOrder = Long.valueOf(request.getParameter("id"));
-        final Optional<Object> accountSession = request.takeFromSession("account");
+        final Long idBookOrder = Long.valueOf(request.getParameter(Constant.ID_PARAMETER_NAME));
+        final Optional<Object> accountSession = request.takeFromSession(Constant.ACCOUNT_PARAMETER_NAME);
         final Account account = (Account) accountSession.get();
         final Role role = account.getRole();
-        if (bookOrderService.delete(idBookOrder)) {
-            if (Role.READER.equals(role)) {
-                return requestFactory.createRedirectResponse("controller?command=reader_book_order_page");
-            } else {
-                return requestFactory.createRedirectResponse("controller?command=librarian_book_order_page");
+        try {
+            if (BasicBookOrderService.getInstance().delete(idBookOrder)) {
+                if (Role.READER.equals(role)) {
+                    return requestFactory.createRedirectResponse(format(URL_READER_BOOK_ORDER_PAGE, account.getId()));
+                } else {
+                    return requestFactory.createRedirectResponse(ConfigurationManager.getProperty("url.librarian.order"));
+                }
             }
+        } catch (ServiceException e) {
+            LOG.error("could not delete book order", e);
+
         }
-        request.addAttributeToJsp("errorPassMassage", "Could not delete book order");
-        return requestFactory.createForwardResponse("/WEB-INF/jsp/error.jsp");
+        request.addAttributeToJsp(Constant.ERROR_PASS_MESSAGE_ATTRIBUTE_NAME, ERROR_PASS_MESSAGE_ATTRIBUTE);
+        return requestFactory.createForwardResponse(ConfigurationManager.getProperty("path.page.error"));
     }
 
     public static DeleteBookOrderCommand getInstance() {
@@ -38,6 +54,6 @@ public class DeleteBookOrderCommand implements Command {
     }
 
     private static class Holder {
-        public static final DeleteBookOrderCommand INSTANCE = new DeleteBookOrderCommand(BookOrderService.getInstance());
+        public static final DeleteBookOrderCommand INSTANCE = new DeleteBookOrderCommand();
     }
 }

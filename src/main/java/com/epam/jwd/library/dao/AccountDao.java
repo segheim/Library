@@ -2,17 +2,14 @@ package com.epam.jwd.library.dao;
 
 import com.epam.jwd.library.connection.ConnectionPool;
 import com.epam.jwd.library.exception.AccountDaoException;
-import com.epam.jwd.library.exception.AuthorDaoException;
 import com.epam.jwd.library.model.Account;
 import com.epam.jwd.library.model.AccountDetails;
-import com.epam.jwd.library.model.Author;
 import com.epam.jwd.library.model.Role;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 import java.sql.*;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 
@@ -54,7 +51,7 @@ public class AccountDao extends AbstractDao<Account> implements BasicAccountDao<
     }
 
     @Override
-    public Optional<Account> create(Account account) {
+    public Optional<Account> create(Account account) throws AccountDaoException {
         LOG.trace("start create account");
         Optional<Account> createdAccount = Optional.empty();
         try (final Connection connection = pool.takeConnection();
@@ -68,18 +65,16 @@ public class AccountDao extends AbstractDao<Account> implements BasicAccountDao<
                     long key = generatedKeys.getLong(1);
                     createdAccount = Optional.of(new Account(key, account.getLogin(), account.getPassword(), Role.READER));
                 }
-            } else
-                throw new AccountDaoException("could not create account");
+            }
         } catch (SQLException e) {
             LOG.error("sql error, could not create account", e);
-        } catch (AccountDaoException e) {
-            LOG.error("could not create new account", e);
+            throw new AccountDaoException("could not create new account");
         }
         return createdAccount;
     }
 
     @Override
-    public Optional<Account> read(Long id) {
+    public Optional<Account> read(Long id) throws AccountDaoException {
         LOG.trace("start read account");
         Optional<Account> readAccount = Optional.empty();
         try (final Connection connection = pool.takeConnection();
@@ -92,14 +87,13 @@ public class AccountDao extends AbstractDao<Account> implements BasicAccountDao<
             }
         } catch (SQLException e) {
             LOG.error("sql error, could not find account", e);
-        } catch (AccountDaoException e) {
-            LOG.error("could not find account", e);
+            throw new AccountDaoException("could not find account");
         }
         return readAccount;
     }
 
     @Override
-    public List<Account> readAll() {
+    public List<Account> readAll() throws AccountDaoException {
         LOG.trace("start read all accounts");
         List<Account> accounts = new ArrayList<>();
         try (final Connection connection = pool.takeConnection();
@@ -109,13 +103,11 @@ public class AccountDao extends AbstractDao<Account> implements BasicAccountDao<
                 final Account account = executeAccount(resultSet).orElseThrow(() -> new AccountDaoException("could not extract author"));
                 accounts.add(account);
             }
-            return accounts;
         } catch (SQLException e) {
             LOG.error("sql error, could not found accounts", e);
-        } catch (AccountDaoException e) {
-            LOG.error("did not found accounts", e);
+            throw new AccountDaoException("did not found accounts");
         }
-        return Collections.emptyList();
+        return accounts;
     }
 
     @Override
@@ -124,7 +116,7 @@ public class AccountDao extends AbstractDao<Account> implements BasicAccountDao<
     }
 
     @Override
-    public boolean delete(Long id) {
+    public boolean delete(Long id) throws AccountDaoException {
         LOG.trace("start delete account");
         boolean deleteAccount = false;
         try (final Connection connection = pool.takeConnection();
@@ -133,18 +125,15 @@ public class AccountDao extends AbstractDao<Account> implements BasicAccountDao<
             final int numberChangedLines = preparedStatement.executeUpdate();
             if (numberChangedLines != 0) {
                 deleteAccount = true;
-            } else {
-                throw new AccountDaoException("could not change lines delete account");
             }
         } catch (SQLException e) {
             LOG.error("sql error, could not delete account", e);
-        } catch (AccountDaoException e) {
-            LOG.error("could not delete account", e);
+            throw new AccountDaoException("could not delete account");
         }
         return deleteAccount;
     }
 
-    public Optional<Account> readByLogin(String login) {
+    public Optional<Account> readByLogin(String login) throws AccountDaoException {
         LOG.trace("start read account by login");
         Optional<Account> account = Optional.empty();
         try (final Connection connection = pool.takeConnection();
@@ -158,14 +147,13 @@ public class AccountDao extends AbstractDao<Account> implements BasicAccountDao<
             }
         } catch (SQLException e) {
             LOG.error("sql error, could not found a account", e);
-        } catch (AccountDaoException e) {
-            LOG.error("could not found a account", e);
+            throw new AccountDaoException("could not found a account");
         }
         return account;
     }
 
     @Override
-    public boolean updateRole(Long id, Integer idRole) {
+    public boolean updateRole(Long id, Integer idRole) throws AccountDaoException {
         LOG.trace("start update role");
         boolean updatedAccount = false;
         try (final Connection connection = pool.takeConnection();
@@ -175,13 +163,10 @@ public class AccountDao extends AbstractDao<Account> implements BasicAccountDao<
             final int numberChangedLines = preparedStatement.executeUpdate();
             if (numberChangedLines > 0) {
                 updatedAccount = true;
-            } else {
-                throw new AuthorDaoException("could not changed lines for update author");
             }
         } catch (SQLException e) {
             LOG.error("sql error, could not update author", e);
-        } catch (AuthorDaoException e) {
-            LOG.error("could not update author");
+            throw new AccountDaoException("could not update author");
         }
         return updatedAccount;
     }
@@ -195,20 +180,9 @@ public class AccountDao extends AbstractDao<Account> implements BasicAccountDao<
                             resultSet.getString(ACCOUNT_DETAILS_LAST_NAME_COLUMN_NAME))));
         } catch (SQLException e) {
             LOG.error("could not extract account from executeBook", e);
-            return Optional.empty();
         }
+        return Optional.empty();
     }
-
-//    private Optional<Account> executeAccountWithoutDetails(ResultSet resultSet) {
-//        try {
-//            return Optional.of(new Account(resultSet.getLong(ID_COLUMN_NAME),
-//                    resultSet.getString(LOGIN_COLUMN_NAME), resultSet.getString(PASSWORD_COLUMN_NAME),
-//                    Role.valueOf(resultSet.getString(ROLE_NAME_COLUMN_NAME).toUpperCase())));
-//        } catch (SQLException e) {
-//            LOG.error("could not extract account from executeBook", e);
-//            return Optional.empty();
-//        }
-//    }
 
     public static AccountDao getInstance() {
         return Holder.INSTANCE;

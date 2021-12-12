@@ -6,11 +6,12 @@ import java.util.Objects;
 
 public class Book implements Entity{
 
-    private Long id;
-    private String title;
-    private Date datePublished;
-    private Integer amountOfLeft;
-    private List<Author> authors;
+
+    private final Long id;
+    private final String title;
+    private final Date datePublished;
+    private final Integer amountOfLeft;
+    private final List<Author> authors;
 
     public Book(Long id, String title, Date datePublished, Integer amountOfLeft, List<Author> authors) {
         this.id = id;

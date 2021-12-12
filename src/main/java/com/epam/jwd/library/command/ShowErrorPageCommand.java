@@ -1,10 +1,9 @@
 package com.epam.jwd.library.command;
 
 import com.epam.jwd.library.controller.RequestFactory;
+import com.epam.jwd.library.util.ConfigurationManager;
 
 public class ShowErrorPageCommand implements Command{
-
-    private static final String PATH_ERROR_JSP = "/WEB-INF/jsp/error.jsp";
 
     private final RequestFactory requestFactory = RequestFactory.getInstance();
 
@@ -13,7 +12,7 @@ public class ShowErrorPageCommand implements Command{
 
     @Override
     public CommandResponse execute(CommandRequest request) {
-        return requestFactory.createForwardResponse(PATH_ERROR_JSP);
+        return requestFactory.createForwardResponse(ConfigurationManager.getProperty("path.page.error"));
     }
 
     public static ShowErrorPageCommand getInstance() {

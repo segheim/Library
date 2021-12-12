@@ -1,30 +1,39 @@
 package com.epam.jwd.library.command;
 
 import com.epam.jwd.library.controller.RequestFactory;
+import com.epam.jwd.library.exception.ServiceException;
 import com.epam.jwd.library.model.Author;
-import com.epam.jwd.library.service.AuthorService;
+import com.epam.jwd.library.service.BasicAuthorService;
+import com.epam.jwd.library.util.ConfigurationManager;
+import com.epam.jwd.library.util.Constant;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import java.util.Optional;
 
 public class ShowUpdateAuthorPageCommand implements Command{
 
-    private final AuthorService authorService;
+    private static Logger LOG = LogManager.getLogger(ShowUpdateAuthorPageCommand.class);
+
+    private static final String ERROR_PASS_MASSAGE_ATTRIBUTE = "Could not find author";
+
     private final RequestFactory requestFactory = RequestFactory.getInstance();
 
-    private ShowUpdateAuthorPageCommand(AuthorService authorService) {
-        this.authorService = authorService;
+    private ShowUpdateAuthorPageCommand() {
     }
 
     @Override
     public CommandResponse execute(CommandRequest request) {
-        final Long idAuthor = Long.valueOf(request.getParameter("id"));
-        final Optional<Author> author = authorService.findById(idAuthor);
-        if (author.isPresent()) {
-            request.addAttributeToJsp("author", author.get());
-            return requestFactory.createForwardResponse("/WEB-INF/jsp/updateAuthor.jsp");
-        } else {
-            request.addAttributeToJsp("errorPassMassage", "Could not find author");
-            return requestFactory.createForwardResponse("/WEB-INF/jsp/error.jsp");
+        final Long idAuthor = Long.valueOf(request.getParameter(Constant.ID_PARAMETER_NAME));
+        final Optional<Author> author;
+        try {
+            author = BasicAuthorService.getInstance().findById(idAuthor);
+            request.addAttributeToJsp(Constant.AUTHOR_ATTRIBUTE_NAME, author.get());
+            return requestFactory.createForwardResponse(ConfigurationManager.getProperty("path.page.update.author"));
+        } catch (ServiceException e) {
+            LOG.error("Service error, could not find update author", e);
+            request.addAttributeToJsp(Constant.ERROR_PASS_MESSAGE_ATTRIBUTE_NAME, ERROR_PASS_MASSAGE_ATTRIBUTE);
+            return requestFactory.createForwardResponse(ConfigurationManager.getProperty("path.page.error"));
         }
     }
 
@@ -33,6 +42,6 @@ public class ShowUpdateAuthorPageCommand implements Command{
     }
 
     private static class Holder {
-        public static final ShowUpdateAuthorPageCommand INSTANCE = new ShowUpdateAuthorPageCommand(AuthorService.getInstance());
+        public static final ShowUpdateAuthorPageCommand INSTANCE = new ShowUpdateAuthorPageCommand();
     }
 }
