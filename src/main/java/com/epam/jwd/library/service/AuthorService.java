@@ -5,6 +5,7 @@ import com.epam.jwd.library.exception.AuthorDaoException;
 import com.epam.jwd.library.exception.ServiceException;
 import com.epam.jwd.library.model.Author;
 import com.epam.jwd.library.validation.FirstLastNameValidator;
+import com.epam.jwd.library.validation.ProtectJSInjection;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -24,9 +25,9 @@ public class AuthorService implements BasicAuthorService{
     @Override
     public Optional<Author> create(String firstName, String lastName) throws ServiceException {
         try {
-            Author author = new Author(firstName, lastName);
-            if (!checkDuplication(author) && checkAuthorData(firstName, lastName)) {
-                return authorDao.create(author);
+            final Author safeAuthor = createSafeAuthor(firstName, lastName);
+            if (!checkDuplication(safeAuthor) && checkAuthorData(safeAuthor.getFirstName(), safeAuthor.getLastName())) {
+                return authorDao.create(safeAuthor);
             }
         } catch (AuthorDaoException e) {
             LOG.error("dao error, could not create author", e);
@@ -75,6 +76,12 @@ public class AuthorService implements BasicAuthorService{
             LOG.error("dao error, could not delete author", e);
             throw new ServiceException("Could not delete author");
         }
+    }
+
+    private Author createSafeAuthor(String firstName, String lastName) {
+        final String safeFirstName = ProtectJSInjection.getInstance().protectInjection(firstName);
+        final String safeLastName = ProtectJSInjection.getInstance().protectInjection(lastName);
+        return new Author(safeFirstName, safeLastName);
     }
 
     private boolean checkAuthorData(String firstName, String lastName) {

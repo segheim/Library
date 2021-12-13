@@ -10,6 +10,7 @@ import com.epam.jwd.library.model.Author;
 import com.epam.jwd.library.model.Book;
 import com.epam.jwd.library.validation.FirstLastNameValidator;
 import com.epam.jwd.library.validation.BookValidator;
+import com.epam.jwd.library.validation.ProtectJSInjection;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -74,23 +75,21 @@ public class BookService implements BasicBookService {
     }
 
     @Override
-    public boolean createBookWithAuthor(String title, String date, int amountOfLeft, String authorFirstName, String authorLastName) throws ServiceException {
+    public boolean createBookWithAuthor(String title, String date, Integer amountOfLeft, String authorFirstName, String authorLastName) throws ServiceException {
         boolean createBookWithAuthor = false;
         Connection connection = ConnectionPool.lockingPool().takeConnection();
         if (checkBookData(title, date, amountOfLeft, authorFirstName, authorLastName)) {
-            final Date datePublished = Date.valueOf(date);
-            Book book = new Book(title, datePublished, amountOfLeft);
+            final Book safeBook = createSafeBook(title,date, amountOfLeft);
+            Author author = new Author(authorFirstName, authorLastName);
             try {
-                Author author = new Author(authorFirstName, authorLastName);
                 connection.setAutoCommit(false);
                 BookDao bookDao = BookDao.getInstance();
                 AuthorDao authorDao = AuthorDao.getInstance();
-                final Long idBook = bookDao.create(book)
+                final Long idBook = bookDao.create(safeBook)
                         .map(Book::getId)
                         .orElseThrow(() -> new BookDaoException("could not create book"));
                 Long idAuthor = fetchIdAuthor(author, authorDao);
                 if (!bookDao.createBookInAuthorToBook(idBook, idAuthor)) {
-                    createBookWithAuthor = false;
                     connection.rollback();
                 }
                 createBookWithAuthor = true;
@@ -127,6 +126,13 @@ public class BookService implements BasicBookService {
         }
     }
 
+    private Book createSafeBook(String title, String datePublished, Integer amountOfLeft) {
+        final String safeTitle = ProtectJSInjection.getInstance().protectInjection(title);
+        final String date = ProtectJSInjection.getInstance().protectInjection(datePublished);
+        final Date safeDate = Date.valueOf(date);
+        return new Book(safeTitle, safeDate, amountOfLeft);
+    }
+
     private Long fetchIdAuthor(Author author, AuthorDao authorDao) throws AuthorDaoException {
         Long idAuthor;
         final Optional<Author> readAuthor = authorDao.readAuthorByFirstLastName(author);
@@ -141,11 +147,8 @@ public class BookService implements BasicBookService {
     }
 
     private boolean checkBookData(String title, String date, int amountOfLeft, String authorFirstName, String authorLastName) {
-        if (BookValidator.getInstance().validate(title, date, amountOfLeft)
-                && FirstLastNameValidator.getInstance().validate(authorFirstName, authorLastName)) {
-            return true;
-        }
-        return false;
+        return BookValidator.getInstance().validate(title, date, amountOfLeft)
+                && FirstLastNameValidator.getInstance().validate(authorFirstName, authorLastName);
     }
 
     static BookService getInstance() {

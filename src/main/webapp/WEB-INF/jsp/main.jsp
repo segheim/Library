@@ -1,13 +1,12 @@
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <%@ taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt" %>
-<%@ page import="java.util.Date" %>
+<%@ taglib prefix="sdt" uri="jwd.epam.com" %>
 <%@ page import="com.epam.jwd.library.model.Role" %>
 <%@ page contentType="text/html;charset=UTF-8" language="java" %>
 <%--<fmt:setLocale value="ru_RU"/>--%>
-<%--&lt;%&ndash;<fmt:setBundle basename="l10n.page.main" var="loc"/>&ndash;%&gt;--%>
-
-<%--<fmt:bundle basename="l10n.page.main">--%>
-<%--    <fmt:message key="label.button.accounts" var="locAccounts"/>--%>
+<fmt:setBundle basename="l10n." var="loc" />
+<%--<fmt:bundle basename="${loc}">--%>
+    <fmt:message bundle="${loc}" key="label.button.accounts" var="locAccounts"/>
 <%--    <fmt:message key="label.button.order" var="locOrder"/>--%>
 <%--</fmt:bundle>--%>
 
@@ -36,10 +35,10 @@
                                     <a class="btn btn-primary" href="/controller?command=librarian_book_order_page" role="button">Orders</a>
                                 </c:if>
                                 <c:if test="${not empty sessionScope.account and (sessionScope.account.role eq Role.READER)}">
-<%--                                    <a class="btn btn-primary" href="/controller?command=reader_book_order_page&id=${sessionScope.account.id}" role="button"><fmt:message bundle="loc" key="label.button.order"/></a>--%>
-<%--                                    <a class="btn btn-primary" href="/controller?command=account_page&id=${sessionScope.account.id}" role="button"><fmt:message bundle="loc" key="label.button.person"/></a>--%>
-<%--                                    <a class="btn btn-primary" href="/controller?command=librarian_book_order_page" role="button">${locAccounts}</a>--%>
-                                    <a class="btn btn-primary" href="/controller?command=reader_book_order_page&id=${sessionScope.account.id}" role="button">order</a>--%>
+<%--                                    <a class="btn btn-primary" href="/controller?command=reader_book_order_page&id=${sessionScope.account.id}" role="button"><fmt:message bundle="${loc}" key="label.button.order"/></a>--%>
+<%--                                    <a class="btn btn-primary" href="/controller?command=account_page&id=${sessionScope.account.id}" role="button"><fmt:message bundle="${loc}" key="label.button.person"/></a>--%>
+                                    <a class="btn btn-primary" href="/controller?command=librarian_book_order_page" role="button">${locAccounts}</a>
+                                    <a class="btn btn-primary" href="/controller?command=reader_book_order_page&id=${sessionScope.account.id}" role="button">order</a>
                                     <a class="btn btn-primary" href="/controller?command=account_page&id=${sessionScope.account.id}" role="button">person data</a>
                                 </c:if>
                                 <c:if test="${not empty sessionScope.account && sessionScope.account.role eq Role.ADMIN}">
@@ -54,7 +53,7 @@
             </main>
             <footer>
                 <div class="container">
-                    <i>Сегодня: <%= new Date() %></i>
+                    <i><sdt:presentDate /></i>
                 </div>
             </footer>
         </div>

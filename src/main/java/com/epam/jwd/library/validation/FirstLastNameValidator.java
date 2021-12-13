@@ -22,6 +22,9 @@ public class FirstLastNameValidator {
         }
         Pattern pattern = Pattern.compile("[A-Za-z]{1,20}");
         Matcher matcherFirstName = pattern.matcher(firstName);
+        Pattern patternProtectInjection = Pattern.compile("[\\<]");
+        Matcher matcherProtectInjection = patternProtectInjection.matcher(firstName);
+        firstName = matcherProtectInjection.replaceAll("%3c");
         Matcher matcherLastName = pattern.matcher(lastName);
 
         return matcherFirstName.matches() && matcherLastName.matches();

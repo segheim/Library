@@ -19,6 +19,7 @@ public class SearchBookCommand implements Command {
     private static final Logger LOG = LogManager.getLogger(SearchBookCommand.class);
 
     private static final String ERROR_PASS_MESSAGE_ATTRIBUTE = "Could not find book";
+
     private final RequestFactory requestFactory = RequestFactory.getInstance();
 
     private SearchBookCommand() {
