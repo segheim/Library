@@ -1,5 +1,22 @@
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
+<%@ taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt" %>
 <%@ page contentType="text/html;charset=UTF-8" language="java" %>
+<fmt:setLocale value="${cookie.lang.value}"/>
+<fmt:setBundle basename="lang.main" var="loc" />
+
+<fmt:bundle basename="${loc}">
+    <fmt:message bundle="${loc}" key="label.register" var="locRegister"/>
+    <fmt:message bundle="${loc}" key="label.login" var="locLogin"/>
+    <fmt:message bundle="${loc}" key="label.valid.text" var="locValidText"/>
+    <fmt:message bundle="${loc}" key="label.invalid.login.text" var="locInvalidLoginText"/>
+    <fmt:message bundle="${loc}" key="label.password" var="locPassword"/>
+    <fmt:message bundle="${loc}" key="label.invalid.password.text" var="locInvalidPasswordText"/>
+    <fmt:message bundle="${loc}" key="label.first.name" var="locFirstName"/>
+    <fmt:message bundle="${loc}" key="label.valid.text" var="locValidText"/>
+    <fmt:message bundle="${loc}" key="label.invalid.first.name.text" var="locInvalidFirstNameText"/>
+    <fmt:message bundle="${loc}" key="label.last.name" var="locLastName"/>
+    <fmt:message bundle="${loc}" key="label.invalid.last.name.text" var="locInvalidLastNameText"/>
+</fmt:bundle>
 <html>
 <head>
     <title>Registration</title>
@@ -12,53 +29,53 @@
 <body>
     <div class="container-login">
         <div class="col-sm-4">
-            <h1 class="header-register">Register</h1>
-            <form  class="needs-validation" name = "registration_form" method="post" action="/controller?command=registration" novalidate>
+            <h1 class="header-register">${locRegister}</h1>
+                <form  class="needs-validation" name = "registration_form" method="post" action="/controller?command=registration" novalidate>
                 <div class="mb-3">
-                    <label for="exampleInputLogin" class="form-label">Login</label>
+                    <label for="exampleInputLogin" class="form-label">${locLogin}</label>
                     <input type="text" name="login" pattern=".{3,30}" class="form-control" id="exampleInputLogin" required>
                     <div class="valid-feedback">
-                        Looks good!
+                        ${locValidText}
                     </div>
                     <div class="invalid-feedback">
-                        Please enter login(3-30 symbols)
+                        ${locInvalidLoginText}
                     </div>
                 </div>
                 <div class="mb-3">
-                    <label for="exampleInputPassword" class="form-label">Password</label>
+                    <label for="exampleInputPassword" class="form-label">${locPassword}</label>
                     <input type="password" name="password" pattern=".{3,100}" class="form-control" id="exampleInputPassword" required>
                     <div class="valid-feedback">
-                        Looks good!
+                        ${locValidText}
                     </div>
                     <div class="invalid-feedback">
-                        Please enter password(3-100 symbols)
+                        ${locInvalidPasswordText}
                     </div>
                 </div>
                 <div class="mb-3">
-                    <label for="exampleInputFirstName" class="form-label">First name</label>
+                    <label for="exampleInputFirstName" class="form-label">${locFirstName}</label>
                     <input type="text" name="first_name" pattern="[A-Za-z]{1,20}" class="form-control" id="exampleInputFirstName" required>
                     <div class="valid-feedback">
-                        Looks good!
+                        ${locValidText}
                     </div>
                     <div class="invalid-feedback">
-                        Please enter first name(1-20 letters)
+                        ${locInvalidFirstNameText}
                     </div>
                 </div>
                 <div class="mb-3">
-                    <label for="exampleInputLastName" class="form-label">Last name</label>
+                    <label for="exampleInputLastName" class="form-label">${locLastName}</label>
                     <input type="text" name="last_name" pattern="[A-Za-z]{1,20}" class="form-control" id="exampleInputLastName" required>
                     <div class="valid-feedback">
-                        Looks good!
+                        ${locValidText}
                     </div>
                     <div class="invalid-feedback">
-                        Please enter last name(1-20 letters)
+                        ${locInvalidLastNameText}
                     </div>
                 </div>
                 <c:if test="${not empty requestScope.errorRegistrationMessage}">
                     <b style="color: red">${requestScope.errorRegistrationMessage}</b>
                     <br>
                 </c:if>
-                <button type="submit" class="btn btn-primary">Register</button>
+                <button type="submit" class="btn btn-primary">${locRegister}</button>
             </form>
         </div>
     </div>

@@ -3,12 +3,15 @@
 <%@ taglib prefix="sdt" uri="jwd.epam.com" %>
 <%@ page import="com.epam.jwd.library.model.Role" %>
 <%@ page contentType="text/html;charset=UTF-8" language="java" %>
-<%--<fmt:setLocale value="ru_RU"/>--%>
-<fmt:setBundle basename="l10n." var="loc" />
-<%--<fmt:bundle basename="${loc}">--%>
+<fmt:setLocale value="${cookie.lang.value}"/>
+<fmt:setBundle basename="lang.main" var="loc" />
+
+<fmt:bundle basename="${loc}">
+    <fmt:message bundle="${loc}" key="label.button.order" var="locOrder"/>
     <fmt:message bundle="${loc}" key="label.button.accounts" var="locAccounts"/>
-<%--    <fmt:message key="label.button.order" var="locOrder"/>--%>
-<%--</fmt:bundle>--%>
+    <fmt:message bundle="${loc}" key="label.button.check" var="locCheckOrders"/>
+    <fmt:message bundle="${loc}" key="label.button.person" var="locPersonData"/>
+</fmt:bundle>
 
 <html>
 <head>
@@ -32,19 +35,18 @@
                                 <c:if test="${not empty sessionScope.account and (sessionScope.account.role eq Role.LIBRARIAN)}">
 <%--                                    <a class="btn btn-primary" href="/controller?command=librarian_book_order_page" role="button"><fmt:message bundle="loc" key="label.button.check"/></a>--%>
 <%--                                    <a class="btn btn-primary" href="/controller?command=librarian_book_order_page" role="button">${locAccounts}</a>--%>
-                                    <a class="btn btn-primary" href="/controller?command=librarian_book_order_page" role="button">Orders</a>
+                                    <a class="btn btn-primary" href="/controller?command=librarian_book_order_page" role="button">${locCheckOrders}</a>
                                 </c:if>
                                 <c:if test="${not empty sessionScope.account and (sessionScope.account.role eq Role.READER)}">
 <%--                                    <a class="btn btn-primary" href="/controller?command=reader_book_order_page&id=${sessionScope.account.id}" role="button"><fmt:message bundle="${loc}" key="label.button.order"/></a>--%>
 <%--                                    <a class="btn btn-primary" href="/controller?command=account_page&id=${sessionScope.account.id}" role="button"><fmt:message bundle="${loc}" key="label.button.person"/></a>--%>
-                                    <a class="btn btn-primary" href="/controller?command=librarian_book_order_page" role="button">${locAccounts}</a>
-                                    <a class="btn btn-primary" href="/controller?command=reader_book_order_page&id=${sessionScope.account.id}" role="button">order</a>
-                                    <a class="btn btn-primary" href="/controller?command=account_page&id=${sessionScope.account.id}" role="button">person data</a>
+                                    <a class="btn btn-primary" href="/controller?command=reader_book_order_page&id=${sessionScope.account.id}" role="button">${locOrder}</a>
+                                    <a class="btn btn-primary" href="/controller?command=account_page&id=${sessionScope.account.id}" role="button">${locPersonData}</a>
                                 </c:if>
                                 <c:if test="${not empty sessionScope.account && sessionScope.account.role eq Role.ADMIN}">
 <%--                                    <a class="btn btn-primary" href="/controller?command=accounts_page" role="button"><fmt:message bundle="loc" key="label.button.accounts"/></a>--%>
 <%--                                    <a class="btn btn-primary" href="/controller?command=librarian_book_order_page" role="button">${locAccounts}</a>--%>
-                                    <a class="btn btn-primary" href="/controller?command=accounts_page" role="button">accounts</a>
+                                    <a class="btn btn-primary" href="/controller?command=accounts_page" role="button">${locAccounts}</a>
                                 </c:if>
                             </div>
                         </span>

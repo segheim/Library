@@ -7,6 +7,7 @@ public class Constant {
     public static final String PASSWORD_PARAMETER_NAME = "password";
     public static final String ROLE_PARAMETER_NAME = "role";
     public static final String BOOK_PARAMETER_NAME = "book";
+    public static final String COMMAND_PARAMETER_NAME = "command";
     public static final String BOOK_ORDERS_ATTRIBUTE_NAME = "bookOrders";
     public static final String FIRST_NAME_PARAMETER_NAME = "first_name";
     public static final String LAST_NAME_PARAMETER_NAME = "last_name";
@@ -24,4 +25,7 @@ public class Constant {
     public static final String ERROR_PASS_MESSAGE_ATTRIBUTE_NAME = "errorPassMessage";
     public static final String ERROR_LOGIN_PASS_MESSAGE_NAME = "errorLoginPassMessage";
     public static final String ERROR_REGISTER_PASS_MESSAGE_NAME = "errorRegistrationMessage";
+    public static final String COOKIE_EN_LANG_VALUE= "en_US";
+    public static final String COOKIE_RU_LANG_VALUE= "ru_RU";
+    public static final String COOKIE_PARAMETER_NAME = "lang";
 }

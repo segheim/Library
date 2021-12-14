@@ -31,6 +31,11 @@ public class WrappingCommandRequest implements CommandRequest {
     }
 
     @Override
+    public String getRequestURI() {
+        return httpServletRequest.getRequestURI();
+    }
+
+    @Override
     public void createSession() {
         httpServletRequest.getSession();
     }

@@ -1,6 +1,18 @@
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
+<%@ taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt" %>
 <%@ page contentType="text/html;charset=UTF-8" language="java" %>
 <%@ page import="com.epam.jwd.library.model.Role" %>
+<fmt:setLocale value="${cookie.lang.value}"/>
+<fmt:setBundle basename="lang.main" var="loc" />
+
+<fmt:bundle basename="${loc}">
+    <fmt:message bundle="${loc}" key="label.id" var="locId"/>
+    <fmt:message bundle="${loc}" key="label.first.name" var="locFirstName"/>
+    <fmt:message bundle="${loc}" key="label.last.name" var="locLastName"/>
+    <fmt:message bundle="${loc}" key="label.action" var="locAction"/>
+    <fmt:message bundle="${loc}" key="label.button.update" var="locUpdate"/>
+    <fmt:message bundle="${loc}" key="label.button.delete" var="locDelete"/>
+</fmt:bundle>
 <html>
 <head>
     <title>Authors</title>
@@ -21,11 +33,11 @@
                 <table class="table table-striped table-hover">
                     <thead class="table-primary">
                         <tr>
-                            <th>Id</th>
-                            <th>First name</th>
-                            <th>Last name</th>
+                            <th>${locId}</th>
+                            <th>${locFirstName}</th>
+                            <th>${locLastName}</th>
                             <c:if test="${not empty sessionScope.account and (sessionScope.account.role eq Role.ADMIN)}">
-                                <th>Action</th>
+                                <th>${locAction}</th>
                             </c:if>
                         </tr>
                     </thead>
@@ -37,8 +49,8 @@
                                 <td>${author.lastName}</td>
                                 <c:if test="${not empty sessionScope.account and (sessionScope.account.role eq Role.ADMIN)}">
                                     <td>
-                                        <a href="/controller?command=update_author_page&id=${author.id}">update</a>
-                                        <a href="/controller?command=delete_author&id=${author.id}">delete</a>
+                                        <a href="/controller?command=update_author_page&id=${author.id}">${locUpdate}</a>
+                                        <a href="/controller?command=delete_author&id=${author.id}">${locDelete}</a>
                                     </td>
                                 </c:if>
                             </tr>

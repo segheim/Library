@@ -1,5 +1,18 @@
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
+<%@ taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt" %>
 <%@ page contentType="text/html;charset=UTF-8" language="java" %>
+<fmt:setLocale value="${cookie.lang.value}"/>
+<fmt:setBundle basename="lang.main" var="loc" />
+
+<fmt:bundle basename="${loc}">
+    <fmt:message bundle="${loc}" key="label.update.author" var="locUpdateAuthor"/>
+    <fmt:message bundle="${loc}" key="label.first.name" var="locFirstName"/>
+    <fmt:message bundle="${loc}" key="label.valid.text" var="locValidText"/>
+    <fmt:message bundle="${loc}" key="label.invalid.first.name.text" var="locInvalidFirstNameText"/>
+    <fmt:message bundle="${loc}" key="label.last.name" var="locLastName"/>
+    <fmt:message bundle="${loc}" key="label.invalid.last.name.text" var="locInvalidLastNameText"/>
+    <fmt:message bundle="${loc}" key="label.button.update" var="locUpdate"/>
+</fmt:bundle>
 <html>
 <head>
     <title>Update author</title>
@@ -15,34 +28,34 @@
         <jsp:include page="header.jsp"></jsp:include>
         <div class="container-login">
             <div class="col-sm-4">
-                <h1 class="header-update">Update author</h1>
+                <h1 class="header-update">${locUpdateAuthor}</h1>
                 <h2 class="header-form">${author.firstName} ${author.lastName}</h2>
                 <form class="needs-validation" name = "update_author_form" method="post"
                       action="/controller?command=update_author" novalidate>
                     <input type="hidden" name="id" value="${author.id}">
                     <div class="mb-3">
-                        <label for="exampleInputFirstName" class="form-label">First name</label>
+                        <label for="exampleInputFirstName" class="form-label">${locFirstName}</label>
                         <input type="text" pattern="[A-Za-z]{1,20}" name="first_name" class="form-control"
                                id="exampleInputFirstName" required>
                         <div class="valid-feedback">
-                            Looks good!
+                            ${locValidText}
                         </div>
                         <div class="invalid-feedback">
-                            Please enter first name(1-20 letters)
+                            ${locInvalidFirstNameText}
                         </div>
                     </div>
                     <div class="mb-3">
-                        <label for="exampleInputLastName" class="form-label">Last name</label>
+                        <label for="exampleInputLastName" class="form-label">${locLastName}</label>
                         <input type="text" pattern="[A-Za-z]{1,20}" name="last_name" class="form-control"
                                id="exampleInputLastName" required>
                         <div class="valid-feedback">
-                            Looks good!
+                            ${locValidText}
                         </div>
                         <div class="invalid-feedback">
-                            Please enter last name(1-20 letters)
+                            ${locInvalidLastNameText}
                         </div>
                     </div>
-                    <button type="submit" class="btn btn-primary">Update</button>
+                    <button type="submit" class="btn btn-primary">${locUpdate}</button>
                 </form>
             </div>
         </div>

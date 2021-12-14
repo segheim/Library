@@ -1,6 +1,22 @@
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
+<%@ taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt" %>
 <%@ page contentType="text/html;charset=UTF-8" language="java" %>
 <%@ page import="com.epam.jwd.library.model.Role" %>
+<fmt:setLocale value="${cookie.lang.value}"/>
+<fmt:setBundle basename="lang.main" var="loc" />
+
+<fmt:bundle basename="${loc}">
+    <fmt:message bundle="${loc}" key="label.button.search" var="locSearch"/>
+    <fmt:message bundle="${loc}" key="label.search.text" var="locSearchText"/>
+    <fmt:message bundle="${loc}" key="label.button.create" var="locCreate"/>
+    <fmt:message bundle="${loc}" key="label.title" var="locTitle"/>
+    <fmt:message bundle="${loc}" key="label.author" var="locAuthor"/>
+    <fmt:message bundle="${loc}" key="label.date.published" var="locDatePublished"/>
+    <fmt:message bundle="${loc}" key="label.quantity" var="locQuantity"/>
+    <fmt:message bundle="${loc}" key="label.action" var="locAction"/>
+    <fmt:message bundle="${loc}" key="label.button.update" var="locUpdate"/>
+    <fmt:message bundle="${loc}" key="label.button.delete" var="locDelete"/>
+</fmt:bundle>
 <html>
 <head>
     <title>Catalog</title>
@@ -13,26 +29,26 @@
         <div class="container-context">
             <jsp:include page="header.jsp"></jsp:include>
             <div class="container col-ms-6">
-                <form class="d-flex" name="search" role="search" method="post" action="/controller?command=search_book">
-                    <input name="title" class="form-control me-4" type="search" placeholder="Search by book title" aria-label="Search">
-                    <button class="btn btn-primary" type="submit">Search</button>
+                <form class="col-sm-6" name="search" role="search" method="post" action="/controller?command=search_book">
+                    <input name="title" class="form-control me-4" type="search" placeholder="${locSearchText}" aria-label="Search">
+                    <button class="btn btn-primary" type="submit">${locSearch}</button>
                 </form>
             </div>
             <c:if test="${not empty sessionScope.account and (sessionScope.account.role eq Role.ADMIN)}">
                 <div class="d-grid gap-2">
-                    <a class="btn btn-primary" href="/controller?command=create_book_page" role="button">create book</a>
+                    <a class="btn btn-primary" href="/controller?command=create_book_page" role="button">${locCreate}</a>
                 </div>
             </c:if>
             <div class="container">
                 <table class="table table-striped table-hover">
                     <thead class="table-primary">
                         <tr>
-                            <th>Title</th>
-                            <th>Author</th>
-                            <th>Date published</th>
-                            <th>Quantity</th>
+                            <th>${locTitle}</th>
+                            <th>${locAuthor}</th>
+                            <th>${locDatePublished}</th>
+                            <th>${locQuantity}</th>
                             <c:if test="${not empty sessionScope.account and (sessionScope.account.role eq Role.ADMIN)}">
-                                <th>Action</th>
+                                <th>${locAction}</th>
                             </c:if>
                         </tr>
                     </thead>
@@ -50,8 +66,8 @@
                                     <td>${book.amountOfLeft}</td>
                                     <c:if test="${not empty sessionScope.account and (sessionScope.account.role eq Role.ADMIN)}">
                                         <td>
-                                            <a href="/controller?command=update_book_page&id=${book.id}">update</a>
-                                            <a href="/controller?command=delete_book&id=${book.id}">delete</a>
+                                            <a href="/controller?command=update_book_page&id=${book.id}">${locUpdate}</a>
+                                            <a href="/controller?command=delete_book&id=${book.id}">${locDelete}</a>
                                         </td>
                                     </c:if>
                                 </c:if>

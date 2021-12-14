@@ -30,6 +30,7 @@ public enum CommandRegistry {
     CHANGE_STATUS_BOOK_ORDER_ENDED(EndBookOrderCommand.getInstance(),"end_book_order"),
     REGISTRATION_PAGE(ShowRegistrationPageCommand.getInstance(), "registration_page"),
     CHANGE_ACCOUNT_ROLE(ChangeAccountRoleCommand.getInstance(), "change_account_role"),
+    CHANGE_LANGUAGE(ChangeLanguageCommand.getInstance(), "change_lang"),
     SEARCH_BOOK(SearchBookCommand.getInstance(), "search_book"),
     REGISTRATION(RegistrationCommand.getInstance(), "registration"),
     LOGIN(LoginCommand.getInstance(), "login"),

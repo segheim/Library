@@ -1,13 +1,18 @@
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <%@ taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt" %>
 <%@ page contentType="text/html;charset=UTF-8" language="java" %>
-<%--<fmt:setLocale value="en_US"/>--%>
-<%--&lt;%&ndash;<fmt:setBundle basename="l10n.page.main" var="loc" />&ndash;%&gt;--%>
+<fmt:setLocale value="${cookie.lang.value}"/>
+<fmt:setBundle basename="lang.main" var="loc" />
 
-<%--<fmt:bundle basename="l10.page.main">--%>
-<%--    <fmt:message key="label.main" var="locMain"/>--%>
-<%--&lt;%&ndash;    <fmt:message key="label.button.order" var="locOrder"/>&ndash;%&gt;--%>
-<%--</fmt:bundle>--%>
+<fmt:bundle basename="${loc}">
+    <fmt:message bundle="${loc}" key="label.name" var="locName"/>
+    <fmt:message bundle="${loc}" key="label.main" var="locMain"/>
+    <fmt:message bundle="${loc}" key="label.authors" var="locAuthors"/>
+    <fmt:message bundle="${loc}" key="label.catalog" var="locCatalog"/>
+    <fmt:message bundle="${loc}" key="label.signin" var="locSignIn"/>
+    <fmt:message bundle="${loc}" key="label.logout" var="locLogout"/>
+    <fmt:message bundle="${loc}" key="label.register" var="locRegister"/>
+</fmt:bundle>
 
 <html>
 <head>
@@ -22,21 +27,16 @@
 <header class="container">
     <nav class="navbar navbar-expand navbar-light" style="background-color: #56abe7;">
         <div class="container">
-            <div class="logo"><a href="#">MyLibrary</a></div>
+            <div class="logo">${locName}</div>
             <ul class="navbar-nav me-auto mb-2 mb-lg-0">
                 <li class="nav-item">
-<%--                    <a class="nav-link" href="/controller?command=main_page"><fmt:message bundle="loc" key="label.main"/> </a>--%>
-<%--                        <a class="nav-link" href="/controller?command=main_page">${locMain}</a>--%>
-    <a class="nav-link" href="/controller?command=main_page">Main</a>
-
+                    <a class="nav-link" href="/controller?command=main_page">${locMain}</a>
                 </li>
                 <li class="nav-item">
-<%--                    <a class="nav-link" href="/controller?command=author_page"><fmt:message bundle="loc" key="label.author"/> </a>--%>
-    <a class="nav-link" href="/controller?command=author_page">Authors</a>
+                    <a class="nav-link" href="/controller?command=author_page">${locAuthors} </a>
                 </li>
                 <li class="nav-item">
-<%--                    <a class="nav-link" href="/controller?command=catalog_page"><fmt:message bundle="loc" key="label.catalog"/> </a>--%>
-    <a class="nav-link" href="/controller?command=catalog_page">Catalog</a>
+                    <a class="nav-link" href="/controller?command=catalog_page">${locCatalog} </a>
                 </li>
             </ul>
         </div>
@@ -45,18 +45,18 @@
         <div class="header-rightside-inner container">
             <div class="container-lang">
                 <div class="lang-switcher">
-                    <a href="#">en</a>
-                    <a href="#">ru</a>
+                    <a href="/controller?command=change_lang&lang=en_US">en</a>
+                    <a href="/controller?command=change_lang&lang=ru_RU">ru</a>
                 </div>
             </div>
             <div class="sing-container">
                 <c:choose>
                     <c:when test="${not empty sessionScope.account}">
-                        <a class="btn btn-primary" href="/controller?command=logout" role="button">Logout</a>
+                        <a class="btn btn-primary" href="/controller?command=logout" role="button">${locLogout}</a>
                     </c:when>
                     <c:otherwise>
-                        <a class="btn btn-primary" href="/controller?command=login_page" role="button">Sing in</a>
-                        <a class="btn btn-primary" href="/controller?command=registration_page" role="button">Register</a>
+                        <a class="btn btn-primary" href="/controller?command=login_page" role="button">${locSignIn}</a>
+                        <a class="btn btn-primary" href="/controller?command=registration_page" role="button">${locRegister}</a>
                     </c:otherwise>
                 </c:choose>
             </div>

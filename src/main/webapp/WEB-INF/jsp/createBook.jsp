@@ -1,5 +1,24 @@
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
+<%@ taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt" %>
 <%@ page contentType="text/html;charset=UTF-8" language="java" %>
+<fmt:setLocale value="${cookie.lang.value}"/>
+<fmt:setBundle basename="lang.main" var="loc" />
+
+<fmt:bundle basename="${loc}">
+    <fmt:message bundle="${loc}" key="label.tittle.create.book" var="locTitleForm"/>
+    <fmt:message bundle="${loc}" key="label.title" var="locTitle"/>
+    <fmt:message bundle="${loc}" key="label.valid.text" var="locValidText"/>
+    <fmt:message bundle="${loc}" key="label.invalid.title.text" var="locInvalidTitleText"/>
+    <fmt:message bundle="${loc}" key="label.date.published" var="locDatePublished"/>
+    <fmt:message bundle="${loc}" key="label.invalid.date.published.text" var="locInvalidDateText"/>
+    <fmt:message bundle="${loc}" key="label.quantity.items" var="locQuantity"/>
+    <fmt:message bundle="${loc}" key="label.invalid.quantity.text" var="locInvalidQuantityText"/>
+    <fmt:message bundle="${loc}" key="label.first.name" var="locFirstName"/>
+    <fmt:message bundle="${loc}" key="label.invalid.first.name.text" var="locInvalidFirstNameText"/>
+    <fmt:message bundle="${loc}" key="label.last.name" var="locLastName"/>
+    <fmt:message bundle="${loc}" key="label.invalid.last.name.text" var="locInvalidLastNameText"/>
+    <fmt:message bundle="${loc}" key="label.button.create" var="locCreate"/>
+</fmt:bundle>
 <html>
 <head>
     <title>CreateBook</title>
@@ -15,69 +34,69 @@
         <jsp:include page="header.jsp"></jsp:include>
         <div class="container-create">
             <div class="col-sm-4">
-                <h1 class="header-create">Create book form</h1>
+                <h1 class="header-create">${locTitleForm}</h1>
                 <form class="needs-validation" name="create_book_form" method="post"
                       action="/controller?command=create_book" novalidate>
                     <div class="mb-3">
-                        <label for="exampleInputTitle" class="form-label">Title</label>
+                        <label for="exampleInputTitle" class="form-label">${locTitle}</label>
                         <input type="text"  pattern=".{0,100}" name="title" class="form-control"
                                id="exampleInputTitle" required>
                         <div class="valid-feedback">
-                            Looks good!
+                            ${locValidText}
                         </div>
                         <div class="invalid-feedback">
-                            Please enter title(1-100 symbols)
+                            ${locInvalidTitleText}
                         </div>
                     </div>
                     <div class="mb-3">
-                        <label for="exampleInputDatePublished" class="form-label">Published date</label>
+                        <label for="exampleInputDatePublished" class="form-label">${locDatePublished}</label>
                         <input type="date" pattern="^\d{4}[-]?((((0[13578])|(1[02]))[-]?(([0-2][0-9])|(3[01])))|(((0[469])|(11))[-]?(([0-2][0-9])|(30)))|(02[-]?[0-2][0-9]))$"
                                name="date_published" class="form-control" id="exampleInputDatePublished" required>
                         <div class="valid-feedback">
-                            Looks good!
+                            ${locValidText}
                         </div>
                         <div class="invalid-feedback">
-                            Please enter date
+                            ${locInvalidDateText}
                         </div>
                     </div>
                     <div class="mb-3">
-                        <label for="exampleInputAmountOfLeft" class="form-label">Quantity of items</label>
+                        <label for="exampleInputAmountOfLeft" class="form-label">${locQuantity}</label>
                         <input type="number" pattern="^\d{1,4}" name="amount_of_left" class="form-control"
                                id="exampleInputAmountOfLeft" required>
                         <div class="valid-feedback">
-                            Looks good!
+                            ${locValidText}
                         </div>
                         <div class="invalid-feedback">
-                            Please enter number(no more 9999)
+                            ${locInvalidQuantityText}
                         </div>
                     </div>
                     <div class="mb-3">
-                        <label for="exampleInputFirstName" class="form-label">First name</label>
+                        <label for="exampleInputFirstName" class="form-label">${locFirstName}</label>
                         <input type="text" pattern="[A-Za-z]{1,20}" name="first_name" class="form-control"
                                id="exampleInputFirstName" required>
                         <div class="valid-feedback">
-                            Looks good!
+                            ${locValidText}
                         </div>
                         <div class="invalid-feedback">
-                            Please enter first name(1-20 letters)
+                            ${locInvalidFirstNameText}
                         </div>
                     </div>
                     <div class="mb-3">
-                        <label for="exampleInputLastName" class="form-label">First name</label>
+                        <label for="exampleInputLastName" class="form-label">${locLastName}</label>
                         <input type="text" pattern="[A-Za-z]{1,20}" name="last_name" class="form-control"
                                id="exampleInputLastName" required>
                         <div class="valid-feedback">
-                            Looks good!
+                            ${locValidText}
                         </div>
                         <div class="invalid-feedback">
-                            Please enter last name(1-20 letters)
+                            ${locInvalidLastNameText}
                         </div>
                     </div>
                     <c:if test="${not empty requestScope.errorCreatBookMessage}">
                         <b style="color: red">${requestScope.errorCreatBookMessage}</b>
                         <br>
                     </c:if>
-                    <button type="submit" class="btn btn-primary">Create</button>
+                    <button type="submit" class="btn btn-primary">${locCreate}</button>
                 </form>
             </div>
         </div>

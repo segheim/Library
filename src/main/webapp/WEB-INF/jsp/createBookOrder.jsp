@@ -1,5 +1,18 @@
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
+<%@ taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt" %>
 <%@ page contentType="text/html;charset=UTF-8" language="java" %>
+<fmt:setLocale value="${cookie.lang.value}"/>
+<fmt:setBundle basename="lang.main" var="loc" />
+
+<fmt:bundle basename="${loc}">
+  <fmt:message bundle="${loc}" key="label.title.create.order" var="locTitle"/>
+  <fmt:message bundle="${loc}" key="label.author" var="locAuthor"/>
+  <fmt:message bundle="${loc}" key="label.selected.book" var="locSelectedBook"/>
+  <fmt:message bundle="${loc}" key="label.select.leading.book" var="locSelectText"/>
+  <fmt:message bundle="${loc}" key="label.reading.room" var="locReadingRoom"/>
+  <fmt:message bundle="${loc}" key="label.library.card" var="locLibraryCard"/>
+  <fmt:message bundle="${loc}" key="label.button.create" var="locCreate"/>
+</fmt:bundle>
 <html>
 <head>
   <title>Book order</title>
@@ -13,19 +26,19 @@
       <jsp:include page="header.jsp"></jsp:include>
       <div class="container">
         <div class="header-name">
-          <b>Your order, dear ${sessionScope.account.details.firstName} ${sessionScope.account.details.lastName}</b>
+          <b>${locTitle} ${sessionScope.account.details.firstName} ${sessionScope.account.details.lastName}</b>
         </div>
       </div>
-      <div class="container">Selected book: ${requestScope.book.title}</div>
+      <div class="container">${locSelectedBook}: ${requestScope.book.title}</div>
       <div class="container">
-        Author:
+        ${locAuthor}:
         <c:forEach var="author" items="${requestScope.book.authors}">
           ${author.firstName}
           ${author.lastName}
         </c:forEach>
       </div>
       <div class="container">
-        <header-name>Select the method to lending book:</header-name>
+        <header-name>${locSelectText}:</header-name>
       </div>
       <div class="container">
         <form name="create_book_order_form" method="post" action="/controller?command=create_book_order">
@@ -34,21 +47,21 @@
                 <input class="form-check-input" type="radio" name="order_type" value="READINGROOM"
                        id="checkReadingRoom">
             <label class="form-check-label" for="checkReadingRoom">
-              Reading Room
+              ${locReadingRoom}
             </label>
           </div>
           <div class="form-check">
                 <input class="form-check-input" type="radio" name="order_type" value="LIBRARYCARD"
                        id="checkLibraryCard" checked>
             <label class="form-check-label" for="checkLibraryCard">
-              Library Card
+              ${locLibraryCard}
             </label>
           </div>
           <c:if test="${not empty requestScope.errorCreateBookOrderMassage}">
             <b style="color: red">${requestScope.errorCreateBookOrderMassage}</b>
             <br>
           </c:if>
-          <button type="submit" class="btn btn-primary">Create order</button>
+          <button type="submit" class="btn btn-primary">${locCreate}</button>
         </form>
       </div>
     </div>

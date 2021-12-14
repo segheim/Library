@@ -42,7 +42,7 @@ public class CreateBookOrderCommand implements Command {
                 final Account account = (Account) accountSession.get();
                 final String orderType = orderTypes[0];
                 bookOrderService.createBookOrder(account, idBook, orderType).orElseThrow(() -> new ServiceException("Could not create book order")); {
-                    return requestFactory.createRedirectResponse(format(ConfigurationManager.getProperty("url.reader.order.id"), account.getId()));
+                    return requestFactory.createRedirectResponse(format(ConfigurationManager.getProperty("url.reader.order") + account.getId()));
             }
         } catch (ServiceException e) {
             LOG.error("Service error, could not create book order", e);

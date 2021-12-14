@@ -9,7 +9,6 @@ import com.epam.jwd.library.util.Constant;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
-import java.util.Optional;
 
 public class ShowBookPageCommand implements Command {
 

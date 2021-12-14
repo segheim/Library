@@ -1,6 +1,24 @@
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
+<%@ taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt" %>
 <%@ page contentType="text/html;charset=UTF-8" language="java" %>
 <%@ page import="com.epam.jwd.library.model.Role" %>
+<fmt:setLocale value="${cookie.lang.value}"/>
+<fmt:setBundle basename="lang.main" var="loc" />
+
+<fmt:bundle basename="${loc}">
+    <fmt:message bundle="${loc}" key="label.personal.data" var="locPersonData"/>
+    <fmt:message bundle="${loc}" key="label.personal.number" var="locPersonalNumber"/>
+    <fmt:message bundle="${loc}" key="label.login" var="locLogin"/>
+    <fmt:message bundle="${loc}" key="label.first.name" var="locFirstName"/>
+    <fmt:message bundle="${loc}" key="label.last.name" var="locLastName"/>
+    <fmt:message bundle="${loc}" key="label.role" var="locRole"/>
+    <fmt:message bundle="${loc}" key="label.select.role" var="locSelect"/>
+    <fmt:message bundle="${loc}" key="label.admin" var="locAdmin"/>
+    <fmt:message bundle="${loc}" key="label.librarian" var="locLibrarian"/>
+    <fmt:message bundle="${loc}" key="label.reader" var="locReader"/>
+    <fmt:message bundle="${loc}" key="label.guest" var="locGuest"/>
+    <fmt:message bundle="${loc}" key="label.button.change.role" var="locChangeRole"/>
+</fmt:bundle>
 <html>
 <head>
     <title>Account</title>
@@ -13,22 +31,22 @@
         <div class="container-context">
             <jsp:include page="header.jsp"></jsp:include>
             <div class="container">
-                <h2>Personal data</h2>
+                <h2>${locPersonData}</h2>
             </div>
             <div class="container">
-                <h3>Personal number: ${requestScope.account.id}</h3>
+                <h3>${locPersonalNumber}: ${requestScope.account.id}</h3>
             </div>
             <div class="container">
-                <h3>Login: ${requestScope.account.login}</h3>
+                <h3>${locLogin}: ${requestScope.account.login}</h3>
             </div>
             <div class="container">
-                <h3>First Name: ${requestScope.account.details.firstName}</h3>
+                <h3>${locFirstName}: ${requestScope.account.details.firstName}</h3>
             </div>
             <div class="container">
-               <h3>Last Name: ${requestScope.account.details.lastName}</h3>
+               <h3>${locLastName}: ${requestScope.account.details.lastName}</h3>
             </div>
             <div class="container">
-                <h3>Role: ${requestScope.account.role.name()}</h3>
+                <h3>${locRole}: ${requestScope.account.role.name()}</h3>
             </div>
             <div class="container">
                 <c:if test="${not empty sessionScope.account and (sessionScope.account.role eq Role.ADMIN)}">
@@ -37,15 +55,15 @@
                         <div class="container">
                             <div class="mb-3">
                                 <select name="role" class="form-select mb-3" aria-label=".form-select-lg example">
-                                    <option selected>select role</option>
-                                    <option value="ADMIN">ADMIN</option>
-                                    <option value="LIBRARIAN">LIBRARIAN</option>
-                                    <option value="READER">READER</option>
-                                    <option value="GUEST">GUEST</option>
+                                    <option selected>${locSelect}</option>
+                                    <option value="ADMIN">${locAdmin}</option>
+                                    <option value="LIBRARIAN">${locLibrarian}</option>
+                                    <option value="READER">${locReader}</option>
+                                    <option value="GUEST">${locGuest}</option>
                                 </select>
                             </div>
                         </div>
-                        <button type="submit" class="btn btn-primary">Change role</button>
+                        <button type="submit" class="btn btn-primary">${locChangeRole}</button>
                     </form>
                 </c:if>
             </div>

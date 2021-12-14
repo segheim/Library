@@ -1,5 +1,20 @@
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
+<%@ taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt" %>
 <%@ page contentType="text/html;charset=UTF-8" language="java" %>
+<fmt:setLocale value="${cookie.lang.value}"/>
+<fmt:setBundle basename="lang.main" var="loc" />
+
+<fmt:bundle basename="${loc}">
+    <fmt:message bundle="${loc}" key="label.list.orders" var="locListOrders"/>
+    <fmt:message bundle="${loc}" key="label.book" var="locBook"/>
+    <fmt:message bundle="${loc}" key="label.author" var="locAuthor"/>
+    <fmt:message bundle="${loc}" key="label.type.order" var="locTypeOrder"/>
+    <fmt:message bundle="${loc}" key="label.date.created.order" var="locDateCreated"/>
+    <fmt:message bundle="${loc}" key="label.date.issued.order" var="locDateIssued"/>
+    <fmt:message bundle="${loc}" key="label.date.return.order" var="locDateReturn"/>
+    <fmt:message bundle="${loc}" key="label.date.order.status" var="locOrderStatus"/>
+    <fmt:message bundle="${loc}" key="label.list.empty" var="locListEmty"/>
+</fmt:bundle>
 <html>
 <head>
     <title>Book order for reader</title>
@@ -16,38 +31,38 @@
             <c:choose>
                 <c:when test="${not empty requestScope.bookOrders}">
                     <div class="container">
-                        <h3>List orders</h3>
+                        <h3>${locListOrders}</h3>
                     </div>
                     <c:forEach var="bookOrder" items="${bookOrders}">
                         <div class="container">
                                 ${bookOrder.details.firstName} ${bookOrder.details.lastName}
                         </div>
                         <div class="container">
-                            Book: &#34;${bookOrder.book.title}&#34;
+                            ${locBook}: &#34;${bookOrder.book.title}&#34;
                         </div>
                         <div class="container">
-                            Author: <c:forEach var="author" items="${bookOrder.book.authors}">
+                            ${locAuthor}: <c:forEach var="author" items="${bookOrder.book.authors}">
                                     ${author.firstName}
                                 <br>${author.lastName}
                             </c:forEach>
                         </div>
                         <div class="container">
-                            Type of order: ${bookOrder.type.name()}
+                            ${locTypeOrder}: ${bookOrder.type.name()}
                         </div>
                         <div class="container">
-                            Date create order: ${bookOrder.dateCreate}
+                            ${locDateCreated}: ${bookOrder.dateCreate}
                         </div>
                         <div class="container">
-                            Date issue a book: ${bookOrder.dateIssue}
+                            ${locDateIssued}: ${bookOrder.dateIssue}
                         </div>
                         <div class="container">
-                            Date return a book: ${bookOrder.dateReturn}
+                            ${locDateReturn}: ${bookOrder.dateReturn}
                         </div>
                         <div class="container">
-                            Order status: ${bookOrder.status.name()}
+                            ${locOrderStatus}: ${bookOrder.status.name()}
                         </div>
                         <div class="container">
-                            <a class="btn btn-primary" href="/controller?command=delete_book_order&id=${bookOrder.id}" role="button">Delete order</a>
+                            <a class="btn btn-primary" href="/controller?command=delete_book_order&id=${bookOrder.id}" role="button">Delete</a>
                         </div>
                         <br>
                     </c:forEach>
@@ -55,7 +70,7 @@
                 <c:otherwise>
                     <div class="container-center">
                         <div class="alert alert-danger" role="alert">
-                            <h3 class="alert-heading">List of orders is empty! &#9785</h3>
+                            <h3 class="alert-heading">${locListEmty}</h3>
                         </div>
                     </div>
                 </c:otherwise>

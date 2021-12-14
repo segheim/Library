@@ -1,4 +1,11 @@
+<%@ taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt" %>
 <%@ page contentType="text/html;charset=UTF-8" language="java" %>
+<fmt:setLocale value="${cookie.lang.value}"/>
+<fmt:setBundle basename="lang.main" var="loc" />
+
+<fmt:bundle basename="${loc}">
+    <fmt:message bundle="${loc}" key="label.error.text" var="locErrorText"/>
+</fmt:bundle>
 <html>
 <head>
     <title>Error</title>
@@ -13,7 +20,7 @@
         <jsp:include page="header.jsp"></jsp:include>
         <div class="container-center">
             <div class="alert alert-danger" role="alert">
-                <h3 class="alert-heading">Oops! Something unpleasant happened... &#9785</h3>
+                <h3 class="alert-heading">${locErrorText}</h3>
                 <p class="mb-0">${errorPassMassage}</p>
             </div>
         </div>

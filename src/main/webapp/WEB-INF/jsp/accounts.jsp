@@ -1,5 +1,19 @@
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
+<%@ taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt" %>
 <%@ page contentType="text/html;charset=UTF-8" language="java" %>
+<fmt:setLocale value="${cookie.lang.value}"/>
+<fmt:setBundle basename="lang.main" var="loc" />
+
+<fmt:bundle basename="${loc}">
+    <fmt:message bundle="${loc}" key="label.id" var="locId"/>
+    <fmt:message bundle="${loc}" key="label.login" var="locLogin"/>
+    <fmt:message bundle="${loc}" key="label.first.name" var="locFirstName"/>
+    <fmt:message bundle="${loc}" key="label.last.name" var="locLastName"/>
+    <fmt:message bundle="${loc}" key="label.role" var="locRole"/>
+    <fmt:message bundle="${loc}" key="label.action" var="locAction"/>
+    <fmt:message bundle="${loc}" key="label.button.change.role" var="locChangeRole"/>
+    <fmt:message bundle="${loc}" key="label.button.delete" var="locDelete"/>
+</fmt:bundle>
 <html>
 <head>
     <title>Accounts</title>
@@ -15,12 +29,12 @@
                 <table class="table table-striped table-hover">
                     <thead class="table-primary">
                     <tr>
-                        <th>Id</th>
-                        <th>Login</th>
-                        <th>Role</th>
-                        <th>First name</th>
-                        <th>Last name</th>
-                        <th>Action</th>
+                        <th>${locId}</th>
+                        <th>${locLogin}</th>
+                        <th>${locRole}</th>
+                        <th>${locFirstName}</th>
+                        <th>${locLastName}</th>
+                        <th>${locAction}</th>
                     </tr>
                     </thead>
                     <tbody>
@@ -32,8 +46,8 @@
                             <td>${account.details.firstName}</td>
                             <td>${account.details.lastName}</td>
                             <td>
-                                <a href="/controller?command=account_page&id=${account.id}">change role</a>
-                                <a href="/controller?command=delete_account&id=${account.id}">delete</a>
+                                <a href="/controller?command=account_page&id=${account.id}">${locChangeRole}</a>
+                                <a href="/controller?command=delete_account&id=${account.id}">Delete</a>
                             </td>
                         </tr>
                     </c:forEach>

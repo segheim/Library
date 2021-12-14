@@ -1,6 +1,23 @@
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
+<%@ taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt" %>
 <%@ page import="com.epam.jwd.library.model.OrderStatus" %>
 <%@ page contentType="text/html;charset=UTF-8" language="java" %>
+<fmt:setLocale value="${cookie.lang.value}"/>
+<fmt:setBundle basename="lang.main" var="loc" />
+
+<fmt:bundle basename="${loc}">
+    <fmt:message bundle="${loc}" key="label.id" var="locId"/>
+    <fmt:message bundle="${loc}" key="label.first.last.name" var="locFirstLastName"/>
+    <fmt:message bundle="${loc}" key="label.book.title" var="locBookTitle"/>
+    <fmt:message bundle="${loc}" key="label.date.created.order" var="locDateCreated"/>
+    <fmt:message bundle="${loc}" key="label.date.issued.order" var="locDateIssued"/>
+    <fmt:message bundle="${loc}" key="label.date.return.order" var="locDateReturn"/>
+    <fmt:message bundle="${loc}" key="label.date.order.status" var="locOrderStatus"/>
+    <fmt:message bundle="${loc}" key="label.action" var="locAction"/>
+    <fmt:message bundle="${loc}" key="label.button.issue" var="locIssue"/>
+    <fmt:message bundle="${loc}" key="label.button.delete" var="locDelete"/>
+    <fmt:message bundle="${loc}" key="label.button.end" var="locEnd"/>
+</fmt:bundle>
 <html>
 <head>
     <title>Book orders for librarian</title>
@@ -19,14 +36,14 @@
                     <table class="table table-striped table-hover">
                         <thead class="table-primary">
                         <tr>
-                            <th>Id</th>
-                            <th>First Last name</th>
-                            <th>Book title</th>
-                            <th>Date create order</th>
-                            <th>Date issue order</th>
-                            <th>Date return order</th>
-                            <th>Order status</th>
-                            <th>Action</th>
+                            <th>${locId}</th>
+                            <th>${locFirstLastName}</th>
+                            <th>${locBookTitle}</th>
+                            <th>${locDateCreated}</th>
+                            <th>${locDateIssued}</th>
+                            <th>${locDateReturn}</th>
+                            <th>${locOrderStatus}</th>
+                            <th>${locAction}</th>
                         </tr>
                         </thead>
                         <tbody>
@@ -44,14 +61,14 @@
                                 <td>${bookOrder.status}</td>
                                 <td>
                                     <c:if test="${bookOrder.status eq OrderStatus.CLAIMED}">
-                                        <a href="/controller?command=issue_book&id=${bookOrder.id}">issued</a>
-                                        <a href="/controller?command=delete_book_order&id=${bookOrder.id}">delete order</a>
+                                        <a href="/controller?command=issue_book&id=${bookOrder.id}">${locIssue}</a>
+                                        <a href="/controller?command=delete_book_order&id=${bookOrder.id}">${locDelete}</a>
                                     </c:if>
                                     <c:if test="${not empty bookOrder.status and (bookOrder.status eq OrderStatus.ISSUED)}">
-                                        <a href="/controller?command=end_book_order&id=${bookOrder.id}">ended</a>
+                                        <a href="/controller?command=end_book_order&id=${bookOrder.id}">${locEnd}</a>
                                     </c:if>
                                     <c:if test="${not empty bookOrder.status and (bookOrder.status eq OrderStatus.ENDED)}">
-                                        <a href="/controller?command=delete_book_order&id=${bookOrder.id}">delete order</a>
+                                        <a href="/controller?command=delete_book_order&id=${bookOrder.id}">${locDelete}</a>
                                     </c:if>
                                 </td>
                             </tr>

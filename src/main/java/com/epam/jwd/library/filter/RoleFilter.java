@@ -3,6 +3,8 @@ package com.epam.jwd.library.filter;
 import com.epam.jwd.library.command.*;
 import com.epam.jwd.library.model.Account;
 import com.epam.jwd.library.model.Role;
+import com.epam.jwd.library.util.ConfigurationManager;
+import com.epam.jwd.library.util.Constant;
 
 import javax.servlet.*;
 import javax.servlet.annotation.WebFilter;
@@ -14,8 +16,6 @@ import java.util.concurrent.ConcurrentHashMap;
 
 @WebFilter(urlPatterns = "/*")
 public class RoleFilter implements Filter {
-
-    private static final String ERROR_JSP_URL = "/controller?command=error_page";
 
     private final Map<Role, Set<Command>> commandsWithRole = new ConcurrentHashMap<>();
 
@@ -42,7 +42,9 @@ public class RoleFilter implements Filter {
         commandsForAdmin.add(ShowUpdateBookPageCommand.getInstance());
         commandsForAdmin.add(UpdateAuthorCommand.getInstance());
         commandsForAdmin.add(UpdateBookCommand.getInstance());
+        commandsForAdmin.add(SearchBookCommand.getInstance());
         commandsForAdmin.add(ChangeAccountRoleCommand.getInstance());
+        commandsForAdmin.add(ChangeLanguageCommand.getInstance());
         commandsForAdmin.add(LoginCommand.getInstance());
         commandsForAdmin.add(LogoutCommand.getInstance());
 
@@ -58,6 +60,7 @@ public class RoleFilter implements Filter {
         commandsForLibrarian.add(SearchBookCommand.getInstance());
         commandsForLibrarian.add(IssueBookCommand.getInstance());
         commandsForLibrarian.add(EndBookOrderCommand.getInstance());
+        commandsForLibrarian.add(ChangeLanguageCommand.getInstance());
         commandsForLibrarian.add(LogoutCommand.getInstance());
 
         Set<Command> commandsForReader = new HashSet<>();
@@ -72,6 +75,7 @@ public class RoleFilter implements Filter {
         commandsForReader.add(ShowAccountPageCommand.getInstance());
         commandsForReader.add(DeleteBookOrderCommand.getInstance());
         commandsForReader.add(CreateBookOrderCommand.getInstance());
+        commandsForReader.add(ChangeLanguageCommand.getInstance());
         commandsForReader.add(SearchBookCommand.getInstance());
         commandsForReader.add(LogoutCommand.getInstance());
 
@@ -82,6 +86,7 @@ public class RoleFilter implements Filter {
         commandsForGuest.add(ShowCatalogPageCommand.getInstance());
         commandsForGuest.add(ShowAuthorPageCommand.getInstance());
         commandsForGuest.add(ShowRegistrationPageCommand.getInstance());
+        commandsForGuest.add(ChangeLanguageCommand.getInstance());
         commandsForGuest.add(SearchBookCommand.getInstance());
         commandsForGuest.add(RegistrationCommand.getInstance());
         commandsForGuest.add(LoginCommand.getInstance());
@@ -95,13 +100,13 @@ public class RoleFilter implements Filter {
     @Override
     public void doFilter(ServletRequest servletRequest, ServletResponse servletResponse, FilterChain filterChain) throws IOException, ServletException {
         final HttpServletRequest request = (HttpServletRequest) servletRequest;
-        final String commandName = request.getParameter("command");
+        final String commandName = request.getParameter(Constant.COMMAND_PARAMETER_NAME);
         final Command command = Command.of(commandName);
         if (isCurrentAccountRoleEvokeCommand(command, request)) {
             filterChain.doFilter(servletRequest, servletResponse);
         } else {
             final HttpServletResponse response = (HttpServletResponse) servletResponse;
-            response.sendRedirect(ERROR_JSP_URL);
+            response.sendRedirect(ConfigurationManager.getProperty("url.error"));
         }
     }
 
@@ -114,7 +119,7 @@ public class RoleFilter implements Filter {
 
     private Role retrieveCurrentAccountRole(HttpServletRequest request) {
         return Optional.ofNullable(request.getSession(false))
-                .map(s -> (Account) s.getAttribute("account"))
+                .map(s -> (Account) s.getAttribute(Constant.ACCOUNT_PARAMETER_NAME))
                 .map(Account::getRole)
                 .orElse(Role.GUEST);
     }
