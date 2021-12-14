@@ -14,6 +14,9 @@ public class ProtectJSInjection {
     }
 
     public String protectInjection(String name) {
+        if (name == null){
+            return null;
+        }
         Pattern patternProtectInjection = Pattern.compile("\\<");
         Matcher matcherProtectInjection = patternProtectInjection.matcher(name);
         return matcherProtectInjection.replaceAll("\\\\<");

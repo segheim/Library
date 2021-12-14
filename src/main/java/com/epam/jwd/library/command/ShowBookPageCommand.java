@@ -32,7 +32,6 @@ public class ShowBookPageCommand implements Command {
             request.addAttributeToJsp(Constant.ERROR_PASS_MESSAGE_ATTRIBUTE_NAME, ERROR_PASS_MESSAGE_ATTRIBUTE);
             return requestFactory.createForwardResponse(ConfigurationManager.getProperty("path.page.error"));
         }
-
     }
 
     public static ShowBookPageCommand getInstance() {

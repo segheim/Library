@@ -44,7 +44,7 @@ public class AuthorDao extends AbstractDao<Author> implements BasicAuthorDao<Aut
                 final ResultSet generatedKeys = preparedStatement.getGeneratedKeys();
                 if (generatedKeys.next()) {
                     long key = generatedKeys.getLong(1);
-                     createdAuthor = Optional.of(new Author(key, author.getFirstName(), author.getLastName()));
+                    createdAuthor = Optional.of(new Author(key, author.getFirstName(), author.getLastName()));
                 }
             }
         } catch (SQLException e) {
