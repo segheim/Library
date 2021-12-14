@@ -16,13 +16,40 @@
         <maven.compiler.source>1.8</maven.compiler.source>
         <junit.version>5.7.1</junit.version>
     </properties>
-
     <dependencies>
         <dependency>
             <groupId>javax.servlet</groupId>
             <artifactId>javax.servlet-api</artifactId>
             <version>4.0.1</version>
             <scope>provided</scope>
+        </dependency>
+        <dependency>
+            <groupId>mysql</groupId>
+            <artifactId>mysql-connector-java</artifactId>
+            <version>8.0.26</version>
+<!--            <scope>provided</scope>-->
+        </dependency>
+        <dependency>
+            <groupId>at.favre.lib</groupId>
+            <artifactId>bcrypt</artifactId>
+            <version>0.9.0</version>
+        </dependency>
+        <dependency>
+            <groupId>javax.servlet.jsp</groupId>
+            <artifactId>javax.servlet.jsp-api</artifactId>
+            <version>2.3.3</version>
+            <scope>provided</scope>
+        </dependency>
+        <dependency>
+            <groupId>javax.servlet.jsp.jstl</groupId>
+            <artifactId>jstl-api</artifactId>
+            <version>1.2</version>
+        </dependency>
+        <dependency>
+            <groupId>org.glassfish.web</groupId>
+            <artifactId>jstl-impl</artifactId>
+            <version>1.2</version>
+            <scope>runtime</scope>
         </dependency>
         <dependency>
             <groupId>org.slf4j</groupId>
@@ -46,6 +73,13 @@
             <version>${junit.version}</version>
             <scope>test</scope>
         </dependency>
+        <dependency>
+            <groupId>org.mockito</groupId>
+            <artifactId>mockito-junit-jupiter</artifactId>
+            <version>4.0.0</version>
+            <scope>test</scope>
+        </dependency>
+
     </dependencies>
 
     <build>
